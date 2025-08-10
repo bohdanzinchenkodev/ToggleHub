@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToggleHub.Domain", "ToggleHub.Domain\ToggleHub.Domain.csproj", "{D599291E-89F1-417E-95CD-CB05829CD154}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToggleHub.Application", "ToggleHub.Application\ToggleHub.Application.csproj", "{568838B1-7622-4E67-8D62-B4C3AFC23084}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToggleHub.Infrastructure", "ToggleHub.Infrastructure\ToggleHub.Infrastructure.csproj", "{BDC74F32-CD6F-4737-B690-981220246C69}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D599291E-89F1-417E-95CD-CB05829CD154}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D599291E-89F1-417E-95CD-CB05829CD154}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D599291E-89F1-417E-95CD-CB05829CD154}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D599291E-89F1-417E-95CD-CB05829CD154}.Release|Any CPU.Build.0 = Release|Any CPU
+		{568838B1-7622-4E67-8D62-B4C3AFC23084}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{568838B1-7622-4E67-8D62-B4C3AFC23084}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{568838B1-7622-4E67-8D62-B4C3AFC23084}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{568838B1-7622-4E67-8D62-B4C3AFC23084}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDC74F32-CD6F-4737-B690-981220246C69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDC74F32-CD6F-4737-B690-981220246C69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDC74F32-CD6F-4737-B690-981220246C69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDC74F32-CD6F-4737-B690-981220246C69}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
