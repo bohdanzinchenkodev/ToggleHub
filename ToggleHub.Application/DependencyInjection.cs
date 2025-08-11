@@ -22,6 +22,9 @@ public static class DependencyInjection
         services.AddScoped<FlagService>();
         services.AddScoped<RuleService>();
         services.AddScoped<AuditLogService>();
+        
+        // Register SlugGenerator
+        services.AddScoped(typeof(SlugGenerator<>), typeof(SlugGenerator<>));
 
         return services;
     }

@@ -11,14 +11,6 @@ public class OrganizationRepository : BaseRepository<Organization>, IOrganizatio
     {
     }
 
-    public async Task<IEnumerable<string>> GetSlugsByPatternAsync(string baseSlug)
-    {
-        return await _dbSet
-            .Where(o => o.Slug == baseSlug || o.Slug.StartsWith(baseSlug + "-"))
-            .Select(o => o.Slug)
-            .ToListAsync();
-    }
-
     public async Task<bool> NameExistsAsync(string name)
     {
         return await _dbSet
