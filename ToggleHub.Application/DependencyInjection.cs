@@ -1,5 +1,7 @@
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using ToggleHub.Application.Services;
+using ToggleHub.Application.Validators;
 
 namespace ToggleHub.Application;
 
@@ -7,6 +9,9 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
+        // Register FluentValidation
+        services.AddValidatorsFromAssemblyContaining<OrganizationValidator>();
+
         // Register all services
         services.AddScoped<OrganizationService>();
         services.AddScoped<UserService>();
