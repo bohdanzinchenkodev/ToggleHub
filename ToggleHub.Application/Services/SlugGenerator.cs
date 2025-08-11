@@ -13,12 +13,12 @@ public class SlugGenerator
         _repository = repository;
     }
 
-    public async Task<string> GenerateAsync(string name)
+    public async Task<string> GenerateAsync<T>(string name) where T : BaseEntity, ISluggedEntity
     {
         string baseSlug = GenerateValidSlug(name);
         
         // Get all existing slugs that match the pattern
-        var existingSlugs = (await _repository.GetSlugsByPatternAsync<Organization>(baseSlug)).ToArray();
+        var existingSlugs = (await _repository.GetSlugsByPatternAsync<T>(baseSlug)).ToArray();
         
         // If base slug doesn't exist, use it
         if (!existingSlugs.Contains(baseSlug))
@@ -46,8 +46,7 @@ public class SlugGenerator
 
     private static string GenerateValidSlug(string name)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            return "organization";
+        ArgumentNullException.ThrowIfNull(name);
 
         // Convert to lowercase
         string slug = name.ToLower();
@@ -66,7 +65,7 @@ public class SlugGenerator
 
         // Ensure slug is not empty
         if (string.IsNullOrEmpty(slug))
-            return "organization";
+            throw new InvalidOperationException("Generated slug is empty. Please provide a valid name.");
 
         // Limit slug length (optional)
         if (slug.Length > 50)

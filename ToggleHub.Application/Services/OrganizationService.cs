@@ -7,10 +7,10 @@ namespace ToggleHub.Application.Services;
 
 public class OrganizationService : BaseService<Organization>
 {
-    private readonly SlugGenerator<Organization> _slugGenerator;
+    private readonly SlugGenerator _slugGenerator;
     private readonly IValidator<Organization> _validator;
 
-    public OrganizationService(IOrganizationRepository organizationRepository, IValidator<Organization> validator, SlugGenerator<Organization> slugGenerator) 
+    public OrganizationService(IOrganizationRepository organizationRepository, IValidator<Organization> validator, SlugGenerator slugGenerator) 
         : base(organizationRepository)
     {
         _validator = validator;
@@ -26,7 +26,7 @@ public class OrganizationService : BaseService<Organization>
             throw new ValidationException(validationResult.Errors);
         }
 
-        entity.Slug = await _slugGenerator.GenerateAsync(entity.Name);
+        entity.Slug = await _slugGenerator.GenerateAsync<Organization>(entity.Name);
         entity.CreatedAt = DateTime.UtcNow;
         return await base.CreateAsync(entity);
     }
