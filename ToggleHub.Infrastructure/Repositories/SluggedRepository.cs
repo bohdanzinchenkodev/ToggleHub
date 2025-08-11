@@ -5,25 +5,27 @@ using ToggleHub.Infrastructure.Data;
 
 namespace ToggleHub.Infrastructure.Repositories;
 
-public class SluggedRepository<T> : ISluggedRepository<T> where T : BaseEntity, ISluggedEntity
+public class SluggedRepository : ISluggedRepository
 {
-    private readonly DbSet<T> _dbSet;
+    private readonly ToggleHubDbContext _context;
 
     public SluggedRepository(ToggleHubDbContext context)
     {
-        _dbSet = context.Set<T>();
+        _context = context;
     }
 
-    public Task<T?> GetBySlugAsync(string slug)
+    public Task<T?> GetBySlugAsync<T>(string slug) where T : BaseEntity, ISluggedEntity
     {
-        return _dbSet
+        var dbSet = _context.Set<T>();
+        return dbSet
             .AsNoTracking()
             .FirstOrDefaultAsync(o => o.Slug == slug);
     }
 
-    public async Task<IEnumerable<string>> GetSlugsByPatternAsync(string baseSlug)
+    public async Task<IEnumerable<string>> GetSlugsByPatternAsync<T>(string baseSlug) where T : BaseEntity, ISluggedEntity
     {
-        return await _dbSet
+        var dbSet = _context.Set<T>();
+        return await dbSet
             .Where(o => o.Slug == baseSlug || o.Slug.StartsWith(baseSlug + "-"))
             .Select(o => o.Slug)
             .ToListAsync();

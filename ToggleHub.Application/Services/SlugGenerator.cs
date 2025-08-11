@@ -4,11 +4,11 @@ using ToggleHub.Domain.Repositories;
 
 namespace ToggleHub.Application.Services;
 
-public class SlugGenerator<T> where T : BaseEntity, ISluggedEntity
+public class SlugGenerator
 {
-    private readonly ISluggedRepository<T> _repository;
+    private readonly ISluggedRepository _repository;
 
-    public SlugGenerator(ISluggedRepository<T> repository)
+    public SlugGenerator(ISluggedRepository repository)
     {
         _repository = repository;
     }
@@ -18,8 +18,7 @@ public class SlugGenerator<T> where T : BaseEntity, ISluggedEntity
         string baseSlug = GenerateValidSlug(name);
         
         // Get all existing slugs that match the pattern
-        var existingSlugs = (await _repository.GetSlugsByPatternAsync(baseSlug)).ToArray();
-            
+        var existingSlugs = (await _repository.GetSlugsByPatternAsync<Organization>(baseSlug)).ToArray();
         
         // If base slug doesn't exist, use it
         if (!existingSlugs.Contains(baseSlug))

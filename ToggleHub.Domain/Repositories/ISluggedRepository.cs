@@ -2,9 +2,9 @@ using ToggleHub.Domain.Entities;
 
 namespace ToggleHub.Domain.Repositories;
 
-public interface ISluggedRepository<T> where T : ISluggedEntity
+public interface ISluggedRepository 
 {
-    Task<T?> GetBySlugAsync(string slug); 
-    Task<IEnumerable<string>> GetSlugsByPatternAsync(string pattern);
+    Task<T?> GetBySlugAsync<T>(string slug) where T : BaseEntity, ISluggedEntity; 
+    Task<IEnumerable<string>> GetSlugsByPatternAsync<T>(string pattern) where T : BaseEntity, ISluggedEntity;
     
 }
