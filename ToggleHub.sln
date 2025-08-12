@@ -8,6 +8,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToggleHub.Infrastructure", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToggleHub.API", "ToggleHub.API\ToggleHub.API.csproj", "{7D1C3B59-3D88-4F9A-9465-C7047EB8CC4E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B675A181-815C-459E-8680-179F6B97D414}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToggleHub.UnitTests", "ToggleHub.UnitTests\ToggleHub.UnitTests.csproj", "{D089F39C-A690-4E1C-B3F8-7C442297AF62}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +34,12 @@ Global
 		{7D1C3B59-3D88-4F9A-9465-C7047EB8CC4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D1C3B59-3D88-4F9A-9465-C7047EB8CC4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D1C3B59-3D88-4F9A-9465-C7047EB8CC4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D089F39C-A690-4E1C-B3F8-7C442297AF62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D089F39C-A690-4E1C-B3F8-7C442297AF62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D089F39C-A690-4E1C-B3F8-7C442297AF62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D089F39C-A690-4E1C-B3F8-7C442297AF62}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D089F39C-A690-4E1C-B3F8-7C442297AF62} = {B675A181-815C-459E-8680-179F6B97D414}
 	EndGlobalSection
 EndGlobal
