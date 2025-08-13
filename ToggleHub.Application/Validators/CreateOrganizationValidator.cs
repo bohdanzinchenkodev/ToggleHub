@@ -1,14 +1,15 @@
 using FluentValidation;
+using ToggleHub.Application.DTOs;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Repositories;
 
 namespace ToggleHub.Application.Validators;
 
-public class OrganizationValidator : AbstractValidator<Organization>
+public class CreateOrganizationValidator : AbstractValidator<CreateOrganizationDto>
 {
     private readonly IOrganizationRepository _organizationRepository;
 
-    public OrganizationValidator(IOrganizationRepository organizationRepository)
+    public CreateOrganizationValidator(IOrganizationRepository organizationRepository)
     {
         _organizationRepository = organizationRepository;
 
@@ -21,17 +22,8 @@ public class OrganizationValidator : AbstractValidator<Organization>
             .WithMessage("An organization with this name already exists");
     }
 
-    private async Task<bool> BeUniqueNameAsync(Organization organization, string name, CancellationToken cancellationToken)
+    private async Task<bool> BeUniqueNameAsync(CreateOrganizationDto organization, string name, CancellationToken cancellationToken)
     {
-        if (organization.Id == 0)
-        {
-            // Creating new organization
-            return !await _organizationRepository.NameExistsAsync(name);
-        }
-        else
-        {
-            // Updating existing organization
-            return !await _organizationRepository.NameExistsAsync(name, organization.Id);
-        }
+        return !await _organizationRepository.NameExistsAsync(name);
     }
 }

@@ -1,46 +1,50 @@
 using System.Text.RegularExpressions;
 using FluentValidation;
+using Mapster;
+using ToggleHub.Application.DTOs;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Repositories;
 
 namespace ToggleHub.Application.Services;
 
-public class OrganizationService : BaseService<Organization>
+public class OrganizationService
 {
     private readonly SlugGenerator _slugGenerator;
-    private readonly IValidator<Organization> _validator;
+    private readonly IValidator<CreateOrganizationDto> _createValidator;
+    private readonly IValidator<UpdateOrganizationDto> _updateValidator;
+    private readonly IOrganizationRepository _organizationRepository;
 
-    public OrganizationService(IOrganizationRepository organizationRepository, IValidator<Organization> validator, SlugGenerator slugGenerator) 
-        : base(organizationRepository)
+    public OrganizationService(IOrganizationRepository organizationRepository, IValidator<CreateOrganizationDto> createValidator, SlugGenerator slugGenerator, IValidator<UpdateOrganizationDto> updateValidator) 
     {
-        _validator = validator;
+        _organizationRepository = organizationRepository;
+        _createValidator = createValidator;
         _slugGenerator = slugGenerator;
+        _updateValidator = updateValidator;
     }
 
-    public override async Task<Organization> CreateAsync(Organization entity)
+    public async Task<Organization> CreateAsync(CreateOrganizationDto createDto)
     {
-        // Validate using FluentValidation
-        var validationResult = await _validator.ValidateAsync(entity);
-        if (!validationResult.IsValid)
-        {
-            throw new ValidationException(validationResult.Errors);
-        }
+        await _createValidator.ValidateAndThrowAsync(createDto);
+        var entity = createDto.Adapt<Organization>();
 
         entity.Slug = await _slugGenerator.GenerateAsync<Organization>(entity.Name);
         entity.CreatedAt = DateTime.UtcNow;
-        return await base.CreateAsync(entity);
+        return await _organizationRepository.CreateAsync(entity);
     }
 
-    public override async Task UpdateAsync(Organization entity)
+    public async Task UpdateAsync(UpdateOrganizationDto updateDto)
     {
-        // Validate using FluentValidation
-        var validationResult = await _validator.ValidateAsync(entity);
-        if (!validationResult.IsValid)
-        {
-            throw new ValidationException(validationResult.Errors);
-        }
-
-        await base.UpdateAsync(entity);
+        await _updateValidator.ValidateAndThrowAsync(updateDto);
+        var entity = await _organizationRepository.GetByIdAsync(updateDto.Id);
+        
+        var slug = entity!.Slug;
+        // Check if the name has changed to generate a new slug
+        if (updateDto.Name != entity.Name)
+            slug = await _slugGenerator.GenerateAsync<Organization>(updateDto.Name);
+        
+        entity = updateDto.Adapt(entity);
+        entity.Slug = slug;
+        await _organizationRepository.UpdateAsync(entity);
     }
 
    
