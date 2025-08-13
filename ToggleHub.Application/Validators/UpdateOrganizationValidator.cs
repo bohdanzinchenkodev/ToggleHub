@@ -19,20 +19,14 @@ public class UpdateOrganizationValidator : AbstractValidator<UpdateOrganizationD
             .WithMessage("Organization name must be between 1 and 100 characters")
             .MustAsync(BeUniqueNameAsync)
             .WithMessage("An organization with this name already exists");
-        
+
         RuleFor(x => x.Id)
             .GreaterThan(0)
-            .WithMessage("Organization ID must be greater than 0")
-            .MustAsync(OrganizationExistsAsync)
-            .WithMessage("Organization does not exist");
+            .WithMessage("Organization ID must be greater than 0");
     }
 
     private async Task<bool> BeUniqueNameAsync(UpdateOrganizationDto organization, string name, CancellationToken cancellationToken)
     {
         return !await _organizationRepository.NameExistsAsync(name, organization.Id);
-    }
-    private async Task<bool> OrganizationExistsAsync(int id, CancellationToken cancellationToken)
-    {
-        return await _organizationRepository.GetByIdAsync(id) != null;
     }
 }

@@ -3,6 +3,7 @@ using FluentValidation;
 using Mapster;
 using ToggleHub.Application.DTOs;
 using ToggleHub.Domain.Entities;
+using ToggleHub.Domain.Exceptions;
 using ToggleHub.Domain.Repositories;
 
 namespace ToggleHub.Application.Services;
@@ -24,7 +25,10 @@ public class OrganizationService
 
     public async Task<Organization> CreateAsync(CreateOrganizationDto createDto)
     {
-        await _createValidator.ValidateAndThrowAsync(createDto);
+        var validationResult = await _createValidator.ValidateAsync(createDto);
+        if (!validationResult.IsValid)
+            throw new ValidationException(validationResult.Errors);
+        
         var entity = createDto.Adapt<Organization>();
 
         entity.Slug = await _slugGenerator.GenerateAsync<Organization>(entity.Name);
@@ -34,8 +38,13 @@ public class OrganizationService
 
     public async Task UpdateAsync(UpdateOrganizationDto updateDto)
     {
-        await _updateValidator.ValidateAndThrowAsync(updateDto);
+        var validationResult = await _updateValidator.ValidateAsync(updateDto);
+        if (!validationResult.IsValid)
+            throw new ValidationException(validationResult.Errors);
+        
         var entity = await _organizationRepository.GetByIdAsync(updateDto.Id);
+        if(entity == null)
+            throw new NotFoundException($"Organization with ID {updateDto.Id} not found");
         
         var slug = entity!.Slug;
         // Check if the name has changed to generate a new slug
@@ -47,5 +56,19 @@ public class OrganizationService
         await _organizationRepository.UpdateAsync(entity);
     }
 
-   
+    public async Task<OrganizationDto?> GetByIdAsync(int id)
+    {
+        var entity = await _organizationRepository.GetByIdAsync(id);
+        var dto = entity?.Adapt<OrganizationDto>();
+        return dto;
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var entity = await _organizationRepository.GetByIdAsync(id);
+        if (entity == null)    
+            throw new NotFoundException($"Organization with ID {id} not found");
+    
+        await _organizationRepository.DeleteAsync(id);
+    }
 }

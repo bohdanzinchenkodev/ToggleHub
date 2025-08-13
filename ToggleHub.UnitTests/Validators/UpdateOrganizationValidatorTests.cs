@@ -88,8 +88,6 @@ public class UpdateOrganizationValidatorTests
         var dto = new UpdateOrganizationDto { Id = 1, Name = "Valid Organization" };
         _mockRepository.Setup(r => r.NameExistsAsync("Valid Organization", 1))
             .ReturnsAsync(false);
-        _mockRepository.Setup(r => r.GetByIdAsync(1))
-            .ReturnsAsync(new Organization());
 
         // Act & Assert
         var result = await _validator.TestValidateAsync(dto);
