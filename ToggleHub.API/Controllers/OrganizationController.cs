@@ -14,7 +14,7 @@ public class OrganizationController : ControllerBase
     {
         _organizationService = organizationService;
     }
-    
+    [HttpPost]
     public async Task<IActionResult> Create(CreateOrganizationDto organizationDto)
     {
         var result = await _organizationService.CreateAsync(organizationDto);
