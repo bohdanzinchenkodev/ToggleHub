@@ -23,7 +23,7 @@ public class OrganizationService
         _updateValidator = updateValidator;
     }
 
-    public async Task<Organization> CreateAsync(CreateOrganizationDto createDto)
+    public async Task<OrganizationDto> CreateAsync(CreateOrganizationDto createDto)
     {
         var validationResult = await _createValidator.ValidateAsync(createDto);
         if (!validationResult.IsValid)
@@ -33,7 +33,9 @@ public class OrganizationService
 
         entity.Slug = await _slugGenerator.GenerateAsync<Organization>(entity.Name);
         entity.CreatedAt = DateTime.UtcNow;
-        return await _organizationRepository.CreateAsync(entity);
+        entity = await _organizationRepository.CreateAsync(entity);
+        var dto = entity.Adapt<OrganizationDto>();
+        return dto;
     }
 
     public async Task UpdateAsync(UpdateOrganizationDto updateDto)
@@ -59,6 +61,12 @@ public class OrganizationService
     public async Task<OrganizationDto?> GetByIdAsync(int id)
     {
         var entity = await _organizationRepository.GetByIdAsync(id);
+        var dto = entity?.Adapt<OrganizationDto>();
+        return dto;
+    }
+    public async Task<OrganizationDto?> GetBySlugAsync(string slug)
+    {
+        var entity = await _slugGenerator.GetBySlugAsync<Organization>(slug);
         var dto = entity?.Adapt<OrganizationDto>();
         return dto;
     }

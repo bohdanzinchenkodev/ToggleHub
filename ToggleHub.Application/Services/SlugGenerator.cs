@@ -13,6 +13,17 @@ public class SlugGenerator
         _repository = repository;
     }
 
+    public async Task<T?> GetBySlugAsync<T>(string slug) where T : BaseEntity, ISluggedEntity
+    {
+        ArgumentNullException.ThrowIfNull(slug);
+        
+        // Validate slug format
+        if (!Regex.IsMatch(slug, @"^[a-z0-9]+(?:-[a-z0-9]+)*$"))
+            throw new ArgumentException("Invalid slug format.", nameof(slug));
+
+        // Fetch the entity by slug
+        return await _repository.GetBySlugAsync<T>(slug);
+    }
     public async Task<string> GenerateAsync<T>(string name) where T : BaseEntity, ISluggedEntity
     {
         string baseSlug = GenerateValidSlug(name);
