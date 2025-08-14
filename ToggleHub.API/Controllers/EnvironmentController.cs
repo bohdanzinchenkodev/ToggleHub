@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ToggleHub.Application.DTOs.Environment;
 using ToggleHub.Application.Interfaces;
+using ToggleHub.Domain.Entities;
 
 namespace ToggleHub.API.Controllers;
 
@@ -51,5 +52,12 @@ public class EnvironmentController : ControllerBase
     {
         await _environmentService.DeleteAsync(id);
         return NoContent();
+    }
+    [HttpGet]
+    [Route("/api/environment-types")]
+    public async Task<IActionResult> GetEnvironmentTypes()
+    {
+        var envTypes = await _environmentService.GetEnvironmentTypesAsync();
+        return Ok(envTypes);
     }
 }

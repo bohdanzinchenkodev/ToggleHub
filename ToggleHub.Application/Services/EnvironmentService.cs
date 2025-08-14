@@ -64,4 +64,15 @@ public class EnvironmentService : IEnvironmentService
     {
         await _environmentRepository.DeleteAsync(id);
     }
+    public Task<IEnumerable<EnvironmentTypeDto>> GetEnvironmentTypesAsync()
+    {
+        var values = Enum.GetValues(typeof(EnvironmentType))
+            .Cast<EnvironmentType>()
+            .Select(e => new EnvironmentTypeDto
+            {
+                Name = e.ToString(),
+                Value = (int)e
+            });
+        return Task.FromResult(values);
+    }
 }

@@ -2,9 +2,9 @@ namespace ToggleHub.Domain.Entities;
 
 public enum EnvironmentType
 {
-    Dev,
-    Staging,
-    Prod
+    Dev = 10,
+    Staging = 20,
+    Prod = 30
 }
 
 public class Environment : BaseEntity
