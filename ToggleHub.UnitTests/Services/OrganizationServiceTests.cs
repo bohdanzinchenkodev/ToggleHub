@@ -18,7 +18,7 @@ public class OrganizationServiceTests
     private Mock<IValidator<CreateOrganizationDto>> _createValidator;
     private Mock<IValidator<UpdateOrganizationDto>> _updateValidator;
     private Mock<ISlugGenerator> _slugGenerator;
-    private OrganizationService _service;
+    private IOrganizationService _service;
 
     [SetUp]
     public void SetUp()

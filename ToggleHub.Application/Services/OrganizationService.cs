@@ -10,7 +10,7 @@ using ToggleHub.Domain.Repositories;
 
 namespace ToggleHub.Application.Services;
 
-public class OrganizationService
+public class OrganizationService : IOrganizationService
 {
     private readonly ISlugGenerator _slugGenerator;
     private readonly IValidator<CreateOrganizationDto> _createValidator;

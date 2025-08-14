@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ToggleHub.Application.DTOs;
 using ToggleHub.Application.DTOs.Organization;
+using ToggleHub.Application.Interfaces;
 using ToggleHub.Application.Services;
 
 namespace ToggleHub.API.Controllers;
@@ -9,9 +10,9 @@ namespace ToggleHub.API.Controllers;
 [Route("api/organizations")]
 public class OrganizationController : ControllerBase
 {
-    private readonly OrganizationService _organizationService;
+    private readonly IOrganizationService _organizationService;
 
-    public OrganizationController(OrganizationService organizationService)
+    public OrganizationController(IOrganizationService organizationService)
     {
         _organizationService = organizationService;
     }

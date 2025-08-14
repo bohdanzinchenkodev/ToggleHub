@@ -1,4 +1,5 @@
 using Moq;
+using ToggleHub.Application.Interfaces;
 using ToggleHub.Application.Services;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Repositories;
@@ -9,7 +10,7 @@ namespace ToggleHub.UnitTests.Services;
 public class SlugGeneratorTests
 {
     private Mock<ISluggedRepository> _mockRepository;
-    private SlugGenerator _slugGenerator;
+    private ISlugGenerator _slugGenerator;
 
     private class TestSluggedEntity : BaseEntity, ISluggedEntity
     {

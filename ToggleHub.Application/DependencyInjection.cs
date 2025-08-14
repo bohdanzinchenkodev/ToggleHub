@@ -14,7 +14,7 @@ public static class DependencyInjection
         services.AddValidatorsFromAssemblyContaining<IApplicationMaker>();
 
         // Register all services
-        services.AddScoped<OrganizationService>();
+        services.AddScoped<IOrganizationService, OrganizationService>();
         
         
         // Register SlugGenerator
