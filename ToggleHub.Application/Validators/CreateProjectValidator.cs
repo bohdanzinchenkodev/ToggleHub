@@ -26,7 +26,8 @@ public class CreateProjectValidator : AbstractValidator<CreateProjectDto>
         RuleFor(x => x.OrgId)
             .GreaterThan(0)
             .WithMessage("Organization ID must be greater than 0")
-            .MustAsync(BeExistingOrgAsync);
+            .MustAsync(BeExistingOrgAsync)
+            .WithMessage("Organization with this ID does not exist");
     }
 
     private async Task<bool> BeExistingOrgAsync(int orgId, CancellationToken cancellationToken)

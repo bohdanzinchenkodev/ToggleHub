@@ -15,6 +15,7 @@ public static class DependencyInjection
 
         // Register all services
         services.AddScoped<IOrganizationService, OrganizationService>();
+        services.AddScoped<IProjectService, ProjectService>();
         
         
         // Register SlugGenerator

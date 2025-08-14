@@ -17,6 +17,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwaggerUI(x =>
+    {
+        x.SwaggerEndpoint("/openapi/v1.json", "ToggleHub API V1");
+    });
 }
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
