@@ -1,3 +1,4 @@
+using ToggleHub.API.Middleware;
 using ToggleHub.Application;
 using ToggleHub.Infrastructure;
 
@@ -17,6 +18,7 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
 app.MapControllers();
 await app.RunAsync();

@@ -25,6 +25,9 @@ public class OrganizationController : ControllerBase
     public async Task<IActionResult> GetById(int id)
     {
         var result = await _organizationService.GetByIdAsync(id);
+        if (result == null)
+            return NotFound("Organization not found");
+        
         return Ok(result);
     }
 
@@ -32,6 +35,9 @@ public class OrganizationController : ControllerBase
     public async Task<IActionResult> GetBySlug(string slug)
     {
         var result = await _organizationService.GetBySlugAsync(slug);
+        if (result == null)
+            return NotFound("Organization not found");
+        
         return Ok(result);
     }
     [HttpPut("{id:int}")]
