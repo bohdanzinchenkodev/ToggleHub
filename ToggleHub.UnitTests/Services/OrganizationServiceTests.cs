@@ -2,6 +2,7 @@ using Moq;
 using FluentValidation;
 using FluentValidation.Results;
 using ToggleHub.Application.DTOs;
+using ToggleHub.Application.DTOs.Organization;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Application.Services;
 using ToggleHub.Domain.Entities;

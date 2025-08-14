@@ -2,6 +2,7 @@ using System.Text.RegularExpressions;
 using FluentValidation;
 using Mapster;
 using ToggleHub.Application.DTOs;
+using ToggleHub.Application.DTOs.Organization;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Exceptions;
@@ -45,37 +46,37 @@ public class OrganizationService
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
         
-        var entity = await _organizationRepository.GetByIdAsync(updateDto.Id);
-        if(entity == null)
+        var organization = await _organizationRepository.GetByIdAsync(updateDto.Id);
+        if(organization == null)
             throw new NotFoundException($"Organization with ID {updateDto.Id} not found");
         
-        var slug = entity!.Slug;
+        var slug = organization!.Slug;
         // Check if the name has changed to generate a new slug
-        if (updateDto.Name != entity.Name)
+        if (updateDto.Name != organization.Name)
             slug = await _slugGenerator.GenerateAsync<Organization>(updateDto.Name);
         
-        entity = updateDto.Adapt(entity);
-        entity.Slug = slug;
-        await _organizationRepository.UpdateAsync(entity);
+        organization = updateDto.Adapt(organization);
+        organization.Slug = slug;
+        await _organizationRepository.UpdateAsync(organization);
     }
 
     public async Task<OrganizationDto?> GetByIdAsync(int id)
     {
-        var entity = await _organizationRepository.GetByIdAsync(id);
-        var dto = entity?.Adapt<OrganizationDto>();
+        var organization = await _organizationRepository.GetByIdAsync(id);
+        var dto = organization?.Adapt<OrganizationDto>();
         return dto;
     }
     public async Task<OrganizationDto?> GetBySlugAsync(string slug)
     {
-        var entity = await _slugGenerator.GetBySlugAsync<Organization>(slug);
-        var dto = entity?.Adapt<OrganizationDto>();
+        var organization = await _slugGenerator.GetBySlugAsync<Organization>(slug);
+        var dto = organization?.Adapt<OrganizationDto>();
         return dto;
     }
 
     public async Task DeleteAsync(int id)
     {
-        var entity = await _organizationRepository.GetByIdAsync(id);
-        if (entity == null)    
+        var organization = await _organizationRepository.GetByIdAsync(id);
+        if (organization == null)    
             throw new NotFoundException($"Organization with ID {id} not found");
     
         await _organizationRepository.DeleteAsync(id);

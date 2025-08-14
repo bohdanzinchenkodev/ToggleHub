@@ -1,4 +1,4 @@
-namespace ToggleHub.Application.DTOs;
+namespace ToggleHub.Application.DTOs.Organization;
 
 public class UpdateOrganizationDto
 {

@@ -1,5 +1,6 @@
 using FluentValidation;
 using ToggleHub.Application.DTOs;
+using ToggleHub.Application.DTOs.Organization;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Repositories;
 

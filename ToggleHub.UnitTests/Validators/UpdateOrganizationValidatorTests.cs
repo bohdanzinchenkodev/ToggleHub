@@ -1,6 +1,7 @@
 using FluentValidation.TestHelper;
 using Moq;
 using ToggleHub.Application.DTOs;
+using ToggleHub.Application.DTOs.Organization;
 using ToggleHub.Application.Validators;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Repositories;

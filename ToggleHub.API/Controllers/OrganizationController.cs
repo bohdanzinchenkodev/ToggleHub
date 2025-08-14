@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ToggleHub.Application.DTOs;
+using ToggleHub.Application.DTOs.Organization;
 using ToggleHub.Application.Services;
 
 namespace ToggleHub.API.Controllers;
