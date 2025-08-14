@@ -1,5 +1,6 @@
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using ToggleHub.Application.Interfaces;
 using ToggleHub.Application.Services;
 using ToggleHub.Application.Validators;
 
@@ -17,7 +18,7 @@ public static class DependencyInjection
         
         
         // Register SlugGenerator
-        services.AddScoped<SlugGenerator>();
+        services.AddScoped<ISlugGenerator, SlugGenerator>();
 
         return services;
     }

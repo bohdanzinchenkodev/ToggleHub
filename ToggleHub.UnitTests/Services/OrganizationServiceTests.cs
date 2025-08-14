@@ -2,6 +2,7 @@ using Moq;
 using FluentValidation;
 using FluentValidation.Results;
 using ToggleHub.Application.DTOs;
+using ToggleHub.Application.Interfaces;
 using ToggleHub.Application.Services;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Exceptions;
@@ -15,7 +16,7 @@ public class OrganizationServiceTests
     private Mock<IOrganizationRepository> _organizationRepository;
     private Mock<IValidator<CreateOrganizationDto>> _createValidator;
     private Mock<IValidator<UpdateOrganizationDto>> _updateValidator;
-    private Mock<SlugGenerator> _slugGenerator;
+    private Mock<ISlugGenerator> _slugGenerator;
     private OrganizationService _service;
 
     [SetUp]
@@ -24,24 +25,41 @@ public class OrganizationServiceTests
         _organizationRepository = new Mock<IOrganizationRepository>();
         _createValidator = new Mock<IValidator<CreateOrganizationDto>>();
         _updateValidator = new Mock<IValidator<UpdateOrganizationDto>>();
-        _slugGenerator = new Mock<SlugGenerator>(MockBehavior.Default, default!);
+        _slugGenerator = new Mock<ISlugGenerator>();
         _service = new OrganizationService(_organizationRepository.Object, _createValidator.Object, _slugGenerator.Object, _updateValidator.Object);
     }
 
     [Test]
     public async Task CreateAsync_ValidDto_CreatesOrganization()
     {
+        // Arrange
         var dto = new CreateOrganizationDto { Name = "Test Org" };
-        var org = new Organization { Id = 1, Name = "Test Org", Slug = "test-org", CreatedAt = DateTime.UtcNow };
-        var validationResult = new ValidationResult();
-        _createValidator.Setup(v => v.ValidateAsync(dto, CancellationToken.None)).ReturnsAsync(validationResult);
-        _slugGenerator.Setup(s => s.GenerateAsync<Organization>(dto.Name)).ReturnsAsync("test-org");
-        _organizationRepository.Setup(r => r.CreateAsync(It.IsAny<Organization>())).ReturnsAsync(org);
+        var now = DateTime.UtcNow;
 
+        _createValidator
+            .Setup(v => v.ValidateAsync(dto, CancellationToken.None))
+            .ReturnsAsync(new ValidationResult());
+
+        _slugGenerator
+            .Setup(s => s.GenerateAsync<Organization>(dto.Name))
+            .ReturnsAsync("test-org");
+
+        _organizationRepository
+            .Setup(r => r.CreateAsync(It.IsAny<Organization>()))
+            .ReturnsAsync((Organization o) => o);
+
+        // Act
         var result = await _service.CreateAsync(dto);
 
+        // Assert (state)
         Assert.That(result.Name, Is.EqualTo(dto.Name));
         Assert.That(result.Slug, Is.EqualTo("test-org"));
+
+        // Assert (behavior)
+        _createValidator.Verify(v => v.ValidateAsync(dto, CancellationToken.None), Times.Once);
+        _slugGenerator.Verify(s => s.GenerateAsync<Organization>(dto.Name), Times.Once);
+        _organizationRepository.Verify(r => r.CreateAsync(
+            It.Is<Organization>(o => o.Name == "Test Org" && o.Slug == "test-org")), Times.Once);
     }
 
     [Test]

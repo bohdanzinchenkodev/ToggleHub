@@ -1,10 +1,11 @@
 using System.Text.RegularExpressions;
+using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Repositories;
 
 namespace ToggleHub.Application.Services;
 
-public class SlugGenerator
+public class SlugGenerator : ISlugGenerator
 {
     private readonly ISluggedRepository _repository;
 

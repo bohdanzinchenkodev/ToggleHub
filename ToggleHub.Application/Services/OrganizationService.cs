@@ -2,6 +2,7 @@ using System.Text.RegularExpressions;
 using FluentValidation;
 using Mapster;
 using ToggleHub.Application.DTOs;
+using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Exceptions;
 using ToggleHub.Domain.Repositories;
@@ -10,12 +11,12 @@ namespace ToggleHub.Application.Services;
 
 public class OrganizationService
 {
-    private readonly SlugGenerator _slugGenerator;
+    private readonly ISlugGenerator _slugGenerator;
     private readonly IValidator<CreateOrganizationDto> _createValidator;
     private readonly IValidator<UpdateOrganizationDto> _updateValidator;
     private readonly IOrganizationRepository _organizationRepository;
 
-    public OrganizationService(IOrganizationRepository organizationRepository, IValidator<CreateOrganizationDto> createValidator, SlugGenerator slugGenerator, IValidator<UpdateOrganizationDto> updateValidator) 
+    public OrganizationService(IOrganizationRepository organizationRepository, IValidator<CreateOrganizationDto> createValidator, ISlugGenerator slugGenerator, IValidator<UpdateOrganizationDto> updateValidator) 
     {
         _organizationRepository = organizationRepository;
         _createValidator = createValidator;
