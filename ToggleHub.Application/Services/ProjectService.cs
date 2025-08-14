@@ -78,6 +78,14 @@ public class ProjectService : IProjectService
         var dto = project.Adapt<ProjectDto>();
         return dto;
     }
+    public async Task DeleteAsync(int id)
+    {
+        var project = await _projectRepository.GetByIdAsync(id);
+        if (project == null)
+            throw new NotFoundException($"Project with ID {id} not found");
+        
+        await _projectRepository.DeleteAsync(id);
+    }
 
     public async Task<IEnumerable<ProjectDto>> GetAllAsync(int? organizationId = null)
     {
