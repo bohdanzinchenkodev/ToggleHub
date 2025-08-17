@@ -17,7 +17,9 @@ public class ToggleHubDbContext : DbContext
     public DbSet<Environment> Environments { get; set; }
     public DbSet<ApiKey> ApiKeys { get; set; }
     public DbSet<Flag> Flags { get; set; }
-    public DbSet<Rule> Rules { get; set; }
+    public DbSet<RuleSet> RuleSets { get; set; }
+    public DbSet<RuleCondition> RuleConditions { get; set; }
+    public DbSet<RuleConditionItem> RuleConditionItems { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -131,7 +133,6 @@ public class ToggleHubDbContext : DbContext
         modelBuilder.Entity<Flag>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.OrgId).IsRequired();
             entity.Property(e => e.ProjectId).IsRequired();
             entity.Property(e => e.EnvironmentId).IsRequired();
             entity.Property(e => e.Key).IsRequired().HasMaxLength(255);
@@ -139,11 +140,7 @@ public class ToggleHubDbContext : DbContext
             entity.Property(e => e.Description).HasMaxLength(1000);
             entity.Property(e => e.Enabled).IsRequired();
             entity.Property(e => e.UpdatedAt).IsRequired();
-            
-            entity.HasOne(e => e.Organization)
-                  .WithMany()
-                  .HasForeignKey(e => e.OrgId)
-                  .OnDelete(DeleteBehavior.Restrict);
+            entity.Property(e => e.BucketingSeed).IsRequired();
                   
             entity.HasOne(e => e.Project)
                   .WithMany()
@@ -154,28 +151,67 @@ public class ToggleHubDbContext : DbContext
                   .WithMany()
                   .HasForeignKey(e => e.EnvironmentId)
                   .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasMany(e => e.RuleSets)
+                    .WithOne(e => e.Flag)
+                    .HasForeignKey(e => e.FlagId)
+                    .OnDelete(DeleteBehavior.Cascade);
                   
             entity.HasIndex(e => new { e.EnvironmentId, e.Key }).IsUnique();
         });
 
         // Configure Rule
-        modelBuilder.Entity<Rule>(entity =>
+        modelBuilder.Entity<RuleSet>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.FlagId).IsRequired();
             entity.Property(e => e.Priority).IsRequired();
-            entity.Property(e => e.ConditionsJson).HasMaxLength(4000);
-            entity.Property(e => e.Value).HasMaxLength(4000);
-            entity.Property(e => e.CreatedAt).IsRequired();
             
             entity.HasOne(e => e.Flag)
-                  .WithMany()
+                  .WithMany(x => x.RuleSets)
                   .HasForeignKey(e => e.FlagId)
                   .OnDelete(DeleteBehavior.Cascade);
-                  
-            entity.HasIndex(e => new { e.FlagId, e.Priority }).IsUnique();
+            
+            entity.HasMany(e => e.Conditions)
+                    .WithOne(e => e.RuleSet)
+                    .HasForeignKey(e => e.RuleSetId)
+                    .OnDelete(DeleteBehavior.Cascade);
         });
 
+        // Configure RuleCondition
+        modelBuilder.Entity<RuleCondition>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.RuleSetId).IsRequired();
+            entity.Property(e => e.Field).IsRequired().HasMaxLength(255);
+            entity.Property(e => e.FieldType).IsRequired();
+            entity.Property(e => e.Operator).IsRequired();
+            entity.Property(e => e.ValueString).HasMaxLength(1000);
+            
+            entity.HasOne(e => e.RuleSet)
+                  .WithMany(rs => rs.Conditions)
+                  .HasForeignKey(e => e.RuleSetId)
+                  .OnDelete(DeleteBehavior.Cascade);
+                  
+            entity.HasMany(e => e.Items)
+                    .WithOne()
+                    .HasForeignKey(i => i.RuleConditionId)
+                    .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        // Configure RuleConditionItem
+        modelBuilder.Entity<RuleConditionItem>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.RuleConditionId).IsRequired();
+            entity.Property(e => e.ValueString).HasMaxLength(1000);
+            
+            entity.HasOne(e => e.RuleCondition)
+                  .WithMany(rc => rc.Items)
+                  .HasForeignKey(e => e.RuleConditionId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+        
         // Configure AuditLog
         modelBuilder.Entity<AuditLog>(entity =>
         {

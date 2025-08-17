@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ToggleHub.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using ToggleHub.Infrastructure.Data;
 namespace ToggleHub.Infrastructure.Migrations
 {
     [DbContext(typeof(ToggleHubDbContext))]
-    partial class ToggleHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250817230032_AddRuleSet")]
+    partial class AddRuleSet
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

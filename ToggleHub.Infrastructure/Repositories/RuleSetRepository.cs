@@ -4,9 +4,9 @@ using ToggleHub.Infrastructure.Data;
 
 namespace ToggleHub.Infrastructure.Repositories;
 
-public class RuleRepository : BaseRepository<Rule>, IRuleRepository
+public class RuleSetRepository : BaseRepository<RuleSet>, IRuleSetRepository
 {
-    public RuleRepository(ToggleHubDbContext context) : base(context)
+    public RuleSetRepository(ToggleHubDbContext context) : base(context)
     {
     }
 }

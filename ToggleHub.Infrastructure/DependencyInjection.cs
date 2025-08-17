@@ -25,8 +25,10 @@ public static class DependencyInjection
         services.AddScoped<IEnvironmentRepository, EnvironmentRepository>();
         services.AddScoped<IApiKeyRepository, ApiKeyRepository>();
         services.AddScoped<IFlagRepository, FlagRepository>();
-        services.AddScoped<IRuleRepository, RuleRepository>();
         services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+        services.AddScoped<IRuleSetRepository, RuleSetRepository>();
+        services.AddScoped<IRuleConditionRepository, RuleConditionRepository>();
+        services.AddScoped<IRuleConditionItemRepository, RuleConditionItemRepository>();
 
         return services;
     }
