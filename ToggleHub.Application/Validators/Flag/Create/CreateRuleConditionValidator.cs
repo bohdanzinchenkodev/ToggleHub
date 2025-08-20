@@ -9,17 +9,16 @@ public class CreateRuleConditionValidator : RuleConditionValidatorBase<CreateRul
 {
     public CreateRuleConditionValidator() : base()
     {
-        When(x => x.Items.Any(), () =>
-        {
-            RuleForEach(x => x.Items)
-                .SetValidator(new CreateRuleConditionItemValidator());
-        });
-
+        // Validate items when field type is List
         When(x => x.FieldType == RuleFieldType.List, () =>
         {
             RuleFor(x => x.Items)
                 .NotEmpty()
-                .WithMessage("List items are required for List field type.");
+                .WithMessage("Items are required when field type is List.");
+
+            RuleForEach(x => x.Items)
+                .SetValidator(new CreateRuleConditionItemValidator())
+                .WithMessage("Rule condition item validation failed.");
         });
     }
 }

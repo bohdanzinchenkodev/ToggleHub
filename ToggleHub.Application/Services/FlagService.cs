@@ -14,16 +14,18 @@ namespace ToggleHub.Application.Services;
 public class FlagService : IFlagService
 {
     private readonly IValidator<CreateFlagDto> _createValidator;
+    private readonly IValidator<UpdateFlagDto> _updateValidator;
     private readonly IFlagRepository _flagRepository;
     private readonly IEnvironmentRepository _environmentRepository;
     private readonly IProjectRepository _projectRepository;
 
-    public FlagService(IValidator<CreateFlagDto> createValidator, IFlagRepository flagRepository, IEnvironmentRepository environmentRepository, IProjectRepository projectRepository)
+    public FlagService(IValidator<CreateFlagDto> createValidator, IFlagRepository flagRepository, IEnvironmentRepository environmentRepository, IProjectRepository projectRepository, IValidator<UpdateFlagDto> updateValidator)
     {
         _createValidator = createValidator;
         _flagRepository = flagRepository;
         _environmentRepository = environmentRepository;
         _projectRepository = projectRepository;
+        _updateValidator = updateValidator;
     }
 
     public async Task<FlagDto> CreateAsync(CreateFlagDto createDto)
@@ -72,6 +74,10 @@ public class FlagService : IFlagService
 
     public async Task<FlagDto> UpdateAsync(UpdateFlagDto updateDto)
     {
+        var validationResult = await _updateValidator.ValidateAsync(updateDto);
+        if (!validationResult.IsValid)
+            throw new ValidationException(validationResult.Errors);
+        
         var flag = await _flagRepository.GetByIdAsync(updateDto.Id);
         if (flag == null)
             throw new NotFoundException($"Flag with ID {updateDto.Id} not found.");
