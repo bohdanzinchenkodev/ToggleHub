@@ -43,7 +43,7 @@ public class EnvironmentService : IEnvironmentService
         if (environment == null)
             throw new NotFoundException($"Environment with id {updateDto.Id} not found.");
         
-        environment.Name = updateDto.Type;
+        environment.Type = updateDto.Type;
         await _environmentRepository.UpdateAsync(environment);
         return environment.Adapt<EnvironmentDto>();
     }

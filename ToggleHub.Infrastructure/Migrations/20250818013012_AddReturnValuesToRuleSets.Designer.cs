@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ToggleHub.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using ToggleHub.Infrastructure.Data;
 namespace ToggleHub.Infrastructure.Migrations
 {
     [DbContext(typeof(ToggleHubDbContext))]
-    partial class ToggleHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250818013012_AddReturnValuesToRuleSets")]
+    partial class AddReturnValuesToRuleSets
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,9 +72,12 @@ namespace ToggleHub.Infrastructure.Migrations
 
                     b.HasIndex("OrgId");
 
+                    b.HasIndex("Prefix")
+                        .IsUnique();
+
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("ApiKeys", (string)null);
+                    b.ToTable("ApiKeys");
                 });
 
             modelBuilder.Entity("ToggleHub.Domain.Entities.AuditLog", b =>
@@ -119,13 +125,15 @@ namespace ToggleHub.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EnvironmentId");
+                    b.HasIndex("CreatedAt");
 
-                    b.HasIndex("OrgId");
+                    b.HasIndex("EnvironmentId");
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("AuditLogs", (string)null);
+                    b.HasIndex("OrgId", "CreatedAt");
+
+                    b.ToTable("AuditLogs");
                 });
 
             modelBuilder.Entity("ToggleHub.Domain.Entities.Environment", b =>
@@ -136,17 +144,18 @@ namespace ToggleHub.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ProjectId")
+                    b.Property<int>("Name")
                         .HasColumnType("int");
 
-                    b.Property<int>("Type")
+                    b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectId");
+                    b.HasIndex("ProjectId", "Name")
+                        .IsUnique();
 
-                    b.ToTable("Environments", (string)null);
+                    b.ToTable("Environments");
                 });
 
             modelBuilder.Entity("ToggleHub.Domain.Entities.Flag", b =>
@@ -180,11 +189,12 @@ namespace ToggleHub.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EnvironmentId");
-
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Flags", (string)null);
+                    b.HasIndex("EnvironmentId", "Key")
+                        .IsUnique();
+
+                    b.ToTable("Flags");
                 });
 
             modelBuilder.Entity("ToggleHub.Domain.Entities.OrgMember", b =>
@@ -206,11 +216,12 @@ namespace ToggleHub.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrgId");
-
                     b.HasIndex("UserId");
 
-                    b.ToTable("OrgMembers", (string)null);
+                    b.HasIndex("OrgId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("OrgMembers");
                 });
 
             modelBuilder.Entity("ToggleHub.Domain.Entities.Organization", b =>
@@ -239,7 +250,7 @@ namespace ToggleHub.Infrastructure.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.ToTable("Organizations", (string)null);
+                    b.ToTable("Organizations");
                 });
 
             modelBuilder.Entity("ToggleHub.Domain.Entities.Project", b =>
@@ -268,9 +279,10 @@ namespace ToggleHub.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrgId");
+                    b.HasIndex("OrgId", "Slug")
+                        .IsUnique();
 
-                    b.ToTable("Projects", (string)null);
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("ToggleHub.Domain.Entities.RuleCondition", b =>
@@ -309,7 +321,7 @@ namespace ToggleHub.Infrastructure.Migrations
 
                     b.HasIndex("RuleSetId");
 
-                    b.ToTable("RuleConditions", (string)null);
+                    b.ToTable("RuleConditions");
                 });
 
             modelBuilder.Entity("ToggleHub.Domain.Entities.RuleConditionItem", b =>
@@ -334,7 +346,7 @@ namespace ToggleHub.Infrastructure.Migrations
 
                     b.HasIndex("RuleConditionId");
 
-                    b.ToTable("RuleConditionItems", (string)null);
+                    b.ToTable("RuleConditionItems");
                 });
 
             modelBuilder.Entity("ToggleHub.Domain.Entities.RuleSet", b =>
@@ -372,7 +384,7 @@ namespace ToggleHub.Infrastructure.Migrations
 
                     b.HasIndex("FlagId");
 
-                    b.ToTable("RuleSets", (string)null);
+                    b.ToTable("RuleSets");
                 });
 
             modelBuilder.Entity("ToggleHub.Domain.Entities.User", b =>
@@ -401,7 +413,7 @@ namespace ToggleHub.Infrastructure.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("ToggleHub.Domain.Entities.ApiKey", b =>

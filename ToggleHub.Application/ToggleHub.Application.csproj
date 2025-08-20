@@ -17,4 +17,8 @@
       <ProjectReference Include="..\ToggleHub.Domain\ToggleHub.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Mapping\" />
+    </ItemGroup>
+
 </Project>

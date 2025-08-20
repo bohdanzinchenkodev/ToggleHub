@@ -14,20 +14,20 @@ public class RuleCondition : BaseEntity
 }
 public enum RuleFieldType
 {
-    Boolean,
-    String,
-    Number,
-    List
+    Boolean = 10,
+    String = 20,
+    Number = 30,
+    List = 40,
 }
 public enum OperatorType
 {
-    Equals,
-    NotEquals,
-    GreaterThan,
-    LessThan,
-    Contains,
-    StartsWith,
-    EndsWith,
-    In,
-    NotIn
+    Equals = 10,
+    NotEquals = 20,
+    GreaterThan = 30,
+    LessThan = 40,
+    Contains = 50,
+    StartsWith = 60,
+    EndsWith = 70,
+    In = 80,
+    NotIn = 90,
 }
