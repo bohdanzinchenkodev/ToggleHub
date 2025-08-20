@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text.Json;
 using FluentValidation;
+using FluentValidation.Results;
 using ToggleHub.Domain.Exceptions;
 
 namespace ToggleHub.API.Middleware;
@@ -23,9 +24,20 @@ public class ExceptionHandlingMiddleware
         catch (ValidationException ex)
         {
             context.Response.StatusCode = 400;
+            var errors = ex.Errors?.ToList();  
+            if((errors == null || !errors.Any()) && !string.IsNullOrEmpty(ex.Message))
+                errors = [new ValidationFailure(string.Empty, ex.Message)];
+            
+            if(errors == null || !errors.Any())
+            {
+                context.Response.StatusCode = 500;
+                await context.Response.WriteAsync(JsonSerializer.Serialize(new { error = "An unexpected validation error occurred." }));
+                return;
+            }
+            
             var validationFailureResponse = new ValidationFailureResponse
             {
-                Errors = ex.Errors.Select(x => new ValidationResponse
+                Errors = errors.Select(x => new ValidationResponse
                 {
                     PropertyName = x.PropertyName,
                     Message = x.ErrorMessage
