@@ -87,6 +87,14 @@ public class FlagService : IFlagService
         return flag.Adapt<FlagDto>();
     }
 
+    public async Task DeleteAsync(int id)
+    {
+        var flag = await _flagRepository.GetByIdAsync(id);
+        if (flag == null)
+            throw new NotFoundException($"Flag with ID {id} not found.");
+
+        await _flagRepository.DeleteAsync(flag.Id);
+    }
 
     private void ReconcileRuleSets(Flag flag, UpdateFlagDto updateDto)
     {

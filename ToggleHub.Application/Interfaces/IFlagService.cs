@@ -9,4 +9,5 @@ public interface IFlagService
     Task<FlagDto> CreateAsync(CreateFlagDto createDto);
     Task<FlagDto?> GetByIdAsync(int id);
     Task<FlagDto> UpdateAsync(UpdateFlagDto updateDto);
+    Task DeleteAsync(int id);
 }

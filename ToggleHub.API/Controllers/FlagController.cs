@@ -46,4 +46,11 @@ public class FlagController : ControllerBase
         return Ok(result);
     }
     
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int projectId, int environmentId, int id)
+    {
+        await _flagService.DeleteAsync(id);
+        return NoContent();
+    }
+    
 }
