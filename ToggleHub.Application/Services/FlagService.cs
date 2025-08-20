@@ -4,6 +4,7 @@ using Mapster;
 using ToggleHub.Application.DTOs.Flag;
 using ToggleHub.Application.DTOs.Flag.Create;
 using ToggleHub.Application.DTOs.Flag.Update;
+using ToggleHub.Application.Helpers;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Exceptions;
@@ -80,7 +81,7 @@ public class FlagService : IFlagService
         
         var flag = await _flagRepository.GetByIdAsync(updateDto.Id);
         if (flag == null)
-            throw new NotFoundException($"Flag with ID {updateDto.Id} not found.");
+            throw new ValidationException($"Flag with ID {updateDto.Id} not found.");
 
         flag.Description = updateDto.Description;
         flag.Enabled = updateDto.Enabled;
@@ -128,7 +129,7 @@ public class FlagService : IFlagService
                 
             ruleSet.OffReturnValueRaw = ruleSetDto.OffReturnValueRaw;
             ruleSet.ReturnValueRaw = ruleSetDto.ReturnValueRaw;
-            ruleSet.ReturnValueType = ruleSetDto.ReturnValueType;
+            ruleSet.ReturnValueType = EnumHelpers.ParseEnum<ReturnValueType>(ruleSetDto.ReturnValueType);
             ruleSet.Percentage = ruleSetDto.Percentage;
             ruleSet.Priority = ruleSetDto.Priority;
             
@@ -170,8 +171,8 @@ public class FlagService : IFlagService
             keepConditionIds.Add(conditionDto.Id.Value);
                 
             condition.Field = conditionDto.Field;
-            condition.FieldType = conditionDto.FieldType;
-            condition.Operator = conditionDto.Operator;
+            condition.FieldType = EnumHelpers.ParseEnum<RuleFieldType>(conditionDto.FieldType);
+            condition.Operator = EnumHelpers.ParseEnum<OperatorType>(conditionDto.Operator);
             condition.ValueString = conditionDto.ValueString;
             condition.ValueNumber = conditionDto.ValueNumber;
             condition.ValueBoolean = conditionDto.ValueBoolean;

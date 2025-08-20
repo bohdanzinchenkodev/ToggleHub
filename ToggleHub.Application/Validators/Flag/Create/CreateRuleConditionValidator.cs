@@ -1,5 +1,6 @@
 using FluentValidation;
 using ToggleHub.Application.DTOs.Flag.Create;
+using ToggleHub.Application.Helpers;
 using ToggleHub.Application.Validators.Flag.Base;
 using ToggleHub.Domain.Entities;
 
@@ -10,7 +11,7 @@ public class CreateRuleConditionValidator : RuleConditionValidatorBase<CreateRul
     public CreateRuleConditionValidator() : base()
     {
         // Validate items when field type is List
-        When(x => x.FieldType == RuleFieldType.List, () =>
+        When(x => EnumHelpers.ParseEnum<RuleFieldType>(x.FieldType) == RuleFieldType.List, () =>
         {
             RuleFor(x => x.Items)
                 .NotEmpty()

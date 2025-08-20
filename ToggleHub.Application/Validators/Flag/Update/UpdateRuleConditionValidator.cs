@@ -1,5 +1,6 @@
 using FluentValidation;
 using ToggleHub.Application.DTOs.Flag.Update;
+using ToggleHub.Application.Helpers;
 using ToggleHub.Application.Validators.Flag.Base;
 using ToggleHub.Domain.Entities;
 
@@ -16,7 +17,7 @@ public class UpdateRuleConditionValidator : RuleConditionValidatorBase<UpdateRul
             .WithMessage("Rule condition ID must be greater than 0 if provided.");
 
         // Validate items when field type is List
-        When(x => x.FieldType == RuleFieldType.List, () =>
+        When(x => EnumHelpers.ParseEnum<RuleFieldType>(x.FieldType) == RuleFieldType.List, () =>
         {
             RuleFor(x => x.Items)
                 .NotEmpty()
