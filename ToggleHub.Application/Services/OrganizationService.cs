@@ -48,7 +48,7 @@ public class OrganizationService : IOrganizationService
         
         var organization = await _organizationRepository.GetByIdAsync(updateDto.Id);
         if(organization == null)
-            throw new NotFoundException($"Organization with ID {updateDto.Id} not found");
+            throw new ApplicationException($"Organization with ID {updateDto.Id} not found");
         
         var slug = organization!.Slug;
         // Check if the name has changed to generate a new slug
@@ -77,7 +77,7 @@ public class OrganizationService : IOrganizationService
     {
         var organization = await _organizationRepository.GetByIdAsync(id);
         if (organization == null)    
-            throw new NotFoundException($"Organization with ID {id} not found");
+            throw new ApplicationException($"Organization with ID {id} not found");
     
         await _organizationRepository.DeleteAsync(id);
     }

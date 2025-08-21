@@ -37,14 +37,14 @@ public class FlagService : IFlagService
         
         var environment = await _environmentRepository.GetByIdAsync(createDto.EnvironmentId);
         if (environment == null)
-            throw new ValidationException($"Environment with ID {createDto.EnvironmentId} not found.");
+            throw new ApplicationException($"Environment with ID {createDto.EnvironmentId} not found.");
         
         var project = await _projectRepository.GetByIdAsync(createDto.ProjectId);
         if (project == null)
-            throw new ValidationException($"Project with ID {createDto.ProjectId} not found.");
+            throw new ApplicationException($"Project with ID {createDto.ProjectId} not found.");
         
         if(await _flagRepository.ExistsAsync(createDto.Key, createDto.EnvironmentId, createDto.ProjectId))
-            throw new ValidationException($"Flag with key '{createDto.Key}' already exists in the environment.");
+            throw new ApplicationException($"Flag with key '{createDto.Key}' already exists in the environment.");
         
         var flag = createDto.Adapt<Flag>();
         
@@ -81,7 +81,7 @@ public class FlagService : IFlagService
         
         var flag = await _flagRepository.GetByIdAsync(updateDto.Id);
         if (flag == null)
-            throw new ValidationException($"Flag with ID {updateDto.Id} not found.");
+            throw new ApplicationException($"Flag with ID {updateDto.Id} not found.");
 
         flag.Description = updateDto.Description;
         flag.Enabled = updateDto.Enabled;
@@ -122,7 +122,7 @@ public class FlagService : IFlagService
             //update existing
             
             if (!existingSets.TryGetValue(ruleSetDto.Id.Value, out ruleSet))
-                throw new ValidationException($"RuleSet with ID {ruleSetDto.Id} not found.");
+                throw new ApplicationException($"RuleSet with ID {ruleSetDto.Id} not found.");
              
             //keep track of the rule set to keep
             keepSetIds.Add(ruleSetDto.Id.Value);
@@ -165,7 +165,7 @@ public class FlagService : IFlagService
 
             //update existing condition
             if (!existingConditions.TryGetValue(conditionDto.Id.Value, out condition))
-                throw new ValidationException($"Condition with ID {conditionDto.Id} not found.");
+                throw new ApplicationException($"Condition with ID {conditionDto.Id} not found.");
             
             //keep track of the condition to keep
             keepConditionIds.Add(conditionDto.Id.Value);
@@ -208,7 +208,7 @@ public class FlagService : IFlagService
 
             //update existing item
             if (!existingItems.TryGetValue(itemDto.Id.Value, out item))
-                throw new ValidationException($"Condition item with ID {itemDto.Id} not found.");
+                throw new ApplicationException($"Condition item with ID {itemDto.Id} not found.");
             
             //keep track of the item to keep
             keepItemIds.Add(itemDto.Id.Value);

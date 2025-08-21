@@ -11,6 +11,10 @@ builder.Services.AddControllers();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -22,7 +26,9 @@ if (app.Environment.IsDevelopment())
         x.SwaggerEndpoint("/openapi/v1.json", "ToggleHub API V1");
     });
 }
-app.UseMiddleware<ExceptionHandlingMiddleware>();
+/*app.UseMiddleware<ExceptionHandlingMiddleware>();*/
+app.UseExceptionHandler();
 app.UseHttpsRedirection();
 app.MapControllers();
+
 await app.RunAsync();

@@ -41,7 +41,7 @@ public class EnvironmentService : IEnvironmentService
         
         var environment = await _environmentRepository.GetByIdAsync(updateDto.Id);
         if (environment == null)
-            throw new NotFoundException($"Environment with id {updateDto.Id} not found.");
+            throw new ApplicationException($"Environment with id {updateDto.Id} not found.");
         
         environment.Type = updateDto.Type;
         await _environmentRepository.UpdateAsync(environment);

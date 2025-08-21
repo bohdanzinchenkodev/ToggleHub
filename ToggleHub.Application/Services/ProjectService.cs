@@ -63,7 +63,7 @@ public class ProjectService : IProjectService
         
         var project = await _projectRepository.GetByIdAsync(updateProjectDto.Id);
         if (project == null)
-            throw new NotFoundException($"Project with ID {updateProjectDto.Id} not found");
+            throw new ApplicationException($"Project with ID {updateProjectDto.Id} not found");
         
         // Check if the name has changed to generate a new slug
         var slug = project.Slug;
@@ -82,7 +82,7 @@ public class ProjectService : IProjectService
     {
         var project = await _projectRepository.GetByIdAsync(id);
         if (project == null)
-            throw new NotFoundException($"Project with ID {id} not found");
+            throw new ApplicationException($"Project with ID {id} not found");
         
         await _projectRepository.DeleteAsync(id);
     }
