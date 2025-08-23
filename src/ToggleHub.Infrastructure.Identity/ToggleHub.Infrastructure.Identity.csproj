@@ -15,4 +15,8 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\ToggleHub.Application\ToggleHub.Application.csproj" />
+    </ItemGroup>
+
 </Project>

@@ -1,3 +1,4 @@
+using System.Security.Authentication;
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
@@ -19,8 +20,10 @@ public class GlobalExceptionHandler : IExceptionHandler
     {
         httpContext.Response.StatusCode = exception switch
         {
-            ApplicationException _ => StatusCodes.Status400BadRequest,
-            UnauthorizedAccessException _ => StatusCodes.Status401Unauthorized,
+            ApplicationException
+                or UserCreationFailedException => StatusCodes.Status400BadRequest,
+            UnauthorizedAccessException _ 
+                or AuthenticationException _ => StatusCodes.Status401Unauthorized,
             NotFoundException _ => StatusCodes.Status404NotFound,
             _ => StatusCodes.Status500InternalServerError
         };
