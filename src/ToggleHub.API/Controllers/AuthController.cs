@@ -1,11 +1,13 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ToggleHub.Application.DTOs.Identity;
 using ToggleHub.Application.Interfaces;
+using ToggleHub.Domain.Constants;
 
 namespace ToggleHub.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/auth")]
 public class AuthController : ControllerBase
 {
     private readonly IIdentityService _identityService;
@@ -36,9 +38,17 @@ public class AuthController : ControllerBase
         return Ok();
     }
 
-    [HttpGet("user/{id}")]
-    public IActionResult GetUser(int id)
+    [HttpGet]
+    [Route("/api/user/me")]
+    [Authorize(Roles = UserConstants.UserRoles.User)]
+    public async Task<IActionResult> GetUser()
     {
-        return Ok(new { userId = id });
+        var user = await _identityService.GetCurrentUserAsync();
+        if (user == null)
+            return Unauthorized();
+        
+        return Ok(user);
     }
+    
+    
 }

@@ -32,6 +32,10 @@ if (app.Environment.IsDevelopment())
 /*app.UseMiddleware<ExceptionHandlingMiddleware>();*/
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
 
 await app.RunAsync();
