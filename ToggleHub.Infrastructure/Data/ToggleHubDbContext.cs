@@ -11,7 +11,6 @@ public class ToggleHubDbContext : DbContext
     }
 
     public DbSet<Organization> Organizations { get; set; }
-    public DbSet<User> Users { get; set; }
     public DbSet<OrgMember> OrgMembers { get; set; }
     public DbSet<Project> Projects { get; set; }
     public DbSet<Environment> Environments { get; set; }
@@ -35,16 +34,7 @@ public class ToggleHubDbContext : DbContext
             entity.HasIndex(e => e.Slug).IsUnique();
             entity.Property(e => e.CreatedAt).IsRequired();
         });
-
-        // Configure User
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.Email).IsRequired().HasMaxLength(255);
-            entity.Property(e => e.Name).IsRequired().HasMaxLength(255);
-            entity.HasIndex(e => e.Email).IsUnique();
-            entity.Property(e => e.CreatedAt).IsRequired();
-        });
+        
 
         // Configure OrgMember
         modelBuilder.Entity<OrgMember>(entity =>
@@ -58,11 +48,7 @@ public class ToggleHubDbContext : DbContext
                   .WithMany()
                   .HasForeignKey(e => e.OrgId)
                   .OnDelete(DeleteBehavior.Cascade);
-                  
-            entity.HasOne(e => e.User)
-                  .WithMany()
-                  .HasForeignKey(e => e.UserId)
-                  .OnDelete(DeleteBehavior.Cascade);
+            
         });
 
         // Configure Project

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Repositories;
 using ToggleHub.Infrastructure.Data;
 using ToggleHub.Infrastructure.Repositories;
@@ -19,7 +20,6 @@ public static class DependencyInjection
         services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
         services.AddScoped<ISluggedRepository, SluggedRepository>();
         services.AddScoped<IOrganizationRepository, OrganizationRepository>();
-        services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IOrgMemberRepository, OrgMemberRepository>();
         services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<IEnvironmentRepository, EnvironmentRepository>();
