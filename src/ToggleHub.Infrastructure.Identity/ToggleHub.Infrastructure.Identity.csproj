@@ -16,7 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\ToggleHub.Application\ToggleHub.Application.csproj" />
+      <ProjectReference Include="..\ToggleHub.Application\ToggleHub.Application.csproj" />
     </ItemGroup>
 
 </Project>

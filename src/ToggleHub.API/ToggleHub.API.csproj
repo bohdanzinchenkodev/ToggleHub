@@ -13,8 +13,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\src\ToggleHub.Infrastructure.Identity\ToggleHub.Infrastructure.Identity.csproj" />
       <ProjectReference Include="..\ToggleHub.Application\ToggleHub.Application.csproj" />
+      <ProjectReference Include="..\ToggleHub.Infrastructure.Identity\ToggleHub.Infrastructure.Identity.csproj" />
       <ProjectReference Include="..\ToggleHub.Infrastructure\ToggleHub.Infrastructure.csproj" />
     </ItemGroup>
 
