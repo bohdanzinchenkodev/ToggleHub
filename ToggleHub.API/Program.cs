@@ -1,6 +1,7 @@
 using ToggleHub.API.Middleware;
 using ToggleHub.Application;
 using ToggleHub.Infrastructure;
+using ToggleHub.Infrastructure.Identity.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddAppIdentity(builder.Configuration);
+
 builder.Services.AddApplication();
 
 builder.Services.AddProblemDetails();
