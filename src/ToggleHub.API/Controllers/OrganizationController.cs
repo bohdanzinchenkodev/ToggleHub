@@ -26,7 +26,7 @@ public class OrganizationController : ControllerBase
     }
 
     [HttpGet("{organizationId:int}")]
-    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.EditOrganization)]
+    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ViewOrganization)]
     public async Task<IActionResult> GetById(int organizationId)
     {
         var result = await _organizationService.GetByIdAsync(organizationId);
@@ -37,6 +37,7 @@ public class OrganizationController : ControllerBase
     }
 
     [HttpGet("{organizationSlug}")]
+    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ViewOrganization, slugRouteKey: nameof(organizationSlug))]
     public async Task<IActionResult> GetBySlug(string organizationSlug)
     {
         var result = await _organizationService.GetBySlugAsync(organizationSlug);
@@ -46,6 +47,7 @@ public class OrganizationController : ControllerBase
         return Ok(result);
     }
     [HttpPut("{organizationId:int}")]
+    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.EditOrganization)]
     public async Task<IActionResult> Update(int organizationId, UpdateOrganizationDto organizationDto)
     {
         organizationDto.Id = organizationId; // Ensure the ID is set for the update
@@ -54,6 +56,7 @@ public class OrganizationController : ControllerBase
     }
     
     [HttpDelete("{organizationId:int}")]
+    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.DeleteOrganization)]
     public async Task<IActionResult> Delete(int organizationId)
     {
         await _organizationService.DeleteAsync(organizationId);
