@@ -4,8 +4,7 @@ public enum OrgMemberRole
 {
     Owner,
     Admin,
-    Editor,
-    Viewer
+    Editor
 }
 
 public class OrgMember : BaseEntity

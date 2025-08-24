@@ -3,6 +3,7 @@ using FluentValidation;
 using Mapster;
 using ToggleHub.Application.DTOs;
 using ToggleHub.Application.DTOs.Organization;
+using ToggleHub.Application.DTOs.User;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Exceptions;
@@ -16,13 +17,15 @@ public class OrganizationService : IOrganizationService
     private readonly IValidator<CreateOrganizationDto> _createValidator;
     private readonly IValidator<UpdateOrganizationDto> _updateValidator;
     private readonly IOrganizationRepository _organizationRepository;
+    private readonly IUserService _userService;
 
-    public OrganizationService(IOrganizationRepository organizationRepository, IValidator<CreateOrganizationDto> createValidator, ISlugGenerator slugGenerator, IValidator<UpdateOrganizationDto> updateValidator) 
+    public OrganizationService(IOrganizationRepository organizationRepository, IValidator<CreateOrganizationDto> createValidator, ISlugGenerator slugGenerator, IValidator<UpdateOrganizationDto> updateValidator, IUserService userService) 
     {
         _organizationRepository = organizationRepository;
         _createValidator = createValidator;
         _slugGenerator = slugGenerator;
         _updateValidator = updateValidator;
+        _userService = userService;
     }
 
     public async Task<OrganizationDto> CreateAsync(CreateOrganizationDto createDto)
@@ -80,5 +83,68 @@ public class OrganizationService : IOrganizationService
             throw new ApplicationException($"Organization with ID {id} not found");
     
         await _organizationRepository.DeleteAsync(id);
+    }
+
+    public async Task AddUserToOrganizationAsync(int organizationId, int userId)
+    {
+        var organization = await _organizationRepository.GetByIdAsync(organizationId);
+        if (organization == null)
+            throw new ApplicationException($"Organization with ID {organizationId} not found");
+        
+        var user = await _userService.GetUserByIdAsync(userId);
+        if (user == null)
+            throw new ApplicationException($"User with ID {userId} not found");
+        
+        if(await IsUserInOrganizationAsync(organizationId, userId))
+            throw new ApplicationException($"User with ID {userId} is already in organization with ID {organizationId}");
+
+        var orgMember = new OrgMember
+        {
+            OrgId = organizationId,
+            UserId = userId,
+            Role = OrgMemberRole.Editor
+        };
+        await _organizationRepository.AddOrgMemberAsync(orgMember);
+    }
+
+    public async Task RemoveUserFromOrganizationAsync(int organizationId, int userId)
+    {
+        var orgMember = await _organizationRepository.GetOrgMemberAsync(organizationId, userId);
+        if (orgMember == null)
+            throw new ApplicationException($"User with ID {userId} is not in organization with ID {organizationId}");
+
+        await _organizationRepository.DeleteOrgMember(orgMember);
+    }
+
+    public async Task<IEnumerable<OrgMemberDto>> GetMembersInOrganizationAsync(int organizationId)
+    {
+        var orgMembers = (await _organizationRepository.GetMembersInOrganizationAsync(organizationId))
+            .ToArray();
+        var userIds = orgMembers
+            .Select(om => om.UserId)
+            .ToList();
+        var users = (await _userService.GetUsersByIdsAsync(userIds))
+            .ToDictionary(u => u.Id, u => u);
+        
+        var orgMemberDtos = new List<OrgMemberDto>();
+        foreach (var orgMember in orgMembers)
+        {
+            if (!users.TryGetValue(orgMember.UserId, out var user)) 
+                continue;
+            var orgMemberDto = new OrgMemberDto
+            {
+                User = user,
+                OrgId = orgMember.OrgId,
+                Role = orgMember.Role
+            };
+            orgMemberDtos.Add(orgMemberDto);
+        }
+            
+        return orgMemberDtos;
+    }
+
+    public async Task<bool> IsUserInOrganizationAsync(int organizationId, int userId)
+    {
+        return await _organizationRepository.IsUserInOrganizationAsync(organizationId, userId);
     }
 }
