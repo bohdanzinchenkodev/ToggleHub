@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
+using ToggleHub.API.Filters;
 using ToggleHub.Application.DTOs.Environment;
 using ToggleHub.Application.Interfaces;
+using ToggleHub.Domain.Constants;
 using ToggleHub.Domain.Entities;
 
 namespace ToggleHub.API.Controllers;
 
 [ApiController]
-[Route("api/projects/{projectId}/environments")]
+[Route("api/organizations/{organizationId}/projects/{projectId}/environments")]
 public class EnvironmentController : ControllerBase
 {
     private readonly IEnvironmentService _environmentService;
@@ -17,14 +19,16 @@ public class EnvironmentController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll(int projectId)
+    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageProjects)]
+    public async Task<IActionResult> GetAll(int organizationId, int projectId)
     {
         var result = await _environmentService.GetAllAsync(projectId);
         return Ok(result);
     }
 
     [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetById(int projectId, int id)
+    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageProjects)]
+    public async Task<IActionResult> GetById(int organizationId, int projectId, int id)
     {
         var result = await _environmentService.GetByIdAsync(id);
         if (result == null)
@@ -33,7 +37,8 @@ public class EnvironmentController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(int projectId, [FromBody] CreateEnvironmentDto dto)
+    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageProjects)]
+    public async Task<IActionResult> Create(int organizationId, int projectId, [FromBody] CreateEnvironmentDto dto)
     {
         dto.ProjectId = projectId;
         var result = await _environmentService.CreateAsync(dto);
@@ -41,14 +46,16 @@ public class EnvironmentController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update(int projectId, [FromBody] UpdateEnvironmentDto dto)
+    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageProjects)]
+    public async Task<IActionResult> Update(int organizationId, int projectId, [FromBody] UpdateEnvironmentDto dto)
     {
         var result = await _environmentService.UpdateAsync(dto);
         return NoContent();
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int projectId, int id)
+    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageProjects)]
+    public async Task<IActionResult> Delete(int organizationId, int projectId, int id)
     {
         await _environmentService.DeleteAsync(id);
         return NoContent();
