@@ -19,8 +19,8 @@ public static class ServiceCollectionExtensions
             options.UseSqlServer(
                 configuration.GetConnectionString("DefaultConnection")));
         
-        services.AddIdentity<AppUser, IdentityRole<int>>()
-            .AddRoles<IdentityRole<int>>()   
+        services.AddIdentity<AppUser, AppRole>()
+            .AddRoles<AppRole>()   
             .AddEntityFrameworkStores<ToggleHubIdentityDbContext>()
             .AddDefaultTokenProviders();
         
@@ -40,6 +40,7 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<IUserService, UserService>();
         
         return services;
     }
