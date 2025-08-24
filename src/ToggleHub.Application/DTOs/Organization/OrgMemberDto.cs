@@ -9,8 +9,8 @@ public class OrgMemberDto
     public int Id { get; set; }
     public int OrgId { get; set; }
     [JsonIgnore]
-    public OrgMemberRole Role { get; set; }
-    [JsonPropertyName("role")]
-    public string RoleString => Role.ToString();
+    public OrgMemberRole OrgRole { get; set; }
+    [JsonPropertyName("orgRole")]
+    public string OrgRoleString => OrgRole.ToString();
     public UserDto User { get; set; }
 }
