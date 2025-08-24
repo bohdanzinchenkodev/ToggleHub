@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using ToggleHub.API.Filters;
 using ToggleHub.Application.DTOs.Organization;
 using ToggleHub.Application.Interfaces;
+using ToggleHub.Domain.Constants;
 
 namespace ToggleHub.API.Controllers;
 
@@ -16,6 +18,7 @@ public class OrgMemberController : ControllerBase
     }
 
     [HttpGet("{userId:int}")]
+    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageMembers)]
     public async Task<IActionResult> GetOrgMember(int organizationId, int userId)
     {
         var result = await _organizationService.GetOrgMemberAsync(organizationId, userId);
@@ -25,12 +28,14 @@ public class OrgMemberController : ControllerBase
         return Ok(result);
     }
     [HttpGet("members")]
+    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageMembers)]
     public async Task<IActionResult> GetOrgMembers(int organizationId)
     {
         var result = await _organizationService.GetMembersInOrganizationAsync(organizationId);
         return Ok(result);
     }
     [HttpPost("members")]
+    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageMembers)]
     public async Task<IActionResult> AddOrgMember(int organizationId, [FromBody] AddUserToOrganizationDto dto)
     {
         await _organizationService.AddUserToOrganizationAsync(dto.OrganizationId, dto.UserId);
