@@ -56,4 +56,19 @@ public class OrganizationController : ControllerBase
         await _organizationService.DeleteAsync(id);
         return NoContent();
     }
+    [HttpGet("{organizationId:int}/members/{userId:int}")]
+    public async Task<IActionResult> GetOrgMember(int organizationId, int userId)
+    {
+        var result = await _organizationService.GetOrgMemberAsync(organizationId, userId);
+        if (result == null)
+            return NotFound("Organization member not found");
+        
+        return Ok(result);
+    }
+    [HttpPost("{organizationId:int}/members")]
+    public async Task<IActionResult> AddOrgMember(int organizationId, [FromBody] AddUserToOrganizationDto dto)
+    {
+        await _organizationService.AddUserToOrganizationAsync(dto.OrganizationId, dto.UserId);
+        return NoContent();
+    }
 }

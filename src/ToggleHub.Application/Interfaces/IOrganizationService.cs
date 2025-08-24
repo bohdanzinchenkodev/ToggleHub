@@ -13,5 +13,6 @@ public interface IOrganizationService
     Task AddUserToOrganizationAsync(int organizationId, int userId);
     Task RemoveUserFromOrganizationAsync(int organizationId, int userId);
     Task<IEnumerable<OrgMemberDto>> GetMembersInOrganizationAsync(int organizationId);
+    Task<OrgMemberDto?> GetOrgMemberAsync(int organizationId, int userId);
     Task<bool> IsUserInOrganizationAsync(int organizationId, int userId);
 }

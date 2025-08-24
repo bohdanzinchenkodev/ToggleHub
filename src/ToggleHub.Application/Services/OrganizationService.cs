@@ -1,12 +1,8 @@
-using System.Text.RegularExpressions;
 using FluentValidation;
 using Mapster;
-using ToggleHub.Application.DTOs;
 using ToggleHub.Application.DTOs.Organization;
-using ToggleHub.Application.DTOs.User;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Entities;
-using ToggleHub.Domain.Exceptions;
 using ToggleHub.Domain.Repositories;
 
 namespace ToggleHub.Application.Services;
@@ -53,7 +49,7 @@ public class OrganizationService : IOrganizationService
         if(organization == null)
             throw new ApplicationException($"Organization with ID {updateDto.Id} not found");
         
-        var slug = organization!.Slug;
+        var slug = organization.Slug;
         // Check if the name has changed to generate a new slug
         if (updateDto.Name != organization.Name)
             slug = await _slugGenerator.GenerateAsync<Organization>(updateDto.Name);
@@ -141,6 +137,26 @@ public class OrganizationService : IOrganizationService
         }
             
         return orgMemberDtos;
+    }
+
+    public async Task<OrgMemberDto?> GetOrgMemberAsync(int organizationId, int userId)
+    {
+        var user = await _userService.GetUserByIdAsync(userId);
+        if (user == null)
+            throw new ApplicationException($"User with ID {userId} not found");
+        
+        var orgMember = await _organizationRepository.GetOrgMemberAsync(organizationId, userId);
+        if (orgMember == null)
+            throw new ApplicationException($"User with ID {userId} is not in organization with ID {organizationId}");
+        
+        var orgMemberDto = new OrgMemberDto
+        {
+            Id = orgMember.Id,
+            User = user,
+            OrgId = orgMember.OrgId,
+            Role = orgMember.Role
+        };
+        return orgMemberDto;
     }
 
     public async Task<bool> IsUserInOrganizationAsync(int organizationId, int userId)
