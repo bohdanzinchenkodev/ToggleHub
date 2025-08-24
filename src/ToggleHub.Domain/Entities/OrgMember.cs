@@ -2,9 +2,9 @@ namespace ToggleHub.Domain.Entities;
 
 public enum OrgMemberRole
 {
-    Owner,
-    Admin,
-    Editor
+    Owner = 10,
+    Admin = 20,
+    FlagManager = 30
 }
 
 public class OrgMember : BaseEntity
