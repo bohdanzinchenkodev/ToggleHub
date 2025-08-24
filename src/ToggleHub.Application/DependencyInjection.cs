@@ -19,7 +19,7 @@ public static class DependencyInjection
         services.AddScoped<IEnvironmentService, EnvironmentService>();
         services.AddScoped<IFlagService, FlagService>();
         services.AddScoped<IWorkContext, WorkContext>();
-        
+        services.AddScoped<IOrganizationPermissionService, OrganizationPermissionService>();
         
         // Register SlugGenerator
         services.AddScoped<ISlugGenerator, SlugGenerator>();
