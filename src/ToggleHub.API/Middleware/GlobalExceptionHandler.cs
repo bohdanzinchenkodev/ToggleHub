@@ -24,6 +24,7 @@ public class GlobalExceptionHandler : IExceptionHandler
                 or UserCreationFailedException => StatusCodes.Status400BadRequest,
             UnauthorizedAccessException _ 
                 or AuthenticationException _ => StatusCodes.Status401Unauthorized,
+            NoAccessPermissionException _ => StatusCodes.Status403Forbidden,
             NotFoundException _ => StatusCodes.Status404NotFound,
             _ => StatusCodes.Status500InternalServerError
         };
