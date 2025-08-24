@@ -7,7 +7,7 @@ using ToggleHub.Domain.Constants;
 namespace ToggleHub.API.Controllers;
 
 [ApiController]
-[Route("api/organizations/{organizationId}/projects")]
+[Route("api/organizations/{organizationId:int}/projects")]
 public class ProjectController : ControllerBase
 {
     private readonly IProjectService _projectService;

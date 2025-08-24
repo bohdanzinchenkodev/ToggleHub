@@ -8,7 +8,7 @@ using ToggleHub.Domain.Entities;
 namespace ToggleHub.API.Controllers;
 
 [ApiController]
-[Route("api/organizations/{organizationId}/projects/{projectId}/environments")]
+[Route("api/organizations/{organizationId:int}/projects/{projectId:int}/environments")]
 public class EnvironmentController : ControllerBase
 {
     private readonly IEnvironmentService _environmentService;
