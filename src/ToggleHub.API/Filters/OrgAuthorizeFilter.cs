@@ -10,7 +10,7 @@ public sealed class OrgAuthorizeAttribute : TypeFilterAttribute
     public OrgAuthorizeAttribute(string permission, string routeKey = "organizationId", string? slugRouteKey = null)
         : base(typeof(OrgAuthorizeFilter))
     {
-        Arguments = [permission, routeKey, slugRouteKey];
+        Arguments = [permission, routeKey, slugRouteKey ?? string.Empty];
     }
 }
 
