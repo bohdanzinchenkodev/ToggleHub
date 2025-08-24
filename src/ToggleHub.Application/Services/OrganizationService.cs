@@ -13,15 +13,13 @@ public class OrganizationService : IOrganizationService
     private readonly IValidator<CreateOrganizationDto> _createValidator;
     private readonly IValidator<UpdateOrganizationDto> _updateValidator;
     private readonly IOrganizationRepository _organizationRepository;
-    private readonly IUserService _userService;
 
-    public OrganizationService(IOrganizationRepository organizationRepository, IValidator<CreateOrganizationDto> createValidator, ISlugGenerator slugGenerator, IValidator<UpdateOrganizationDto> updateValidator, IUserService userService) 
+    public OrganizationService(IOrganizationRepository organizationRepository, IValidator<CreateOrganizationDto> createValidator, ISlugGenerator slugGenerator, IValidator<UpdateOrganizationDto> updateValidator, IOrganizationPermissionService organizationPermissionService, IWorkContext workContext) 
     {
         _organizationRepository = organizationRepository;
         _createValidator = createValidator;
         _slugGenerator = slugGenerator;
         _updateValidator = updateValidator;
-        _userService = userService;
     }
 
     public async Task<OrganizationDto> CreateAsync(CreateOrganizationDto createDto)

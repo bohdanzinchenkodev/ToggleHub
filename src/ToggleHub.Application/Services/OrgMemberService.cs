@@ -8,19 +8,17 @@ namespace ToggleHub.Application.Services;
 public class OrgMemberService : IOrgMemberService
 {
     private readonly IUserService _userService;
-    private readonly IOrganizationRepository _organizationRepository;
     private readonly IOrgMemberRepository _orgMemberRepository;
 
-    public OrgMemberService(IUserService userService, IOrganizationRepository organizationRepository, IOrgMemberRepository orgMemberRepository)
+    public OrgMemberService(IUserService userService, IOrgMemberRepository orgMemberRepository)
     {
         _userService = userService;
-        _organizationRepository = organizationRepository;
         _orgMemberRepository = orgMemberRepository;
     }
 
     public async Task AddUserToOrganizationAsync(int organizationId, int userId)
     {
-        var organization = await _organizationRepository.GetByIdAsync(organizationId);
+        var organization = await _orgMemberRepository.GetByIdAsync(organizationId);
         if (organization == null)
             throw new ApplicationException($"Organization with ID {organizationId} not found");
         
@@ -35,23 +33,23 @@ public class OrgMemberService : IOrgMemberService
         {
             OrgId = organizationId,
             UserId = userId,
-            Role = OrgMemberRole.Editor
+            Role = OrgMemberRole.FlagManager
         };
-        await _organizationRepository.AddOrgMemberAsync(orgMember);
+        await _orgMemberRepository.AddOrgMemberAsync(orgMember);
     }
 
     public async Task RemoveUserFromOrganizationAsync(int organizationId, int userId)
     {
-        var orgMember = await _organizationRepository.GetOrgMemberAsync(organizationId, userId);
+        var orgMember = await _orgMemberRepository.GetOrgMemberAsync(organizationId, userId);
         if (orgMember == null)
             throw new ApplicationException($"User with ID {userId} is not in organization with ID {organizationId}");
 
-        await _organizationRepository.DeleteOrgMember(orgMember);
+        await _orgMemberRepository.DeleteOrgMember(orgMember);
     }
 
     public async Task<IEnumerable<OrgMemberDto>> GetMembersInOrganizationAsync(int organizationId)
     {
-        var orgMembers = (await _organizationRepository.GetMembersInOrganizationAsync(organizationId))
+        var orgMembers = (await _orgMemberRepository.GetMembersInOrganizationAsync(organizationId))
             .ToArray();
         var userIds = orgMembers
             .Select(om => om.UserId)
@@ -83,7 +81,7 @@ public class OrgMemberService : IOrgMemberService
         if (user == null)
             throw new ApplicationException($"User with ID {userId} not found");
         
-        var orgMember = await _organizationRepository.GetOrgMemberAsync(organizationId, userId);
+        var orgMember = await _orgMemberRepository.GetOrgMemberAsync(organizationId, userId);
         if (orgMember == null)
             throw new ApplicationException($"User with ID {userId} is not in organization with ID {organizationId}");
         
@@ -99,6 +97,6 @@ public class OrgMemberService : IOrgMemberService
 
     public async Task<bool> IsUserInOrganizationAsync(int organizationId, int userId)
     {
-        return await _organizationRepository.IsUserInOrganizationAsync(organizationId, userId);
+        return await _orgMemberRepository.IsUserInOrganizationAsync(organizationId, userId);
     }
 }

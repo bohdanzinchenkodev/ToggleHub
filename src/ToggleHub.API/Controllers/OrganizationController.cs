@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using ToggleHub.API.Filters;
 using ToggleHub.Application.DTOs;
 using ToggleHub.Application.DTOs.Organization;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Application.Services;
+using ToggleHub.Domain.Constants;
 
 namespace ToggleHub.API.Controllers;
 
@@ -23,37 +25,38 @@ public class OrganizationController : ControllerBase
         return CreatedAtAction(nameof(GetBySlug), new { slug = result.Slug }, result);
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetById(int id)
+    [HttpGet("{organizationId:int}")]
+    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.EditOrganization)]
+    public async Task<IActionResult> GetById(int organizationId)
     {
-        var result = await _organizationService.GetByIdAsync(id);
+        var result = await _organizationService.GetByIdAsync(organizationId);
         if (result == null)
             return NotFound("Organization not found");
         
         return Ok(result);
     }
 
-    [HttpGet("{slug}")]
-    public async Task<IActionResult> GetBySlug(string slug)
+    [HttpGet("{organizationSlug}")]
+    public async Task<IActionResult> GetBySlug(string organizationSlug)
     {
-        var result = await _organizationService.GetBySlugAsync(slug);
+        var result = await _organizationService.GetBySlugAsync(organizationSlug);
         if (result == null)
             return NotFound("Organization not found");
         
         return Ok(result);
     }
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, UpdateOrganizationDto organizationDto)
+    [HttpPut("{organizationId:int}")]
+    public async Task<IActionResult> Update(int organizationId, UpdateOrganizationDto organizationDto)
     {
-        organizationDto.Id = id; // Ensure the ID is set for the update
+        organizationDto.Id = organizationId; // Ensure the ID is set for the update
         await _organizationService.UpdateAsync(organizationDto);
         return NoContent();
     }
     
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id)
+    [HttpDelete("{organizationId:int}")]
+    public async Task<IActionResult> Delete(int organizationId)
     {
-        await _organizationService.DeleteAsync(id);
+        await _organizationService.DeleteAsync(organizationId);
         return NoContent();
     }
 }
