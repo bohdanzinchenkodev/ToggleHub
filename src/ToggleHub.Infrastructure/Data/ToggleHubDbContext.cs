@@ -40,13 +40,13 @@ public class ToggleHubDbContext : DbContext
         modelBuilder.Entity<OrgMember>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.OrgId).IsRequired();
+            entity.Property(e => e.OrganizationId).IsRequired();
             entity.Property(e => e.UserId).IsRequired();
             entity.Property(e => e.Role).IsRequired();
             
             entity.HasOne(e => e.Organization)
                   .WithMany()
-                  .HasForeignKey(e => e.OrgId)
+                  .HasForeignKey(e => e.OrganizationId)
                   .OnDelete(DeleteBehavior.Cascade);
             
         });
@@ -55,14 +55,14 @@ public class ToggleHubDbContext : DbContext
         modelBuilder.Entity<Project>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.OrgId).IsRequired();
+            entity.Property(e => e.OrganizationId).IsRequired();
             entity.Property(e => e.Name).IsRequired().HasMaxLength(255);
             entity.Property(e => e.Slug).IsRequired().HasMaxLength(255);
             entity.Property(e => e.CreatedAt).IsRequired();
             
             entity.HasOne(e => e.Organization)
                   .WithMany()
-                  .HasForeignKey(e => e.OrgId)
+                  .HasForeignKey(e => e.OrganizationId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
 
@@ -70,12 +70,11 @@ public class ToggleHubDbContext : DbContext
         modelBuilder.Entity<Environment>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.ProjectId).IsRequired();
             entity.Property(e => e.Type).IsRequired();
             
-            entity.HasOne(e => e.Project)
+            entity.HasOne(e => e.Organization)
                   .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
+                  .HasForeignKey(e => e.OrganizationId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
 
@@ -83,7 +82,7 @@ public class ToggleHubDbContext : DbContext
         modelBuilder.Entity<ApiKey>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.OrgId).IsRequired();
+            entity.Property(e => e.OrganizationId).IsRequired();
             entity.Property(e => e.ProjectId).IsRequired();
             entity.Property(e => e.EnvironmentId).IsRequired();
             entity.Property(e => e.Type).IsRequired();
@@ -93,7 +92,7 @@ public class ToggleHubDbContext : DbContext
             
             entity.HasOne(e => e.Organization)
                   .WithMany()
-                  .HasForeignKey(e => e.OrgId)
+                  .HasForeignKey(e => e.OrganizationId)
                   .OnDelete(DeleteBehavior.Restrict);
                   
             entity.HasOne(e => e.Project)
@@ -192,7 +191,7 @@ public class ToggleHubDbContext : DbContext
         modelBuilder.Entity<AuditLog>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.OrgId).IsRequired();
+            entity.Property(e => e.OrganizationId).IsRequired();
             entity.Property(e => e.ProjectId).IsRequired();
             entity.Property(e => e.EnvironmentId).IsRequired();
             entity.Property(e => e.Actor).IsRequired().HasMaxLength(255);
@@ -204,7 +203,7 @@ public class ToggleHubDbContext : DbContext
             
             entity.HasOne(e => e.Organization)
                   .WithMany()
-                  .HasForeignKey(e => e.OrgId)
+                  .HasForeignKey(e => e.OrganizationId)
                   .OnDelete(DeleteBehavior.Restrict);
                   
             entity.HasOne(e => e.Project)

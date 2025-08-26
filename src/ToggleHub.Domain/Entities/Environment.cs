@@ -9,9 +9,9 @@ public enum EnvironmentType
 
 public class Environment : BaseEntity
 {
-    public int ProjectId { get; set; }
+    public int OrganizationId { get; set; }
     public EnvironmentType Type { get; set; }
     
     // Navigation property
-    public Project Project { get; set; } = null!;
+    public Organization Organization { get; set; } = null!;
 }

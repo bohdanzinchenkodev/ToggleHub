@@ -54,9 +54,9 @@ public class EnvironmentService : IEnvironmentService
         return environment?.Adapt<EnvironmentDto>();
     }
 
-    public async Task<IEnumerable<EnvironmentDto>> GetAllAsync(int? projectId = null)
+    public async Task<IEnumerable<EnvironmentDto>> GetAllAsync(int? organizationId = null)
     {
-        var entities = await _environmentRepository.GetAllAsync(projectId);
+        var entities = await _environmentRepository.GetAllAsync(organizationId);
         return entities.Adapt<IEnumerable<EnvironmentDto>>();
     }
 

@@ -9,7 +9,7 @@ public enum OrgMemberRole
 
 public class OrgMember : BaseEntity
 {
-    public int OrgId { get; set; }
+    public int OrganizationId { get; set; }
     public int UserId { get; set; }
     public OrgMemberRole Role { get; set; }
     

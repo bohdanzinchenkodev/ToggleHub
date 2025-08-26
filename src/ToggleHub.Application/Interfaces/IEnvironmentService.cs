@@ -7,7 +7,7 @@ public interface IEnvironmentService
 	Task<EnvironmentDto> CreateAsync(CreateEnvironmentDto createDto);
 	Task<EnvironmentDto> UpdateAsync(UpdateEnvironmentDto updateDto);
 	Task<EnvironmentDto?> GetByIdAsync(int id);
-	Task<IEnumerable<EnvironmentDto>> GetAllAsync(int? projectId = null);
+	Task<IEnumerable<EnvironmentDto>> GetAllAsync(int? organizationId = null);
 	Task DeleteAsync(int id);
 	Task<IEnumerable<EnvironmentTypeDto>> GetEnvironmentTypesAsync();
 }

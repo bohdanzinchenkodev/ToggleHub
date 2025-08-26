@@ -16,28 +16,40 @@ public abstract class RuleConditionValidatorBase<T> : AbstractValidator<T> where
             .WithMessage("Field name is required.")
             .MaximumLength(100)
             .WithMessage("Field name must not exceed 100 characters.");
+        
+        RuleFor(x => x.FieldType)
+            .NotEmpty()
+            .WithMessage("Field type is invalid.");
+        
+        RuleFor(x => x.Operator)
+            .NotEmpty()
+            .WithMessage("Operator is invalid.");
 
         // Validate that the operator is compatible with the field type
-        RuleFor(x => x)
-            .Must(x => MustBeValidOperator(x.Operator, x.FieldType))
-            .WithMessage(x => WithInvalidOperatorMessage(x.Operator, x.FieldType));
+        When(x => x.FieldType.HasValue && x.Operator.HasValue, () =>
+        {
+            RuleFor(x => x)
+                .Must(dto => MustBeValidOperator(dto.Operator, dto.FieldType))
+                .WithMessage(WithInvalidOperatorMessage);
+        });
 
+        
         // Validate value based on field type
-        When(x => EnumHelpers.ParseEnum<RuleFieldType>(x.FieldType) == RuleFieldType.String, () =>
+        When(x => x.FieldType == RuleFieldType.String, () =>
         {
             RuleFor(x => x.ValueString)
                 .NotEmpty()
                 .WithMessage("String value is required for String field type.");
         });
 
-        When(x => EnumHelpers.ParseEnum<RuleFieldType>(x.FieldType) == RuleFieldType.Number, () =>
+        When(x => x.FieldType == RuleFieldType.Number, () =>
         {
             RuleFor(x => x.ValueNumber)
                 .NotNull()
                 .WithMessage("Number value is required for Number field type.");
         });
 
-        When(x => EnumHelpers.ParseEnum<RuleFieldType>(x.FieldType) == RuleFieldType.Boolean, () =>
+        When(x => x.FieldType == RuleFieldType.Boolean, () =>
         {
             RuleFor(x => x.ValueBoolean)
                 .NotNull()
@@ -45,17 +57,19 @@ public abstract class RuleConditionValidatorBase<T> : AbstractValidator<T> where
         });
     }
     
-    private bool MustBeValidOperator(string operatorType, string fieldType)
+    private bool MustBeValidOperator(OperatorType? operatorType, RuleFieldType? fieldType)
     {
-        var operatorTypeValue = EnumHelpers.ParseEnum<OperatorType>(operatorType);
-        var fieldTypeValue = EnumHelpers.ParseEnum<RuleFieldType>(fieldType);
-        return OperatorTypeHelper.IsValidFieldType(operatorTypeValue, fieldTypeValue);
+        
+        return OperatorTypeHelper.IsValidFieldType(operatorType!.Value, fieldType!.Value);
     }
-    private string WithInvalidOperatorMessage(string operatorType, string fieldType)
+    private string WithInvalidOperatorMessage(BaseRuleConditionDto dto)
     {
-        var fieldTypeValue = EnumHelpers.ParseEnum<RuleFieldType>(fieldType);
-        return $"The operator '{operatorType}' is not valid for field type '{fieldType}'. " +
-            $"Valid operators for '{fieldType}' are: {string.Join(", ", OperatorTypeHelper.GetValidOperators(fieldTypeValue))}";
+        var fieldType = dto.FieldType!;
+        var operatorString = dto.OperatorString;
+        var fieldTypeString = dto.FieldTypeString;
+        
+        return $"The operator '{operatorString}' is not valid for field type '{fieldTypeString}'. " +
+            $"Valid operators for '{fieldTypeString}' are: {string.Join(", ", OperatorTypeHelper.GetValidOperators(fieldType.Value))}";
     }
     
 }

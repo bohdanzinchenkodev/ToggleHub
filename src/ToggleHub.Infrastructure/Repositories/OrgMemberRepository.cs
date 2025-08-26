@@ -25,7 +25,7 @@ public class OrgMemberRepository : BaseRepository<OrgMember>, IOrgMemberReposito
     public async Task<IEnumerable<OrgMember>> GetMembersInOrganizationAsync(int organizationId)
     {
         return await _context.OrgMembers
-            .Where(om => om.OrgId == organizationId)
+            .Where(om => om.OrganizationId == organizationId)
             .ToListAsync();
     }
 
@@ -33,12 +33,12 @@ public class OrgMemberRepository : BaseRepository<OrgMember>, IOrgMemberReposito
     public async Task<bool> IsUserInOrganizationAsync(int organizationId, int userId)
     {
         return await _context.OrgMembers
-            .AnyAsync(om => om.OrgId == organizationId && om.UserId == userId);
+            .AnyAsync(om => om.OrganizationId == organizationId && om.UserId == userId);
     }
 
     public async Task<OrgMember?> GetOrgMemberAsync(int organizationId, int userId)
     {
         return await _context.OrgMembers
-            .FirstOrDefaultAsync(om => om.OrgId == organizationId && om.UserId == userId);
+            .FirstOrDefaultAsync(om => om.OrganizationId == organizationId && om.UserId == userId);
     }
 }

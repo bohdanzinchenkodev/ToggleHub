@@ -49,7 +49,7 @@ public class FlagService : IFlagService
         var flag = createDto.Adapt<Flag>();
         
         flag.UpdatedAt = DateTimeOffset.UtcNow;
-        flag.ReturnValueType = EnumHelpers.ParseEnum<ReturnValueType>(createDto.ReturnValueType);
+        flag.ReturnValueType = createDto.ReturnValueType!.Value; //safe to use ! because of validation
         //set bucketing seed to a new GUID
         foreach (var ruleSet in flag.RuleSets)
         {
@@ -163,8 +163,8 @@ public class FlagService : IFlagService
             keepConditionIds.Add(conditionDto.Id.Value);
                 
             condition.Field = conditionDto.Field;
-            condition.FieldType = EnumHelpers.ParseEnum<RuleFieldType>(conditionDto.FieldType);
-            condition.Operator = EnumHelpers.ParseEnum<OperatorType>(conditionDto.Operator);
+            condition.FieldType = conditionDto.FieldType!.Value;
+            condition.Operator = conditionDto.Operator!.Value;
             condition.ValueString = conditionDto.ValueString;
             condition.ValueNumber = conditionDto.ValueNumber;
             condition.ValueBoolean = conditionDto.ValueBoolean;

@@ -31,7 +31,7 @@ public class OrgMemberService : IOrgMemberService
 
         var orgMember = new OrgMember
         {
-            OrgId = organizationId,
+            OrganizationId = organizationId,
             UserId = userId,
             Role = OrgMemberRole.FlagManager
         };
@@ -66,8 +66,8 @@ public class OrgMemberService : IOrgMemberService
             {
                 Id = orgMember.Id,
                 User = user,
-                OrgId = orgMember.OrgId,
-                OrgRole = orgMember.Role
+                OrganizationId = orgMember.OrganizationId,
+                OrganizationRole = orgMember.Role
             };
             orgMemberDtos.Add(orgMemberDto);
         }
@@ -89,8 +89,8 @@ public class OrgMemberService : IOrgMemberService
         {
             Id = orgMember.Id,
             User = user,
-            OrgId = orgMember.OrgId,
-            OrgRole = orgMember.Role
+            OrganizationId = orgMember.OrganizationId,
+            OrganizationRole = orgMember.Role
         };
         return orgMemberDto;
     }

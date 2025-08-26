@@ -8,7 +8,7 @@ public enum ApiKeyType
 
 public class ApiKey : BaseEntity
 {
-    public int OrgId { get; set; }
+    public int OrganizationId { get; set; }
     public int ProjectId { get; set; }
     public int EnvironmentId { get; set; }
     public ApiKeyType Type { get; set; }

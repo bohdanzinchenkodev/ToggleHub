@@ -2,7 +2,7 @@ namespace ToggleHub.Domain.Entities;
 
 public class AuditLog : BaseEntity
 {
-    public int OrgId { get; set; }
+    public int OrganizationId { get; set; }
     public int ProjectId { get; set; }
     public int EnvironmentId { get; set; }
     public string Actor { get; set; } = string.Empty;

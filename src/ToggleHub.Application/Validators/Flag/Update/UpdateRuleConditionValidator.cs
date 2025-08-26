@@ -17,7 +17,7 @@ public class UpdateRuleConditionValidator : RuleConditionValidatorBase<UpdateRul
             .WithMessage("Rule condition ID must be greater than 0 if provided.");
 
         // Validate items when field type is List
-        When(x => EnumHelpers.ParseEnum<RuleFieldType>(x.FieldType) == RuleFieldType.List, () =>
+        When(x => x.FieldType == RuleFieldType.List, () =>
         {
             RuleFor(x => x.Items)
                 .NotEmpty()

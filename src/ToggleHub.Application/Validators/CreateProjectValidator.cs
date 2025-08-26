@@ -19,25 +19,12 @@ public class CreateProjectValidator : AbstractValidator<CreateProjectDto>
             .NotEmpty()
             .WithMessage("Project name is required")
             .Length(1, 100)
-            .WithMessage("Project name must be between 1 and 100 characters")
-            .MustAsync(BeUniqueNameAsync)
-            .WithMessage("Project with this name already exists");
+            .WithMessage("Project name must be between 1 and 100 characters");
 
-        RuleFor(x => x.OrgId)
+        RuleFor(x => x.OrganizationId)
             .GreaterThan(0)
-            .WithMessage("Organization ID must be greater than 0")
-            .MustAsync(BeExistingOrgAsync)
-            .WithMessage("Organization with this ID does not exist");
+            .WithMessage("Organization ID must be greater than 0");
     }
 
-    private async Task<bool> BeExistingOrgAsync(int orgId, CancellationToken cancellationToken)
-    {
-        return await _organizationRepository.GetByIdAsync(orgId) != null;
-    }
-
-    private async Task<bool> BeUniqueNameAsync(CreateProjectDto project, string name,
-        CancellationToken cancellationToken)
-    {
-        return !await _projectRepository.NameExistsAsync(name);
-    }
+    
 }

@@ -38,25 +38,25 @@ public sealed class OrgAuthorizeFilter : IAsyncAuthorizationFilter
 
     public async Task OnAuthorizationAsync(AuthorizationFilterContext ctx)
     {
-        var orgId = TryGetIntRouteValue(ctx.RouteData, _routeKey);
+        var organizationId = TryGetIntRouteValue(ctx.RouteData, _routeKey);
 
-        if (!orgId.HasValue && !string.IsNullOrWhiteSpace(_slugRouteKey))
+        if (!organizationId.HasValue && !string.IsNullOrWhiteSpace(_slugRouteKey))
         {
             var slug = ctx.RouteData.Values[_slugRouteKey!]?.ToString();
             if (!string.IsNullOrWhiteSpace(slug))
             {
                 var orgDto = await _orgService.GetBySlugAsync(slug);
-                orgId = orgDto?.Id;
+                organizationId = orgDto?.Id;
             }
         }
 
-        if (!orgId.HasValue)
+        if (!organizationId.HasValue)
         {
             ctx.Result = new BadRequestObjectResult("Organization not found.");
             return;
         }
 
-        if (!await _perm.AuthorizeAsync(orgId.Value, _permission))
+        if (!await _perm.AuthorizeAsync(organizationId.Value, _permission))
             ctx.Result = new ForbidResult();
     }
 

@@ -9,7 +9,7 @@ public class CreateEnvironmentValidator : AbstractValidator<CreateEnvironmentDto
     {
         RuleFor(x => x.Type)
             .IsInEnum();
-        RuleFor(x => x.ProjectId)
+        RuleFor(x => x.OrganizationId)
             .GreaterThan(0);
     }
 }

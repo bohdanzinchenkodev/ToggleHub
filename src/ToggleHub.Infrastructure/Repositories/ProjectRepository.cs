@@ -30,7 +30,7 @@ public class ProjectRepository : BaseRepository<Project>, IProjectRepository
 
         if (organizationId.HasValue)
         {
-            query = query.Where(p => p.OrgId == organizationId.Value);
+            query = query.Where(p => p.OrganizationId == organizationId.Value);
         }
 
         return await query.ToListAsync();

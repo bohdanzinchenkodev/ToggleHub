@@ -7,7 +7,7 @@ using ToggleHub.Domain.Constants;
 namespace ToggleHub.API.Controllers;
 
 [ApiController]
-[Route("api/organizations/{organizationId:int}/projects")]
+[Route("api/organizations/{organizationId:int}/environments/{environmentId:int}/projects")]
 public class ProjectController : ControllerBase
 {
     private readonly IProjectService _projectService;
@@ -19,7 +19,7 @@ public class ProjectController : ControllerBase
     
     [HttpGet]
     [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageProjects)]
-    public async Task<IActionResult> GetAll(int organizationId)
+    public async Task<IActionResult> GetAll(int organizationId, int environmentId)
     {
         var result = await _projectService.GetAllAsync(organizationId);
         return Ok(result);
@@ -27,7 +27,7 @@ public class ProjectController : ControllerBase
 
     [HttpGet("{id:int}")]
     [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageProjects)]
-    public async Task<IActionResult> GetById(int organizationId, int id)
+    public async Task<IActionResult> GetById(int organizationId, int environmentId, int id)
     {
         var result = await _projectService.GetByIdAsync(id);
         if (result == null)
@@ -37,7 +37,7 @@ public class ProjectController : ControllerBase
     }
     [HttpGet("{slug}")]
     [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageProjects)]
-    public async Task<IActionResult> GetBySlug(int organizationId, string slug)
+    public async Task<IActionResult> GetBySlug(int organizationId, int environmentId, string slug)
     {
         var result = await _projectService.GetBySlugAsync(slug);
         if (result == null)
@@ -48,16 +48,16 @@ public class ProjectController : ControllerBase
     
     [HttpPost]
     [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageProjects)]
-    public async Task<IActionResult> Create(int organizationId, CreateProjectDto projectDto)
+    public async Task<IActionResult> Create(int organizationId, int environmentId, CreateProjectDto projectDto)
     {
-        projectDto.OrgId = organizationId; // Ensure the organization ID is set
+        projectDto.OrganizationId = organizationId; // Ensure the organization ID is set
         var result = await _projectService.CreateAsync(projectDto);
         return CreatedAtAction(nameof(GetBySlug), new { organizationId = organizationId, slug = result.Slug }, result);
     }
     
     [HttpPut("{id:int}")]
     [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageProjects)]
-    public async Task<IActionResult> Update(int organizationId, int id, UpdateProjectDto projectDto)
+    public async Task<IActionResult> Update(int organizationId, int environmentId, int id, UpdateProjectDto projectDto)
     {
         projectDto.Id = id; // Ensure the ID is set for the update
         var result = await _projectService.UpdateAsync(projectDto);
@@ -65,7 +65,7 @@ public class ProjectController : ControllerBase
     }
     [HttpDelete("{id:int}")]
     [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageProjects)]
-    public async Task<IActionResult> Delete(int organizationId, int id)
+    public async Task<IActionResult> Delete(int organizationId, int environmentId, int id)
     {
         await _projectService.DeleteAsync(id);
         return NoContent();

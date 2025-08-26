@@ -7,10 +7,10 @@ namespace ToggleHub.Application.DTOs.Organization;
 public class OrgMemberDto
 {
     public int Id { get; set; }
-    public int OrgId { get; set; }
+    public int OrganizationId { get; set; }
     [JsonIgnore]
-    public OrgMemberRole OrgRole { get; set; }
+    public OrgMemberRole OrganizationRole { get; set; }
     [JsonPropertyName("orgRole")]
-    public string OrgRoleString => OrgRole.ToString();
+    public string OrgRoleString => OrganizationRole.ToString();
     public UserDto User { get; set; }
 }
