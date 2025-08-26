@@ -26,4 +26,13 @@ public class FlagRepository : BaseRepository<Flag>, IFlagRepository
         return _dbSet
             .AnyAsync(x => x.Key == key && x.EnvironmentId == environmentId && x.ProjectId == projectId);
     }
+
+    public Task<Flag?> GetFlagByKeyAsync(string key, int environmentId, int projectId)
+    {
+        return _dbSet
+            .Include(x => x.RuleSets)
+            .ThenInclude(x => x.Conditions)
+            .ThenInclude(x => x.Items)
+            .FirstOrDefaultAsync(x => x.Key == key && x.EnvironmentId == environmentId && x.ProjectId == projectId);
+    }
 }

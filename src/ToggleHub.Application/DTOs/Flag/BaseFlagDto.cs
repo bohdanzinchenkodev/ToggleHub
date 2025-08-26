@@ -9,13 +9,15 @@ public abstract class BaseFlagDto
     public string Key { get; set; } = string.Empty;
     public string? Description { get; set; }
     public bool Enabled { get; set; }
+    public string ReturnValueType { get; set; } = string.Empty;
+    public string? DefaultValueOnRaw { get; set; }
+    public string? DefaultValueOffRaw { get; set; }
 }
 
 public abstract class BaseRuleSetDto
 {
     public string? ReturnValueRaw { get; set; }
     public string? OffReturnValueRaw { get; set; }
-    public string ReturnValueType { get; set; } = string.Empty;
     public int Priority { get; set; }
     public int Percentage { get; set; } = 100;
 }

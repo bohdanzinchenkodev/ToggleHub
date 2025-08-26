@@ -4,5 +4,5 @@ namespace ToggleHub.Application.Interfaces;
 
 public interface IFlagEvaluationService
 {
-    Task<FlagEvaluationResult> EvaluateAsync(int flagId, FlagEvaluationContext context);
+    Task<FlagEvaluationResult> EvaluateAsync(FlagEvaluationRequest request);
 }

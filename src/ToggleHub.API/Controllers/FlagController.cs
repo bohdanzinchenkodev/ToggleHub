@@ -26,7 +26,7 @@ public class FlagController : ControllerBase
         createDto.EnvironmentId = environmentId;
 
         var result = await _flagService.CreateAsync(createDto);
-        return CreatedAtAction(nameof(GetById), new { projectId, environmentId, id = result.Id }, result);
+        return CreatedAtAction(nameof(GetById), new { projectId, environmentId, organizationId, id = result.Id }, result);
     }
     
     [HttpPut]

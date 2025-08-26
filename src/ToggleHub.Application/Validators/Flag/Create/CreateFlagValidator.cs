@@ -8,12 +8,12 @@ public class CreateFlagValidator : FlagValidatorBase<CreateFlagDto>
 {
     public CreateFlagValidator() : base()
     {
-        RuleFor(x => x.RuleSets)
-            .NotEmpty()
-            .WithMessage("At least one ruleset is required.");
-
-        RuleForEach(x => x.RuleSets)
-            .SetValidator(new CreateRuleSetValidator())
-            .WithMessage("Ruleset validation failed.");
+        When(x => x.RuleSets.Any(), () =>
+        {
+            RuleForEach(x => x.RuleSets)
+                .SetValidator(new CreateRuleSetValidator())
+                .WithMessage("Ruleset validation failed.");
+        });
+        
     }
 }

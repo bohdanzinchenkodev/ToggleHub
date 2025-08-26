@@ -17,19 +17,12 @@ public abstract class RuleSetValidatorBase<T> : AbstractValidator<T> where T : B
             .InclusiveBetween(0, 100)
             .WithMessage("Percentage must be between 0 and 100.");
 
-        // For Boolean flags, values are obvious so they're optional
-        When(x => EnumHelpers.ParseEnum<ReturnValueType>(x.ReturnValueType) != ReturnValueType.Boolean, () =>
-        {
-            RuleFor(x => x.ReturnValueRaw)
-                .NotEmpty()
-                .WithMessage("Return value is required for non-Boolean flags when ruleset matches.");
-        });
+        RuleFor(x => x.ReturnValueRaw)
+            .NotEmpty()
+            .WithMessage("Return value is required for non-Boolean flags when ruleset matches.");
 
-        When(x => EnumHelpers.ParseEnum<ReturnValueType>(x.ReturnValueType) != ReturnValueType.Boolean, () =>
-        {
-            RuleFor(x => x.OffReturnValueRaw)
-                .NotEmpty()
-                .WithMessage("Off return value is required for non-Boolean flags.");
-        });
+        RuleFor(x => x.OffReturnValueRaw)
+            .NotEmpty()
+            .WithMessage("Off return value is required for non-Boolean flags.");
     }
 }

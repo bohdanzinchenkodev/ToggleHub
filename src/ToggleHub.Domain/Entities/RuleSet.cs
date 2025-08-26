@@ -6,7 +6,6 @@ public class RuleSet : BaseEntity
     public Guid BucketingSeed { get; set; } = Guid.NewGuid();
     public string? ReturnValueRaw { get; set; }
     public string? OffReturnValueRaw { get; set; } 
-    public ReturnValueType ReturnValueType { get; set; } = ReturnValueType.Boolean;
     public int Priority { get; set; }                 
     public int Percentage { get; set; } = 100;  
     public ICollection<RuleCondition> Conditions { get; set; } = new List<RuleCondition>();

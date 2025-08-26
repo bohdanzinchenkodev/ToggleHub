@@ -10,5 +10,8 @@ public class Flag : BaseEntity
     public DateTimeOffset UpdatedAt { get; set; }
     public Project Project { get; set; } = null!;
     public Environment Environment { get; set; } = null!;
+    public string? DefaultValueOnRaw { get; set; }
+    public string? DefaultValueOffRaw { get; set; } 
+    public ReturnValueType ReturnValueType { get; set; } = ReturnValueType.Boolean;
     public ICollection<RuleSet> RuleSets { get; set; } = new List<RuleSet>();
 }

@@ -49,18 +49,11 @@ public class FlagService : IFlagService
         var flag = createDto.Adapt<Flag>();
         
         flag.UpdatedAt = DateTimeOffset.UtcNow;
-        
+        flag.ReturnValueType = EnumHelpers.ParseEnum<ReturnValueType>(createDto.ReturnValueType);
         //set bucketing seed to a new GUID
-        // Clear ReturnValueRaw fields for boolean rulesets
         foreach (var ruleSet in flag.RuleSets)
         {
             ruleSet.BucketingSeed = Guid.NewGuid();
-            
-            if (ruleSet.ReturnValueType != ReturnValueType.Boolean)
-                continue;
-            
-            ruleSet.OffReturnValueRaw = null;
-            ruleSet.ReturnValueRaw = null;
         }
         
         await _flagRepository.CreateAsync(flag);
@@ -129,7 +122,6 @@ public class FlagService : IFlagService
                 
             ruleSet.OffReturnValueRaw = ruleSetDto.OffReturnValueRaw;
             ruleSet.ReturnValueRaw = ruleSetDto.ReturnValueRaw;
-            ruleSet.ReturnValueType = EnumHelpers.ParseEnum<ReturnValueType>(ruleSetDto.ReturnValueType);
             ruleSet.Percentage = ruleSetDto.Percentage;
             ruleSet.Priority = ruleSetDto.Priority;
             

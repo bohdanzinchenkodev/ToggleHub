@@ -52,7 +52,7 @@ public class ProjectController : ControllerBase
     {
         projectDto.OrgId = organizationId; // Ensure the organization ID is set
         var result = await _projectService.CreateAsync(projectDto);
-        return CreatedAtAction(nameof(GetBySlug), new { orgId = organizationId, slug = result.Slug }, result);
+        return CreatedAtAction(nameof(GetBySlug), new { organizationId = organizationId, slug = result.Slug }, result);
     }
     
     [HttpPut("{id:int}")]

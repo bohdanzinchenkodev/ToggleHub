@@ -20,6 +20,10 @@ public static class DependencyInjection
         services.AddScoped<IFlagService, FlagService>();
         services.AddScoped<IWorkContext, WorkContext>();
         services.AddScoped<IOrganizationPermissionService, OrganizationPermissionService>();
+
+        services.AddScoped<IFlagEvaluationService, FlagEvaluationService>();
+        services.AddScoped<IBucketingService, Sha256BucketingService>();
+        services.AddScoped<IConditionEvaluator, ConditionEvaluator>();
         
         // Register SlugGenerator
         services.AddScoped<ISlugGenerator, SlugGenerator>();

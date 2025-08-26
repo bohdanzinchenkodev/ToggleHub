@@ -42,7 +42,7 @@ public class EnvironmentController : ControllerBase
     {
         dto.ProjectId = projectId;
         var result = await _environmentService.CreateAsync(dto);
-        return CreatedAtAction(nameof(GetById), new { projectId, id = result.Id }, result);
+        return CreatedAtAction(nameof(GetById), new { projectId, id = result.Id, organizationId }, result);
     }
 
     [HttpPut]

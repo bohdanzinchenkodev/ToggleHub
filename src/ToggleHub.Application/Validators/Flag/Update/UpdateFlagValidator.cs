@@ -12,12 +12,11 @@ public class UpdateFlagValidator : FlagValidatorBase<UpdateFlagDto>
             .GreaterThan(0)
             .WithMessage("Flag ID is required.");
 
-        RuleFor(x => x.RuleSets)
-            .NotEmpty()
-            .WithMessage("At least one ruleset is required.");
-
-        RuleForEach(x => x.RuleSets)
-            .SetValidator(new UpdateRuleSetValidator())
-            .WithMessage("Ruleset validation failed.");
+        When(x => x.RuleSets.Any(), () =>
+        {
+            RuleForEach(x => x.RuleSets)
+                .SetValidator(new UpdateRuleSetValidator())
+                .WithMessage("Ruleset validation failed.");
+        });
     }
 }
