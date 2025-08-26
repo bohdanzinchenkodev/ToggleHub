@@ -8,8 +8,9 @@ public class CreateEnvironmentValidator : AbstractValidator<CreateEnvironmentDto
     public CreateEnvironmentValidator()
     {
         RuleFor(x => x.Type)
-            .IsInEnum();
-        RuleFor(x => x.OrganizationId)
+            .NotNull()
+            .WithMessage("Environment type is required and must be valid.");
+        RuleFor(x => x.ProjectId)
             .GreaterThan(0);
     }
 }

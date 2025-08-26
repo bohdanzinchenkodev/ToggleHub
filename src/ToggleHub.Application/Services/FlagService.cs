@@ -14,13 +14,13 @@ namespace ToggleHub.Application.Services;
 
 public class FlagService : IFlagService
 {
-    private readonly IValidator<CreateFlagDto> _createValidator;
-    private readonly IValidator<UpdateFlagDto> _updateValidator;
+    private readonly IValidator<CreateCreateOrUpdateFlagDto> _createValidator;
+    private readonly IValidator<UpdateCreateOrUpdateFlagDto> _updateValidator;
     private readonly IFlagRepository _flagRepository;
     private readonly IEnvironmentRepository _environmentRepository;
     private readonly IProjectRepository _projectRepository;
 
-    public FlagService(IValidator<CreateFlagDto> createValidator, IFlagRepository flagRepository, IEnvironmentRepository environmentRepository, IProjectRepository projectRepository, IValidator<UpdateFlagDto> updateValidator)
+    public FlagService(IValidator<CreateCreateOrUpdateFlagDto> createValidator, IFlagRepository flagRepository, IEnvironmentRepository environmentRepository, IProjectRepository projectRepository, IValidator<UpdateCreateOrUpdateFlagDto> updateValidator)
     {
         _createValidator = createValidator;
         _flagRepository = flagRepository;
@@ -29,27 +29,27 @@ public class FlagService : IFlagService
         _updateValidator = updateValidator;
     }
 
-    public async Task<FlagDto> CreateAsync(CreateFlagDto createDto)
+    public async Task<FlagDto> CreateAsync(CreateCreateOrUpdateFlagDto createCreateOrUpdateDto)
     {
-        var validationResult = await _createValidator.ValidateAsync(createDto);
+        var validationResult = await _createValidator.ValidateAsync(createCreateOrUpdateDto);
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
         
-        var environment = await _environmentRepository.GetByIdAsync(createDto.EnvironmentId);
+        var environment = await _environmentRepository.GetByIdAsync(createCreateOrUpdateDto.EnvironmentId);
         if (environment == null)
-            throw new ApplicationException($"Environment with ID {createDto.EnvironmentId} not found.");
+            throw new ApplicationException($"Environment with ID {createCreateOrUpdateDto.EnvironmentId} not found.");
         
-        var project = await _projectRepository.GetByIdAsync(createDto.ProjectId);
+        var project = await _projectRepository.GetByIdAsync(createCreateOrUpdateDto.ProjectId);
         if (project == null)
-            throw new ApplicationException($"Project with ID {createDto.ProjectId} not found.");
+            throw new ApplicationException($"Project with ID {createCreateOrUpdateDto.ProjectId} not found.");
         
-        if(await _flagRepository.ExistsAsync(createDto.Key, createDto.EnvironmentId, createDto.ProjectId))
-            throw new ApplicationException($"Flag with key '{createDto.Key}' already exists in the environment.");
+        if(await _flagRepository.ExistsAsync(createCreateOrUpdateDto.Key, createCreateOrUpdateDto.EnvironmentId, createCreateOrUpdateDto.ProjectId))
+            throw new ApplicationException($"Flag with key '{createCreateOrUpdateDto.Key}' already exists in the environment.");
         
-        var flag = createDto.Adapt<Flag>();
+        var flag = createCreateOrUpdateDto.Adapt<Flag>();
         
         flag.UpdatedAt = DateTimeOffset.UtcNow;
-        flag.ReturnValueType = createDto.ReturnValueType!.Value; //safe to use ! because of validation
+        flag.ReturnValueType = createCreateOrUpdateDto.ReturnValueType!.Value; //safe to use ! because of validation
         //set bucketing seed to a new GUID
         foreach (var ruleSet in flag.RuleSets)
         {
@@ -66,22 +66,22 @@ public class FlagService : IFlagService
         return flag?.Adapt<FlagDto>();
     }
 
-    public async Task<FlagDto> UpdateAsync(UpdateFlagDto updateDto)
+    public async Task<FlagDto> UpdateAsync(UpdateCreateOrUpdateFlagDto updateCreateOrUpdateDto)
     {
-        var validationResult = await _updateValidator.ValidateAsync(updateDto);
+        var validationResult = await _updateValidator.ValidateAsync(updateCreateOrUpdateDto);
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
         
-        var flag = await _flagRepository.GetByIdAsync(updateDto.Id);
+        var flag = await _flagRepository.GetByIdAsync(updateCreateOrUpdateDto.Id);
         if (flag == null)
-            throw new ApplicationException($"Flag with ID {updateDto.Id} not found.");
+            throw new ApplicationException($"Flag with ID {updateCreateOrUpdateDto.Id} not found.");
 
-        flag.Description = updateDto.Description;
-        flag.Enabled = updateDto.Enabled;
+        flag.Description = updateCreateOrUpdateDto.Description;
+        flag.Enabled = updateCreateOrUpdateDto.Enabled;
         flag.UpdatedAt = DateTimeOffset.UtcNow;
         flag.Key = flag.Key;
         
-        ReconcileRuleSets(flag, updateDto);
+        ReconcileRuleSets(flag, updateCreateOrUpdateDto);
 
         await _flagRepository.UpdateAsync(flag);
         return flag.Adapt<FlagDto>();
@@ -96,11 +96,11 @@ public class FlagService : IFlagService
         await _flagRepository.DeleteAsync(flag.Id);
     }
 
-    private void ReconcileRuleSets(Flag flag, UpdateFlagDto updateDto)
+    private void ReconcileRuleSets(Flag flag, UpdateCreateOrUpdateFlagDto updateCreateOrUpdateDto)
     {
         var existingSets = flag.RuleSets.ToDictionary(x => x.Id);
         var keepSetIds = new HashSet<int>();
-        foreach (var ruleSetDto in updateDto.RuleSets)
+        foreach (var ruleSetDto in updateCreateOrUpdateDto.RuleSets)
         {
             RuleSet? ruleSet;
             //create 

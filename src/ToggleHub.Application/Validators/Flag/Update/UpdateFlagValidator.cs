@@ -4,7 +4,7 @@ using ToggleHub.Application.Validators.Flag.Base;
 
 namespace ToggleHub.Application.Validators.Flag.Update;
 
-public class UpdateFlagValidator : FlagValidatorBase<UpdateFlagDto>
+public class UpdateFlagValidator : FlagValidatorBase<UpdateCreateOrUpdateFlagDto>
 {
     public UpdateFlagValidator() : base()
     {

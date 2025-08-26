@@ -18,11 +18,11 @@ public abstract class RuleConditionValidatorBase<T> : AbstractValidator<T> where
             .WithMessage("Field name must not exceed 100 characters.");
         
         RuleFor(x => x.FieldType)
-            .NotEmpty()
+            .NotNull()
             .WithMessage("Field type is invalid.");
         
         RuleFor(x => x.Operator)
-            .NotEmpty()
+            .NotNull()
             .WithMessage("Operator is invalid.");
 
         // Validate that the operator is compatible with the field type

@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using ToggleHub.Application.DTOs.User;
+using ToggleHub.Application.Helpers;
 using ToggleHub.Domain.Entities;
 
 namespace ToggleHub.Application.DTOs.Organization;
@@ -11,6 +12,6 @@ public class OrgMemberDto
     [JsonIgnore]
     public OrgMemberRole OrganizationRole { get; set; }
     [JsonPropertyName("orgRole")]
-    public string OrgRoleString => OrganizationRole.ToString();
-    public UserDto User { get; set; }
+    public string OrgRoleString => OrganizationRole.ParseEnumToString();
+    public required UserDto User { get; set; }
 }

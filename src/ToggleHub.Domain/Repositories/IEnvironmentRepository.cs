@@ -5,5 +5,5 @@ namespace ToggleHub.Domain.Repositories;
 
 public interface IEnvironmentRepository : IBaseRepository<Environment>
 {
-    Task<IEnumerable<Environment>> GetAllAsync(int? organizationId = null);
+    Task<IEnumerable<Environment>> GetAllAsync(int? projectId = null);
 }

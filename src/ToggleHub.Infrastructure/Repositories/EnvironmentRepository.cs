@@ -12,11 +12,11 @@ public class EnvironmentRepository : BaseRepository<Environment>, IEnvironmentRe
     {
     }
 
-    public async Task<IEnumerable<Environment>> GetAllAsync(int? organizationId = null)
+    public async Task<IEnumerable<Environment>> GetAllAsync(int? projectId = null)
     {
         var query = _dbSet.AsQueryable();
-        if (organizationId.HasValue)
-            query = _dbSet.Where(e => e.OrganizationId == organizationId.Value);
+        if (projectId.HasValue)
+            query = _dbSet.Where(e => e.ProjectId == projectId.Value);
 
         return await query.ToListAsync();
     }

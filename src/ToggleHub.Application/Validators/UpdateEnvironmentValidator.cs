@@ -10,6 +10,8 @@ public class UpdateEnvironmentValidator : AbstractValidator<UpdateEnvironmentDto
         RuleFor(x => x.Id)
             .GreaterThan(0);
         RuleFor(x => x.Type)
-            .IsInEnum();
+            .NotNull()
+            .WithMessage("Environment type is required and must be valid.");
+        
     }
 }

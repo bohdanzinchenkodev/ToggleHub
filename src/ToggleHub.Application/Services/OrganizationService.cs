@@ -27,6 +27,9 @@ public class OrganizationService : IOrganizationService
         var validationResult = await _createValidator.ValidateAsync(createDto);
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
+
+        if (await _organizationRepository.NameExistsAsync(createDto.Name))
+            throw new ApplicationException($"Organization with name {createDto.Name} already exists");
         
         var entity = createDto.Adapt<Organization>();
 
@@ -42,6 +45,9 @@ public class OrganizationService : IOrganizationService
         var validationResult = await _updateValidator.ValidateAsync(updateDto);
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
+        
+        if (await _organizationRepository.NameExistsAsync(updateDto.Name, updateDto.Id))
+            throw new ApplicationException($"Organization with name {updateDto.Name} already exists");
         
         var organization = await _organizationRepository.GetByIdAsync(updateDto.Id);
         if(organization == null)

@@ -3,7 +3,7 @@ using ToggleHub.Application.DTOs.Flag;
 
 namespace ToggleHub.Application.Validators.Flag.Base;
 
-public abstract class FlagValidatorBase<T> : AbstractValidator<T> where T : BaseFlagDto
+public abstract class FlagValidatorBase<T> : AbstractValidator<T> where T : BaseCreateOrUpdateFlagDto
 {
     protected FlagValidatorBase()
     {

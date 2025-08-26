@@ -71,11 +71,12 @@ public class ToggleHubDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Type).IsRequired();
+           
             
-            entity.HasOne(e => e.Organization)
+            entity.HasOne(e => e.Project)
                   .WithMany()
-                  .HasForeignKey(e => e.OrganizationId)
-                  .OnDelete(DeleteBehavior.Cascade);
+                  .HasForeignKey(e => e.ProjectId)
+                  .OnDelete(DeleteBehavior.Restrict);
         });
 
         // Configure ApiKey

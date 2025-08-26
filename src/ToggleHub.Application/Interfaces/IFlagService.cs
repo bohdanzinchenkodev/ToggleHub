@@ -6,8 +6,8 @@ namespace ToggleHub.Application.Interfaces;
 
 public interface IFlagService
 {
-    Task<FlagDto> CreateAsync(CreateFlagDto createDto);
+    Task<FlagDto> CreateAsync(CreateCreateOrUpdateFlagDto createCreateOrUpdateDto);
     Task<FlagDto?> GetByIdAsync(int id);
-    Task<FlagDto> UpdateAsync(UpdateFlagDto updateDto);
+    Task<FlagDto> UpdateAsync(UpdateCreateOrUpdateFlagDto updateCreateOrUpdateDto);
     Task DeleteAsync(int id);
 }

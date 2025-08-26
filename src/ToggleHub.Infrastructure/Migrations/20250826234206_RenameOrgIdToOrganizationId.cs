@@ -5,7 +5,7 @@
 namespace ToggleHub.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class ChangeProjectAndEnvRelationships : Migration
+    public partial class RenameOrgIdToOrganizationId : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -51,16 +51,6 @@ namespace ToggleHub.Infrastructure.Migrations
                 newName: "IX_OrgMembers_OrganizationId");
 
             migrationBuilder.RenameColumn(
-                name: "ProjectId",
-                table: "Environments",
-                newName: "OrganizationId");
-
-            migrationBuilder.RenameIndex(
-                name: "IX_Environments_ProjectId",
-                table: "Environments",
-                newName: "IX_Environments_OrganizationId");
-
-            migrationBuilder.RenameColumn(
                 name: "OrgId",
                 table: "AuditLogs",
                 newName: "OrganizationId");
@@ -80,18 +70,6 @@ namespace ToggleHub.Infrastructure.Migrations
                 table: "ApiKeys",
                 newName: "IX_ApiKeys_OrganizationId");
 
-            migrationBuilder.AddColumn<int>(
-                name: "EnvironmentId",
-                table: "Projects",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Projects_EnvironmentId",
-                table: "Projects",
-                column: "EnvironmentId");
-
             migrationBuilder.AddForeignKey(
                 name: "FK_ApiKeys_Organizations_OrganizationId",
                 table: "ApiKeys",
@@ -109,26 +87,18 @@ namespace ToggleHub.Infrastructure.Migrations
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Environments_Organizations_OrganizationId",
+                name: "FK_Environments_Projects_ProjectId",
                 table: "Environments",
-                column: "OrganizationId",
-                principalTable: "Organizations",
+                column: "ProjectId",
+                principalTable: "Projects",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_OrgMembers_Organizations_OrganizationId",
                 table: "OrgMembers",
                 column: "OrganizationId",
                 principalTable: "Organizations",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Projects_Environments_EnvironmentId",
-                table: "Projects",
-                column: "EnvironmentId",
-                principalTable: "Environments",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
@@ -153,7 +123,7 @@ namespace ToggleHub.Infrastructure.Migrations
                 table: "AuditLogs");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Environments_Organizations_OrganizationId",
+                name: "FK_Environments_Projects_ProjectId",
                 table: "Environments");
 
             migrationBuilder.DropForeignKey(
@@ -161,19 +131,7 @@ namespace ToggleHub.Infrastructure.Migrations
                 table: "OrgMembers");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Projects_Environments_EnvironmentId",
-                table: "Projects");
-
-            migrationBuilder.DropForeignKey(
                 name: "FK_Projects_Organizations_OrganizationId",
-                table: "Projects");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Projects_EnvironmentId",
-                table: "Projects");
-
-            migrationBuilder.DropColumn(
-                name: "EnvironmentId",
                 table: "Projects");
 
             migrationBuilder.RenameColumn(
@@ -195,16 +153,6 @@ namespace ToggleHub.Infrastructure.Migrations
                 name: "IX_OrgMembers_OrganizationId",
                 table: "OrgMembers",
                 newName: "IX_OrgMembers_OrgId");
-
-            migrationBuilder.RenameColumn(
-                name: "OrganizationId",
-                table: "Environments",
-                newName: "ProjectId");
-
-            migrationBuilder.RenameIndex(
-                name: "IX_Environments_OrganizationId",
-                table: "Environments",
-                newName: "IX_Environments_ProjectId");
 
             migrationBuilder.RenameColumn(
                 name: "OrganizationId",

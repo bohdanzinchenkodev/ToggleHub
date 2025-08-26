@@ -136,7 +136,7 @@ namespace ToggleHub.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("OrganizationId")
+                    b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
                     b.Property<int>("Type")
@@ -144,7 +144,7 @@ namespace ToggleHub.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrganizationId");
+                    b.HasIndex("ProjectId");
 
                     b.ToTable("Environments");
                 });
@@ -260,9 +260,6 @@ namespace ToggleHub.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EnvironmentId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -277,8 +274,6 @@ namespace ToggleHub.Infrastructure.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("EnvironmentId");
 
                     b.HasIndex("OrganizationId");
 
@@ -440,13 +435,13 @@ namespace ToggleHub.Infrastructure.Migrations
 
             modelBuilder.Entity("ToggleHub.Domain.Entities.Environment", b =>
                 {
-                    b.HasOne("ToggleHub.Domain.Entities.Organization", "Organization")
+                    b.HasOne("ToggleHub.Domain.Entities.Project", "Project")
                         .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Organization");
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("ToggleHub.Domain.Entities.Flag", b =>
@@ -481,19 +476,11 @@ namespace ToggleHub.Infrastructure.Migrations
 
             modelBuilder.Entity("ToggleHub.Domain.Entities.Project", b =>
                 {
-                    b.HasOne("ToggleHub.Domain.Entities.Environment", "Environment")
-                        .WithMany()
-                        .HasForeignKey("EnvironmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("ToggleHub.Domain.Entities.Organization", "Organization")
                         .WithMany()
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Environment");
 
                     b.Navigation("Organization");
                 });

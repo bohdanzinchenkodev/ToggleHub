@@ -43,7 +43,7 @@ public class EnvironmentService : IEnvironmentService
         if (environment == null)
             throw new ApplicationException($"Environment with id {updateDto.Id} not found.");
         
-        environment.Type = updateDto.Type;
+        environment.Type = updateDto.Type!.Value;
         await _environmentRepository.UpdateAsync(environment);
         return environment.Adapt<EnvironmentDto>();
     }
@@ -54,9 +54,9 @@ public class EnvironmentService : IEnvironmentService
         return environment?.Adapt<EnvironmentDto>();
     }
 
-    public async Task<IEnumerable<EnvironmentDto>> GetAllAsync(int? organizationId = null)
+    public async Task<IEnumerable<EnvironmentDto>> GetAllAsync(int? projectId = null)
     {
-        var entities = await _environmentRepository.GetAllAsync(organizationId);
+        var entities = await _environmentRepository.GetAllAsync(projectId);
         return entities.Adapt<IEnumerable<EnvironmentDto>>();
     }
 
