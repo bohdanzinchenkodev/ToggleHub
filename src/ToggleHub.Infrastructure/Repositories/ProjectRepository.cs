@@ -12,10 +12,10 @@ public class ProjectRepository : BaseRepository<Project>, IProjectRepository
  
     }
 
-    public async Task<bool> NameExistsAsync(string name)
+    public async Task<bool> NameExistsAsync(string name, int organizationId = 0)
     {
         return await _dbSet
-            .AnyAsync(o => o.Name.ToLower() == name.ToLower());
+            .AnyAsync(o => o.Name.ToLower() == name.ToLower() && (organizationId == 0 || o.OrganizationId == organizationId));
     }
 
     public async Task<IEnumerable<Project>> GetAllAsync(int? organizationId = null)
