@@ -16,13 +16,6 @@ public abstract class RuleSetValidatorBase<T> : AbstractValidator<T> where T : B
         RuleFor(x => x.Percentage)
             .InclusiveBetween(0, 100)
             .WithMessage("Percentage must be between 0 and 100.");
-
-        RuleFor(x => x.ReturnValueRaw)
-            .NotEmpty()
-            .WithMessage("Return value is required for non-Boolean flags when ruleset matches.");
-
-        RuleFor(x => x.OffReturnValueRaw)
-            .NotEmpty()
-            .WithMessage("Off return value is required for non-Boolean flags.");
+        
     }
 }
