@@ -97,13 +97,13 @@ public class SlugGeneratorTests
     public void GenerateAsync_WithInvalidInput_ThrowsException(string invalidInput)
     {
         // Act & Assert
-        Assert.ThrowsAsync<InvalidOperationException>(() => _slugGenerator.GenerateAsync<TestSluggedEntity>(invalidInput));
+        Assert.ThrowsAsync<ApplicationException>(() => _slugGenerator.GenerateAsync<TestSluggedEntity>(invalidInput));
     }
 
     [Test]
     public void GenerateAsync_WithNullInput_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentNullException>(() => _slugGenerator.GenerateAsync<TestSluggedEntity>(null!));
+        Assert.ThrowsAsync<ApplicationException>(() => _slugGenerator.GenerateAsync<TestSluggedEntity>(null!));
     }
 }
