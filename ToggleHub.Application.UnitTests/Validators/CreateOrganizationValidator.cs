@@ -1,11 +1,8 @@
 using FluentValidation.TestHelper;
-using Moq;
-using ToggleHub.Application.DTOs;
 using ToggleHub.Application.DTOs.Organization;
 using ToggleHub.Application.Validators;
-using ToggleHub.Domain.Repositories;
 
-namespace ToggleHub.UnitTests.Validators;
+namespace ToggleHub.Application.UnitTests.Validators;
 
 [TestFixture]
 public class CreateOrganizationValidatorTests

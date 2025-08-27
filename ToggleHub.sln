@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B675A181-815C-459E-8680-179F6B97D414}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToggleHub.UnitTests", "ToggleHub.UnitTests\ToggleHub.UnitTests.csproj", "{D089F39C-A690-4E1C-B3F8-7C442297AF62}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToggleHub.Application.UnitTests", "ToggleHub.Application.UnitTests\ToggleHub.Application.UnitTests.csproj", "{D089F39C-A690-4E1C-B3F8-7C442297AF62}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0090A787-F379-4392-A4A9-4269E95C1190}"
 EndProject

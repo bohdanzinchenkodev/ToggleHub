@@ -4,7 +4,7 @@ using ToggleHub.Application.Services;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Repositories;
 
-namespace ToggleHub.UnitTests.Services;
+namespace ToggleHub.Application.UnitTests.Services;
 
 [TestFixture]
 public class SlugGeneratorTests

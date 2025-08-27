@@ -2,7 +2,7 @@ using FluentValidation.TestHelper;
 using ToggleHub.Application.DTOs.Environment;
 using ToggleHub.Application.Validators;
 
-namespace ToggleHub.UnitTests.Validators;
+namespace ToggleHub.Application.UnitTests.Validators;
 
 [TestFixture]
 public class CreateEnvironmentValidatorTests
