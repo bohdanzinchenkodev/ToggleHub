@@ -16,11 +16,12 @@ public class SlugGenerator : ISlugGenerator
 
     public async Task<T?> GetBySlugAsync<T>(string slug) where T : BaseEntity, ISluggedEntity
     {
-        ArgumentNullException.ThrowIfNull(slug);
+        if (string.IsNullOrEmpty(slug))
+            return null;
         
         // Validate slug format
         if (!Regex.IsMatch(slug, @"^[a-z0-9]+(?:-[a-z0-9]+)*$"))
-            throw new ArgumentException("Invalid slug format.", nameof(slug));
+            return null;
 
         // Fetch the entity by slug
         return await _repository.GetBySlugAsync<T>(slug);
@@ -58,7 +59,8 @@ public class SlugGenerator : ISlugGenerator
 
     private static string GenerateValidSlug(string name)
     {
-        ArgumentNullException.ThrowIfNull(name);
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ApplicationException("Name cannot be null or empty");
 
         // Convert to lowercase
         string slug = name.ToLower();
@@ -77,7 +79,7 @@ public class SlugGenerator : ISlugGenerator
 
         // Ensure slug is not empty
         if (string.IsNullOrEmpty(slug))
-            throw new InvalidOperationException("Generated slug is empty. Please provide a valid name.");
+            throw new ApplicationException("Generated slug is empty. Please provide a valid name.");
 
         // Limit slug length (optional)
         if (slug.Length > 50)
