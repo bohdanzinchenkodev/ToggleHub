@@ -27,10 +27,9 @@ public static class EnvironmentMapping
     {
         environment ??= new Environment();
         environment.Id = updateDto.Id;
-        if (updateDto.Type.HasValue)
-        {
-            environment.Type = updateDto.Type.Value;
-        }
+        
+        environment.Type = updateDto.Type ?? EnvironmentType.Dev;
+        
         return environment;
     }
 }

@@ -11,7 +11,9 @@ public static class ProjectMapping
         {
             Id = project.Id,
             Name = project.Name,
-            Slug = project.Slug
+            Slug = project.Slug,
+            OrganizationId = project.OrganizationId,
+            CreatedAt = project.CreatedAt
         };
     }
 
@@ -19,6 +21,7 @@ public static class ProjectMapping
     {
         project ??= new Project();
         project.Name = createDto.Name;
+        project.OrganizationId = createDto.OrganizationId;
         return project;
     }
     
