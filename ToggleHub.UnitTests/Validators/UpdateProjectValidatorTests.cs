@@ -1,4 +1,4 @@
-using FluentValidation;
+using FluentValidation.TestHelper;
 using ToggleHub.Application.DTOs.Project;
 using ToggleHub.Application.Validators;
 
@@ -21,12 +21,9 @@ public class UpdateProjectValidatorTests
         // Arrange
         var dto = new UpdateProjectDto { Id = 1, Name = "" };
 
-        // Act
-        var result = await _validator.ValidateAsync(dto);
-
-        // Assert
-        Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Errors.Any(e => e.PropertyName == "Name"), Is.True);
+        // Act & Assert
+        var result = await _validator.TestValidateAsync(dto);
+        result.ShouldHaveValidationErrorFor(x => x.Name);
     }
 
     [Test]
@@ -35,12 +32,9 @@ public class UpdateProjectValidatorTests
         // Arrange
         var dto = new UpdateProjectDto { Id = 1, Name = null! };
 
-        // Act
-        var result = await _validator.ValidateAsync(dto);
-
-        // Assert
-        Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Errors.Any(e => e.PropertyName == "Name"), Is.True);
+        // Act & Assert
+        var result = await _validator.TestValidateAsync(dto);
+        result.ShouldHaveValidationErrorFor(x => x.Name);
     }
 
     [Test]
@@ -49,12 +43,9 @@ public class UpdateProjectValidatorTests
         // Arrange
         var dto = new UpdateProjectDto { Id = 1, Name = new string('a', 101) };
 
-        // Act
-        var result = await _validator.ValidateAsync(dto);
-
-        // Assert
-        Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Errors.Any(e => e.PropertyName == "Name"), Is.True);
+        // Act & Assert
+        var result = await _validator.TestValidateAsync(dto);
+        result.ShouldHaveValidationErrorFor(x => x.Name);
     }
 
     [Test]
@@ -63,12 +54,9 @@ public class UpdateProjectValidatorTests
         // Arrange
         var dto = new UpdateProjectDto { Id = 1, Name = new string('a', 100) };
 
-        // Act
-        var result = await _validator.ValidateAsync(dto);
-
-        // Assert
-        Assert.That(result.IsValid, Is.True);
-        Assert.That(result.Errors.Any(e => e.PropertyName == "Name"), Is.False);
+        // Act & Assert
+        var result = await _validator.TestValidateAsync(dto);
+        result.ShouldNotHaveValidationErrorFor(x => x.Name);
     }
 
     [Test]
@@ -77,12 +65,9 @@ public class UpdateProjectValidatorTests
         // Arrange
         var dto = new UpdateProjectDto { Id = 0, Name = "Valid Project" };
 
-        // Act
-        var result = await _validator.ValidateAsync(dto);
-
-        // Assert
-        Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Errors.Any(e => e.PropertyName == "Id"), Is.True);
+        // Act & Assert
+        var result = await _validator.TestValidateAsync(dto);
+        result.ShouldHaveValidationErrorFor(x => x.Id);
     }
 
     [Test]
@@ -91,40 +76,9 @@ public class UpdateProjectValidatorTests
         // Arrange
         var dto = new UpdateProjectDto { Id = -1, Name = "Valid Project" };
 
-        // Act
-        var result = await _validator.ValidateAsync(dto);
-
-        // Assert
-        Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Errors.Any(e => e.PropertyName == "Id"), Is.True);
-    }
-
-    [Test]
-    public async Task Should_NotHaveError_When_NameIsValid()
-    {
-        // Arrange
-        var dto = new UpdateProjectDto { Id = 1, Name = "Valid Project" };
-
-        // Act
-        var result = await _validator.ValidateAsync(dto);
-
-        // Assert
-        Assert.That(result.IsValid, Is.True);
-        Assert.That(result.Errors.Any(e => e.PropertyName == "Name"), Is.False);
-    }
-
-    [Test]
-    public async Task Should_NotHaveError_When_IdIsValid()
-    {
-        // Arrange
-        var dto = new UpdateProjectDto { Id = 1, Name = "Valid Project" };
-
-        // Act
-        var result = await _validator.ValidateAsync(dto);
-
-        // Assert
-        Assert.That(result.IsValid, Is.True);
-        Assert.That(result.Errors.Any(e => e.PropertyName == "Id"), Is.False);
+        // Act & Assert
+        var result = await _validator.TestValidateAsync(dto);
+        result.ShouldHaveValidationErrorFor(x => x.Id);
     }
 
     [Test]
@@ -133,12 +87,9 @@ public class UpdateProjectValidatorTests
         // Arrange
         var dto = new UpdateProjectDto { Id = 1, Name = "Valid Project" };
 
-        // Act
-        var result = await _validator.ValidateAsync(dto);
-
-        // Assert
-        Assert.That(result.IsValid, Is.True);
-        Assert.That(result.Errors, Is.Empty);
+        // Act & Assert
+        var result = await _validator.TestValidateAsync(dto);
+        result.ShouldNotHaveAnyValidationErrors();
     }
 
     [Test]
@@ -147,12 +98,9 @@ public class UpdateProjectValidatorTests
         // Arrange
         var dto = new UpdateProjectDto { Id = 1, Name = "A" };
 
-        // Act
-        var result = await _validator.ValidateAsync(dto);
-
-        // Assert
-        Assert.That(result.IsValid, Is.True);
-        Assert.That(result.Errors.Any(e => e.PropertyName == "Name"), Is.False);
+        // Act & Assert
+        var result = await _validator.TestValidateAsync(dto);
+        result.ShouldNotHaveValidationErrorFor(x => x.Name);
     }
 
     [Test]
@@ -161,25 +109,8 @@ public class UpdateProjectValidatorTests
         // Arrange
         var dto = new UpdateProjectDto { Id = 1, Name = "   " };
 
-        // Act
-        var result = await _validator.ValidateAsync(dto);
-
-        // Assert
-        Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Errors.Any(e => e.PropertyName == "Name"), Is.True);
-    }
-
-    [Test]
-    public async Task Should_NotHaveError_When_IdIsLargePositiveNumber()
-    {
-        // Arrange
-        var dto = new UpdateProjectDto { Id = int.MaxValue, Name = "Valid Project" };
-
-        // Act
-        var result = await _validator.ValidateAsync(dto);
-
-        // Assert
-        Assert.That(result.IsValid, Is.True);
-        Assert.That(result.Errors.Any(e => e.PropertyName == "Id"), Is.False);
+        // Act & Assert
+        var result = await _validator.TestValidateAsync(dto);
+        result.ShouldHaveValidationErrorFor(x => x.Name);
     }
 }

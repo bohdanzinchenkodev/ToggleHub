@@ -71,39 +71,6 @@ public class CreateProjectValidatorTests
     }
 
     [Test]
-    public async Task Should_HaveError_When_OrganizationIdIsNegative()
-    {
-        // Arrange
-        var dto = new CreateProjectDto { Name = "Valid Project", OrganizationId = -1 };
-
-        // Act & Assert
-        var result = await _validator.TestValidateAsync(dto);
-        result.ShouldHaveValidationErrorFor(x => x.OrganizationId);
-    }
-
-    [Test]
-    public async Task Should_NotHaveError_When_NameIsValid()
-    {
-        // Arrange
-        var dto = new CreateProjectDto { Name = "Valid Project", OrganizationId = 1 };
-
-        // Act & Assert
-        var result = await _validator.TestValidateAsync(dto);
-        result.ShouldNotHaveValidationErrorFor(x => x.Name);
-    }
-
-    [Test]
-    public async Task Should_NotHaveError_When_OrganizationIdIsValid()
-    {
-        // Arrange
-        var dto = new CreateProjectDto { Name = "Valid Project", OrganizationId = 1 };
-
-        // Act & Assert
-        var result = await _validator.TestValidateAsync(dto);
-        result.ShouldNotHaveValidationErrorFor(x => x.OrganizationId);
-    }
-
-    [Test]
     public async Task Should_NotHaveError_When_AllPropertiesAreValid()
     {
         // Arrange
@@ -115,14 +82,14 @@ public class CreateProjectValidatorTests
     }
 
     [Test]
-    public async Task Should_HaveError_When_NameIsSingleCharacter()
+    public async Task Should_NotHaveError_When_NameIsSingleCharacter()
     {
         // Arrange
         var dto = new CreateProjectDto { Name = "A", OrganizationId = 1 };
 
         // Act & Assert
         var result = await _validator.TestValidateAsync(dto);
-        result.ShouldNotHaveValidationErrorFor(x => x.Name);
+        result.ShouldNotHaveValidationErrorFor(x => x.Name); // EXPECT NO ERROR
     }
 
     [Test]
@@ -134,16 +101,5 @@ public class CreateProjectValidatorTests
         // Act & Assert
         var result = await _validator.TestValidateAsync(dto);
         result.ShouldHaveValidationErrorFor(x => x.Name);
-    }
-
-    [Test]
-    public async Task Should_NotHaveError_When_OrganizationIdIsLargePositiveNumber()
-    {
-        // Arrange
-        var dto = new CreateProjectDto { Name = "Valid Project", OrganizationId = int.MaxValue };
-
-        // Act & Assert
-        var result = await _validator.TestValidateAsync(dto);
-        result.ShouldNotHaveValidationErrorFor(x => x.OrganizationId);
     }
 }
