@@ -4,7 +4,7 @@ using ToggleHub.Application.Validators.Flag.Base;
 
 namespace ToggleHub.Application.Validators.Flag.Create;
 
-public class CreateFlagValidator : FlagValidatorBase<CreateCreateOrUpdateFlagDto>
+public class CreateFlagValidator : FlagValidatorBase<CreateFlagDto>
 {
     public CreateFlagValidator() : base()
     {

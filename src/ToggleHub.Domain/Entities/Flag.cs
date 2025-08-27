@@ -4,7 +4,7 @@ public class Flag : BaseEntity
 {
     public int ProjectId { get; set; }
     public int EnvironmentId { get; set; }
-    public required string Key { get; set; }
+    public string Key { get; set; } = string.Empty;
     public string? Description { get; set; }
     public bool Enabled { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }

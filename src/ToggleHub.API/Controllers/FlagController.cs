@@ -20,23 +20,23 @@ public class FlagController : ControllerBase
 
     [HttpPost]
     [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageFlags)]
-    public async Task<IActionResult> Create(int organizationId, int projectId, int environmentId, [FromBody] CreateCreateOrUpdateFlagDto createCreateOrUpdateDto)
+    public async Task<IActionResult> Create(int organizationId, int projectId, int environmentId, [FromBody] CreateFlagDto createDto)
     {
-        createCreateOrUpdateDto.ProjectId = projectId;
-        createCreateOrUpdateDto.EnvironmentId = environmentId;
+        createDto.ProjectId = projectId;
+        createDto.EnvironmentId = environmentId;
 
-        var result = await _flagService.CreateAsync(createCreateOrUpdateDto);
+        var result = await _flagService.CreateAsync(createDto);
         return CreatedAtAction(nameof(GetById), new { projectId, environmentId, organizationId, id = result.Id }, result);
     }
     
     [HttpPut]
     [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageFlags)]
-    public async Task<IActionResult> Update(int organizationId, int projectId, int environmentId, [FromBody] UpdateCreateOrUpdateFlagDto updateCreateOrUpdateDto)
+    public async Task<IActionResult> Update(int organizationId, int projectId, int environmentId, [FromBody] UpdateFlagDto updateDto)
     {
-        updateCreateOrUpdateDto.ProjectId = projectId;
-        updateCreateOrUpdateDto.EnvironmentId = environmentId;
+        updateDto.ProjectId = projectId;
+        updateDto.EnvironmentId = environmentId;
 
-        var result = await _flagService.UpdateAsync(updateCreateOrUpdateDto);
+        var result = await _flagService.UpdateAsync(updateDto);
         return Ok(result);
     }
     

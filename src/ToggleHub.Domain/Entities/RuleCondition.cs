@@ -5,7 +5,7 @@ namespace ToggleHub.Domain.Entities;
 public class RuleCondition : BaseEntity
 {
     public int RuleSetId { get; set; }
-    public required string Field { get; set; }        
+    public string Field { get; set; } = string.Empty;        
     public RuleFieldType FieldType { get; set; }
     public OperatorType Operator { get; set; }
     public string? ValueString { get; set; }          

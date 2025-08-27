@@ -1,11 +1,11 @@
 using System.Data;
 using FluentValidation;
-using Mapster;
 using ToggleHub.Application.DTOs.Flag;
 using ToggleHub.Application.DTOs.Flag.Create;
 using ToggleHub.Application.DTOs.Flag.Update;
 using ToggleHub.Application.Helpers;
 using ToggleHub.Application.Interfaces;
+using ToggleHub.Application.Mapping;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Exceptions;
 using ToggleHub.Domain.Repositories;
@@ -14,13 +14,13 @@ namespace ToggleHub.Application.Services;
 
 public class FlagService : IFlagService
 {
-    private readonly IValidator<CreateCreateOrUpdateFlagDto> _createValidator;
-    private readonly IValidator<UpdateCreateOrUpdateFlagDto> _updateValidator;
+    private readonly IValidator<CreateFlagDto> _createValidator;
+    private readonly IValidator<UpdateFlagDto> _updateValidator;
     private readonly IFlagRepository _flagRepository;
     private readonly IEnvironmentRepository _environmentRepository;
     private readonly IProjectRepository _projectRepository;
 
-    public FlagService(IValidator<CreateCreateOrUpdateFlagDto> createValidator, IFlagRepository flagRepository, IEnvironmentRepository environmentRepository, IProjectRepository projectRepository, IValidator<UpdateCreateOrUpdateFlagDto> updateValidator)
+    public FlagService(IValidator<CreateFlagDto> createValidator, IFlagRepository flagRepository, IEnvironmentRepository environmentRepository, IProjectRepository projectRepository, IValidator<UpdateFlagDto> updateValidator)
     {
         _createValidator = createValidator;
         _flagRepository = flagRepository;
@@ -29,27 +29,27 @@ public class FlagService : IFlagService
         _updateValidator = updateValidator;
     }
 
-    public async Task<FlagDto> CreateAsync(CreateCreateOrUpdateFlagDto createCreateOrUpdateDto)
+    public async Task<FlagDto> CreateAsync(CreateFlagDto createDto)
     {
-        var validationResult = await _createValidator.ValidateAsync(createCreateOrUpdateDto);
+        var validationResult = await _createValidator.ValidateAsync(createDto);
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
         
-        var environment = await _environmentRepository.GetByIdAsync(createCreateOrUpdateDto.EnvironmentId);
+        var environment = await _environmentRepository.GetByIdAsync(createDto.EnvironmentId);
         if (environment == null)
-            throw new ApplicationException($"Environment with ID {createCreateOrUpdateDto.EnvironmentId} not found.");
+            throw new ApplicationException($"Environment with ID {createDto.EnvironmentId} not found.");
         
-        var project = await _projectRepository.GetByIdAsync(createCreateOrUpdateDto.ProjectId);
+        var project = await _projectRepository.GetByIdAsync(createDto.ProjectId);
         if (project == null)
-            throw new ApplicationException($"Project with ID {createCreateOrUpdateDto.ProjectId} not found.");
+            throw new ApplicationException($"Project with ID {createDto.ProjectId} not found.");
         
-        if(await _flagRepository.ExistsAsync(createCreateOrUpdateDto.Key, createCreateOrUpdateDto.EnvironmentId, createCreateOrUpdateDto.ProjectId))
-            throw new ApplicationException($"Flag with key '{createCreateOrUpdateDto.Key}' already exists in the environment.");
+        if(await _flagRepository.ExistsAsync(createDto.Key, createDto.EnvironmentId, createDto.ProjectId))
+            throw new ApplicationException($"Flag with key '{createDto.Key}' already exists in the environment.");
         
-        var flag = createCreateOrUpdateDto.Adapt<Flag>();
+        var flag = createDto.ToEntity();
         
         flag.UpdatedAt = DateTimeOffset.UtcNow;
-        flag.ReturnValueType = createCreateOrUpdateDto.ReturnValueType!.Value; //safe to use ! because of validation
+        flag.ReturnValueType = createDto.ReturnValueType!.Value; //safe to use ! because of validation
         //set bucketing seed to a new GUID
         foreach (var ruleSet in flag.RuleSets)
         {
@@ -57,34 +57,32 @@ public class FlagService : IFlagService
         }
         
         await _flagRepository.CreateAsync(flag);
-        return flag.Adapt<FlagDto>();
+        return flag.ToDto();
     }
 
     public async Task<FlagDto?> GetByIdAsync(int id)
     {
         var flag = await _flagRepository.GetByIdAsync(id);
-        return flag?.Adapt<FlagDto>();
+        return flag?.ToDto();
     }
 
-    public async Task<FlagDto> UpdateAsync(UpdateCreateOrUpdateFlagDto updateCreateOrUpdateDto)
+    public async Task<FlagDto> UpdateAsync(UpdateFlagDto updateDto)
     {
-        var validationResult = await _updateValidator.ValidateAsync(updateCreateOrUpdateDto);
+        var validationResult = await _updateValidator.ValidateAsync(updateDto);
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
         
-        var flag = await _flagRepository.GetByIdAsync(updateCreateOrUpdateDto.Id);
+        var flag = await _flagRepository.GetByIdAsync(updateDto.Id);
         if (flag == null)
-            throw new ApplicationException($"Flag with ID {updateCreateOrUpdateDto.Id} not found.");
+            throw new ApplicationException($"Flag with ID {updateDto.Id} not found.");
 
-        flag.Description = updateCreateOrUpdateDto.Description;
-        flag.Enabled = updateCreateOrUpdateDto.Enabled;
+        updateDto.UpdateEntity(flag);
         flag.UpdatedAt = DateTimeOffset.UtcNow;
-        flag.Key = flag.Key;
         
-        ReconcileRuleSets(flag, updateCreateOrUpdateDto);
+        ReconcileRuleSets(flag, updateDto);
 
         await _flagRepository.UpdateAsync(flag);
-        return flag.Adapt<FlagDto>();
+        return flag.ToDto();
     }
 
     public async Task DeleteAsync(int id)
@@ -96,17 +94,17 @@ public class FlagService : IFlagService
         await _flagRepository.DeleteAsync(flag.Id);
     }
 
-    private void ReconcileRuleSets(Flag flag, UpdateCreateOrUpdateFlagDto updateCreateOrUpdateDto)
+    private void ReconcileRuleSets(Flag flag, UpdateFlagDto updateDto)
     {
         var existingSets = flag.RuleSets.ToDictionary(x => x.Id);
         var keepSetIds = new HashSet<int>();
-        foreach (var ruleSetDto in updateCreateOrUpdateDto.RuleSets)
+        foreach (var ruleSetDto in updateDto.RuleSets)
         {
             RuleSet? ruleSet;
             //create 
             if (!ruleSetDto.Id.HasValue)
             {
-                ruleSet = ruleSetDto.Adapt<RuleSet>();
+                ruleSet = ruleSetDto.ToEntity();
                 ruleSet.BucketingSeed = Guid.NewGuid();
                 flag.RuleSets.Add(ruleSet);
                 continue;
@@ -120,10 +118,7 @@ public class FlagService : IFlagService
             //keep track of the rule set to keep
             keepSetIds.Add(ruleSetDto.Id.Value);
                 
-            ruleSet.OffReturnValueRaw = ruleSetDto.OffReturnValueRaw;
-            ruleSet.ReturnValueRaw = ruleSetDto.ReturnValueRaw;
-            ruleSet.Percentage = ruleSetDto.Percentage;
-            ruleSet.Priority = ruleSetDto.Priority;
+            ruleSetDto.UpdateEntity(ruleSet);
             
             ReconcileConditions(ruleSet, ruleSetDto);
         }
@@ -150,7 +145,7 @@ public class FlagService : IFlagService
             //create new condition
             if (!conditionDto.Id.HasValue)
             {
-                condition = conditionDto.Adapt<RuleCondition>();
+                condition = conditionDto.ToEntity();
                 ruleSet.Conditions.Add(condition);
                 continue;
             }
@@ -162,12 +157,7 @@ public class FlagService : IFlagService
             //keep track of the condition to keep
             keepConditionIds.Add(conditionDto.Id.Value);
                 
-            condition.Field = conditionDto.Field;
-            condition.FieldType = conditionDto.FieldType!.Value;
-            condition.Operator = conditionDto.Operator!.Value;
-            condition.ValueString = conditionDto.ValueString;
-            condition.ValueNumber = conditionDto.ValueNumber;
-            condition.ValueBoolean = conditionDto.ValueBoolean;
+            conditionDto.UpdateEntity(condition);
             
             ReconcileConditionItems(condition, conditionDto);
         }
@@ -193,7 +183,7 @@ public class FlagService : IFlagService
             //create new item
             if (!itemDto.Id.HasValue)
             {
-                item = itemDto.Adapt<RuleConditionItem>();
+                item = itemDto.ToEntity();
                 condition.Items.Add(item);
                 continue;
             }
@@ -205,8 +195,7 @@ public class FlagService : IFlagService
             //keep track of the item to keep
             keepItemIds.Add(itemDto.Id.Value);
                 
-            item.ValueString = itemDto.ValueString;
-            item.ValueNumber = itemDto.ValueNumber;
+            itemDto.UpdateEntity(item);
         }
         
         //remove items that are not in the update dto
