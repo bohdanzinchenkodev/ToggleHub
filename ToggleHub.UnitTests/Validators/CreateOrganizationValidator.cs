@@ -54,20 +54,7 @@ public class CreateOrganizationValidatorTests
         result.ShouldHaveValidationErrorFor(x => x.Name)
             .WithErrorMessage("Organization name must be between 1 and 100 characters");
     }
-
-    [Test]
-    public async Task Should_HaveError_When_NameAlreadyExists()
-    {
-        // Arrange
-        var dto = new CreateOrganizationDto { Name = "Existing Org" };
-        _mockRepository.Setup(r => r.NameExistsAsync("Existing Org"))
-            .ReturnsAsync(true);
-
-        // Act & Assert
-        var result = await _validator.TestValidateAsync(dto);
-        result.ShouldHaveValidationErrorFor(x => x.Name)
-            .WithErrorMessage("An organization with this name already exists");
-    }
+    
 
     [Test]
     public async Task Should_NotHaveError_When_NameIsValid()

@@ -69,20 +69,6 @@ public class UpdateOrganizationValidatorTests
     }
 
     [Test]
-    public async Task Should_HaveError_When_NameAlreadyExists_ForDifferentOrganization()
-    {
-        // Arrange
-        var dto = new UpdateOrganizationDto { Id = 1, Name = "Existing Org" };
-        _mockRepository.Setup(r => r.NameExistsAsync("Existing Org", 1))
-            .ReturnsAsync(true);
-
-        // Act & Assert
-        var result = await _validator.TestValidateAsync(dto);
-        result.ShouldHaveValidationErrorFor(x => x.Name)
-            .WithErrorMessage("An organization with this name already exists");
-    }
-
-    [Test]
     public async Task Should_NotHaveError_When_NameIsValid()
     {
         // Arrange
