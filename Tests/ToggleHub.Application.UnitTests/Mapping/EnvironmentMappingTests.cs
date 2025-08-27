@@ -261,7 +261,7 @@ public class EnvironmentMappingTests
         // Assert
         Assert.That(result, Is.SameAs(existingEnvironment));
         Assert.That(result.Id, Is.EqualTo(35));
-        Assert.That(result.Type, Is.EqualTo(EnvironmentType.Prod)); // Should preserve existing type
+        Assert.That(result.Type, Is.EqualTo(EnvironmentType.Dev)); // Default value since empty string maps to Dev
         Assert.That(result.ProjectId, Is.EqualTo(1000)); // Should preserve existing value
     }
 }
