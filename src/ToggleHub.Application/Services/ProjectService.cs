@@ -1,7 +1,7 @@
 using FluentValidation;
-using Mapster;
 using ToggleHub.Application.DTOs.Project;
 using ToggleHub.Application.Interfaces;
+using ToggleHub.Application.Mapping;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Exceptions;
 using ToggleHub.Domain.Repositories;
@@ -30,15 +30,13 @@ public class ProjectService : IProjectService
     public async Task<ProjectDto?> GetByIdAsync(int id)
     {
         var project = await _projectRepository.GetByIdAsync(id);
-        var dto = project?.Adapt<ProjectDto>();
-        return dto;
+        return project?.ToDto();
     }
 
     public async Task<ProjectDto?> GetBySlugAsync(string slug)
     {
         var project = await _sluggedRepository.GetBySlugAsync<Project>(slug);
-        var dto = project?.Adapt<ProjectDto>();
-        return dto;
+        return project?.ToDto();
     }
 
     public async Task<ProjectDto> CreateAsync(CreateProjectDto createProjectDto)
@@ -55,14 +53,14 @@ public class ProjectService : IProjectService
         if(await _projectRepository.NameExistsAsync(createProjectDto.Name, organization.Id))
             throw new ApplicationException($"Project with name '{createProjectDto.Name}' already exists in your organization.");
         
-        var project = createProjectDto.Adapt<Project>();
+        var project = createProjectDto.ToEntity();
+    
         project.Slug = await _slugGenerator.GenerateAsync<Project>(project.Name);
         project.CreatedAt = DateTime.UtcNow;
         
         project = await _projectRepository.CreateAsync(project);
         
-        var dto = project.Adapt<ProjectDto>();
-        return dto;
+        return project.ToDto();
     }
 
     public async Task<ProjectDto> UpdateAsync(UpdateProjectDto updateProjectDto)
@@ -87,14 +85,14 @@ public class ProjectService : IProjectService
             slug = await _slugGenerator.GenerateAsync<Project>(updateProjectDto.Name);
         }
         
-        project = updateProjectDto.Adapt(project);
+        updateProjectDto.ToEntity(project);
         project.Slug = slug;
         
         await _projectRepository.UpdateAsync(project);
         
-        var dto = project.Adapt<ProjectDto>();
-        return dto;
+        return project.ToDto();
     }
+    
     public async Task DeleteAsync(int id)
     {
         var project = await _projectRepository.GetByIdAsync(id);
@@ -107,7 +105,6 @@ public class ProjectService : IProjectService
     public async Task<IEnumerable<ProjectDto>> GetAllAsync(int? organizationId = null)
     {
         var projects = await _projectRepository.GetAllAsync(organizationId);
-        var dtos = projects.Adapt<IEnumerable<ProjectDto>>();
-        return dtos;
+        return projects.Select(p => p.ToDto());
     }
 }
