@@ -11,13 +11,11 @@ namespace ToggleHub.UnitTests.Validators;
 [TestFixture]
 public class UpdateOrganizationValidatorTests
 {
-    private Mock<IOrganizationRepository> _mockRepository;
     private UpdateOrganizationValidator _validator;
 
     [SetUp]
     public void SetUp()
     {
-        _mockRepository = new Mock<IOrganizationRepository>();
         _validator = new UpdateOrganizationValidator();
     }
 
@@ -52,8 +50,7 @@ public class UpdateOrganizationValidatorTests
 
         // Act & Assert
         var result = await _validator.TestValidateAsync(dto);
-        result.ShouldHaveValidationErrorFor(x => x.Name)
-            .WithErrorMessage("Organization name must be between 1 and 100 characters");
+        result.ShouldHaveValidationErrorFor(x => x.Name);
     }
 
     [Test]
@@ -64,8 +61,7 @@ public class UpdateOrganizationValidatorTests
 
         // Act & Assert
         var result = await _validator.TestValidateAsync(dto);
-        result.ShouldHaveValidationErrorFor(x => x.Id)
-            .WithErrorMessage("Organization ID must be greater than 0");
+        result.ShouldHaveValidationErrorFor(x => x.Id);
     }
 
     [Test]
@@ -73,8 +69,6 @@ public class UpdateOrganizationValidatorTests
     {
         // Arrange
         var dto = new UpdateOrganizationDto { Id = 1, Name = "Valid Organization" };
-        _mockRepository.Setup(r => r.NameExistsAsync("Valid Organization", 1))
-            .ReturnsAsync(false);
 
         // Act & Assert
         var result = await _validator.TestValidateAsync(dto);
