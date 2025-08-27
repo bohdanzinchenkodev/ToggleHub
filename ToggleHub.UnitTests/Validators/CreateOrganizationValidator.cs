@@ -17,7 +17,7 @@ public class CreateOrganizationValidatorTests
     public void SetUp()
     {
         _mockRepository = new Mock<IOrganizationRepository>();
-        _validator = new CreateOrganizationValidator(_mockRepository.Object);
+        _validator = new CreateOrganizationValidator();
     }
 
     [Test]

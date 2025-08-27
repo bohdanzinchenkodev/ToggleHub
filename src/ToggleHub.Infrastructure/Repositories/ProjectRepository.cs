@@ -18,12 +18,6 @@ public class ProjectRepository : BaseRepository<Project>, IProjectRepository
             .AnyAsync(o => o.Name.ToLower() == name.ToLower());
     }
 
-    public async Task<bool> NameExistsAsync(string name, int excludeId)
-    {
-        return await _dbSet
-            .AnyAsync(o => o.Name.ToLower() == name.ToLower() && o.Id != excludeId);
-    }
-
     public async Task<IEnumerable<Project>> GetAllAsync(int? organizationId = null)
     {
         var query = _dbSet.AsQueryable();

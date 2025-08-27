@@ -1,17 +1,12 @@
 using FluentValidation;
 using ToggleHub.Application.DTOs.Project;
-using ToggleHub.Domain.Repositories;
 
 namespace ToggleHub.Application.Validators;
 
 public class UpdateProjectValidator : AbstractValidator<UpdateProjectDto>
 {
-    private readonly IProjectRepository _projectRepository;
-
-    public UpdateProjectValidator(IProjectRepository projectRepository)
+    public UpdateProjectValidator()
     {
-        _projectRepository = projectRepository;
-
         RuleFor(x => x.Name)
             .NotEmpty()
             .WithMessage("Project name is required")

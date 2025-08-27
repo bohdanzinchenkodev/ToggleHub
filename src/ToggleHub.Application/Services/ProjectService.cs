@@ -45,6 +45,10 @@ public class ProjectService : IProjectService
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
         
+        // Check if a project with the same name already exists in the organization
+        if(await _projectRepository.NameExistsAsync(createProjectDto.Name))
+            throw new ApplicationException($"Project with name '{createProjectDto.Name}' already exists.");
+        
         var project = createProjectDto.Adapt<Project>();
         project.Slug = await _slugGenerator.GenerateAsync<Project>(project.Name);
         project.CreatedAt = DateTime.UtcNow;
@@ -68,7 +72,12 @@ public class ProjectService : IProjectService
         // Check if the name has changed to generate a new slug
         var slug = project.Slug;
         if (updateProjectDto.Name != project.Name)
+        {
+            if(await _projectRepository.NameExistsAsync(updateProjectDto.Name))
+                throw new ApplicationException($"Project with name '{updateProjectDto.Name}' already exists.");
+            
             slug = await _slugGenerator.GenerateAsync<Project>(updateProjectDto.Name);
+        }
         
         project = updateProjectDto.Adapt(project);
         project.Slug = slug;

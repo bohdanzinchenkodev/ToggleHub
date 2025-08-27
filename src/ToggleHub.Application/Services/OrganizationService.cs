@@ -46,9 +46,6 @@ public class OrganizationService : IOrganizationService
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
         
-        if (await _organizationRepository.NameExistsAsync(updateDto.Name, updateDto.Id))
-            throw new ApplicationException($"Organization with name {updateDto.Name} already exists");
-        
         var organization = await _organizationRepository.GetByIdAsync(updateDto.Id);
         if(organization == null)
             throw new ApplicationException($"Organization with ID {updateDto.Id} not found");
@@ -56,7 +53,13 @@ public class OrganizationService : IOrganizationService
         var slug = organization.Slug;
         // Check if the name has changed to generate a new slug
         if (updateDto.Name != organization.Name)
+        {
+            if (await _organizationRepository.NameExistsAsync(updateDto.Name))
+                throw new ApplicationException($"Organization with name {updateDto.Name} already exists");
+            
             slug = await _slugGenerator.GenerateAsync<Organization>(updateDto.Name);
+        }
+        
         
         organization = updateDto.Adapt(organization);
         organization.Slug = slug;
