@@ -1,7 +1,7 @@
 using FluentValidation;
-using Mapster;
 using ToggleHub.Application.DTOs.Organization;
 using ToggleHub.Application.Interfaces;
+using ToggleHub.Application.Mapping;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Repositories;
 
@@ -30,13 +30,13 @@ public class OrganizationService : IOrganizationService
 
         if (await _organizationRepository.NameExistsAsync(createDto.Name))
             throw new ApplicationException($"Organization with name {createDto.Name} already exists");
-        
-        var entity = createDto.Adapt<Organization>();
+
+        var entity = createDto.ToEntity();
 
         entity.Slug = await _slugGenerator.GenerateAsync<Organization>(entity.Name);
         entity.CreatedAt = DateTime.UtcNow;
         entity = await _organizationRepository.CreateAsync(entity);
-        var dto = entity.Adapt<OrganizationDto>();
+        var dto = entity.ToDto();
         return dto;
     }
 
@@ -61,7 +61,7 @@ public class OrganizationService : IOrganizationService
         }
         
         
-        organization = updateDto.Adapt(organization);
+        organization = updateDto.ToEntity(organization);
         organization.Slug = slug;
         await _organizationRepository.UpdateAsync(organization);
     }
@@ -69,13 +69,13 @@ public class OrganizationService : IOrganizationService
     public async Task<OrganizationDto?> GetByIdAsync(int id)
     {
         var organization = await _organizationRepository.GetByIdAsync(id);
-        var dto = organization?.Adapt<OrganizationDto>();
+        var dto = organization?.ToDto();
         return dto;
     }
     public async Task<OrganizationDto?> GetBySlugAsync(string slug)
     {
         var organization = await _slugGenerator.GetBySlugAsync<Organization>(slug);
-        var dto = organization?.Adapt<OrganizationDto>();
+        var dto = organization?.ToDto();
         return dto;
     }
 
