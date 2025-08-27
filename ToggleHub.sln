@@ -2,8 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B675A181-815C-459E-8680-179F6B97D414}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToggleHub.Application.UnitTests", "ToggleHub.Application.UnitTests\ToggleHub.Application.UnitTests.csproj", "{D089F39C-A690-4E1C-B3F8-7C442297AF62}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0090A787-F379-4392-A4A9-4269E95C1190}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToggleHub.Infrastructure.Identity", "src\ToggleHub.Infrastructure.Identity\ToggleHub.Infrastructure.Identity.csproj", "{A5288DD7-D5E9-49F8-9D11-B069FD51A9F8}"
@@ -16,16 +14,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToggleHub.Domain", "src\Tog
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToggleHub.Infrastructure", "src\ToggleHub.Infrastructure\ToggleHub.Infrastructure.csproj", "{9A40E7A3-234F-454D-962D-EC2CBC2C620D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToggleHub.Application.UnitTests", "Tests\ToggleHub.Application.UnitTests\ToggleHub.Application.UnitTests.csproj", "{6FB8ADEB-8BAD-4A97-A9FD-B803F44C66BC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D089F39C-A690-4E1C-B3F8-7C442297AF62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D089F39C-A690-4E1C-B3F8-7C442297AF62}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D089F39C-A690-4E1C-B3F8-7C442297AF62}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D089F39C-A690-4E1C-B3F8-7C442297AF62}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A5288DD7-D5E9-49F8-9D11-B069FD51A9F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A5288DD7-D5E9-49F8-9D11-B069FD51A9F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5288DD7-D5E9-49F8-9D11-B069FD51A9F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -46,13 +42,17 @@ Global
 		{9A40E7A3-234F-454D-962D-EC2CBC2C620D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A40E7A3-234F-454D-962D-EC2CBC2C620D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A40E7A3-234F-454D-962D-EC2CBC2C620D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FB8ADEB-8BAD-4A97-A9FD-B803F44C66BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FB8ADEB-8BAD-4A97-A9FD-B803F44C66BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FB8ADEB-8BAD-4A97-A9FD-B803F44C66BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FB8ADEB-8BAD-4A97-A9FD-B803F44C66BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{D089F39C-A690-4E1C-B3F8-7C442297AF62} = {B675A181-815C-459E-8680-179F6B97D414}
 		{A5288DD7-D5E9-49F8-9D11-B069FD51A9F8} = {0090A787-F379-4392-A4A9-4269E95C1190}
 		{E6ABA771-15F8-4DC4-A270-7498957467F8} = {0090A787-F379-4392-A4A9-4269E95C1190}
 		{DAED79C3-A4FF-47C5-8DB9-4AE0417D0845} = {0090A787-F379-4392-A4A9-4269E95C1190}
 		{B331D7EB-E0C2-455B-B5A6-410104D9ECFC} = {0090A787-F379-4392-A4A9-4269E95C1190}
 		{9A40E7A3-234F-454D-962D-EC2CBC2C620D} = {0090A787-F379-4392-A4A9-4269E95C1190}
+		{6FB8ADEB-8BAD-4A97-A9FD-B803F44C66BC} = {B675A181-815C-459E-8680-179F6B97D414}
 	EndGlobalSection
 EndGlobal
