@@ -86,10 +86,7 @@ public class ToggleHubDbContext : DbContext
             entity.Property(e => e.OrganizationId).IsRequired();
             entity.Property(e => e.ProjectId).IsRequired();
             entity.Property(e => e.EnvironmentId).IsRequired();
-            entity.Property(e => e.Type).IsRequired();
-            entity.Property(e => e.Prefix).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.Hash).IsRequired().HasMaxLength(255);
-            entity.Property(e => e.Scopes).HasMaxLength(1000);
+            entity.Property(e => e.Key).IsRequired();
             
             entity.HasOne(e => e.Organization)
                   .WithMany()
@@ -105,6 +102,8 @@ public class ToggleHubDbContext : DbContext
                   .WithMany()
                   .HasForeignKey(e => e.EnvironmentId)
                   .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasIndex(e => e.Key).IsUnique();
         });
 
         // Configure Flag
