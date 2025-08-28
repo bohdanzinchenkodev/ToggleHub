@@ -3,6 +3,7 @@ using ToggleHub.Application.DTOs.Project;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Application.Mapping;
 using ToggleHub.Domain.Entities;
+using ToggleHub.Domain.Events;
 using ToggleHub.Domain.Exceptions;
 using ToggleHub.Domain.Repositories;
 
@@ -16,8 +17,9 @@ public class ProjectService : IProjectService
     private readonly IValidator<UpdateProjectDto> _updateValidator;
     private readonly IOrganizationRepository _organizationRepository;
     private readonly ISlugGenerator _slugGenerator;
+    private readonly IEventPublisher _eventPublisher;
 
-    public ProjectService(ISluggedRepository sluggedRepository, IProjectRepository projectRepository, IValidator<CreateProjectDto> createValidator, ISlugGenerator slugGenerator, IValidator<UpdateProjectDto> updateValidator, IOrganizationRepository organizationRepository)
+    public ProjectService(ISluggedRepository sluggedRepository, IProjectRepository projectRepository, IValidator<CreateProjectDto> createValidator, ISlugGenerator slugGenerator, IValidator<UpdateProjectDto> updateValidator, IOrganizationRepository organizationRepository, IEventPublisher eventPublisher)
     {
         _sluggedRepository = sluggedRepository;
         _projectRepository = projectRepository;
@@ -25,6 +27,7 @@ public class ProjectService : IProjectService
         _slugGenerator = slugGenerator;
         _updateValidator = updateValidator;
         _organizationRepository = organizationRepository;
+        _eventPublisher = eventPublisher;
     }
 
     public async Task<ProjectDto?> GetByIdAsync(int id)
@@ -59,6 +62,12 @@ public class ProjectService : IProjectService
         project.CreatedAt = DateTime.UtcNow;
         
         project = await _projectRepository.CreateAsync(project);
+        
+        var eventMessage = new ProjectCreatedEvent
+        {
+            Project = project
+        };
+        await _eventPublisher.PublishAsync(eventMessage);
         
         return project.ToDto();
     }

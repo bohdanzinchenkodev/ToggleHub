@@ -17,6 +17,7 @@ public class ProjectServiceTests
     private Mock<IValidator<UpdateProjectDto>> _mockUpdateValidator;
     private Mock<IOrganizationRepository> _mockOrganizationRepository;
     private Mock<ISlugGenerator> _mockSlugGenerator;
+    private Mock<IEventPublisher> _mockEventPublisher;
     private ProjectService _projectService;
 
     [SetUp]
@@ -28,6 +29,7 @@ public class ProjectServiceTests
         _mockUpdateValidator = new Mock<IValidator<UpdateProjectDto>>();
         _mockOrganizationRepository = new Mock<IOrganizationRepository>();
         _mockSlugGenerator = new Mock<ISlugGenerator>();
+        _mockEventPublisher = new Mock<IEventPublisher>();
 
         _projectService = new ProjectService(
             _mockSluggedRepository.Object,
@@ -35,7 +37,8 @@ public class ProjectServiceTests
             _mockCreateValidator.Object,
             _mockSlugGenerator.Object,
             _mockUpdateValidator.Object,
-            _mockOrganizationRepository.Object);
+            _mockOrganizationRepository.Object,
+            _mockEventPublisher.Object);
     }
 
     [Test]
