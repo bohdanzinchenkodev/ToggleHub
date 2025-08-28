@@ -1,8 +1,9 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using ToggleHub.Application.Interfaces;
 
-namespace ToggleHub.Application.Services;
+namespace ToggleHub.Infrastructure.Identity.Services;
 
 public class WorkContext : IWorkContext
 {
@@ -15,11 +16,17 @@ public class WorkContext : IWorkContext
 
     public int? GetCurrentUserId()
     {
-        var userIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext == null) return null;
+
+        // only trust cookie/Identity scheme
+        if (httpContext.User.Identity?.AuthenticationType != IdentityConstants.ApplicationScheme)
+            return null;
+
+        var userIdClaim = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (int.TryParse(userIdClaim, out var userId))
             return userId;
-            
+
         return null;
     }
 }

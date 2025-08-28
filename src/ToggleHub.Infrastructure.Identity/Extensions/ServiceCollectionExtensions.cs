@@ -39,8 +39,11 @@ public static class ServiceCollectionExtensions
             };
         });
 
+        services.AddHttpContextAccessor();
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IWorkContext, WorkContext>();
+        
         
         return services;
     }
