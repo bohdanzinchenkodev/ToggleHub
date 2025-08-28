@@ -15,19 +15,23 @@ public class EnvironmentServiceTests
     private Mock<IEnvironmentRepository> _mockEnvironmentRepository;
     private Mock<IValidator<CreateEnvironmentDto>> _mockCreateValidator;
     private Mock<IValidator<UpdateEnvironmentDto>> _mockUpdateValidator;
+    private Mock<IEventPublisher> _mockEventPublisher;
     private EnvironmentService _environmentService;
-
+    
     [SetUp]
     public void SetUp()
     {
         _mockEnvironmentRepository = new Mock<IEnvironmentRepository>();
         _mockCreateValidator = new Mock<IValidator<CreateEnvironmentDto>>();
         _mockUpdateValidator = new Mock<IValidator<UpdateEnvironmentDto>>();
+        _mockEventPublisher = new Mock<IEventPublisher>();
+        
 
         _environmentService = new EnvironmentService(
             _mockEnvironmentRepository.Object,
             _mockCreateValidator.Object,
-            _mockUpdateValidator.Object);
+            _mockUpdateValidator.Object,
+            _mockEventPublisher.Object);
     }
 
     [Test]
