@@ -3,6 +3,7 @@ using ToggleHub.Application.DTOs.Environment;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Application.Mapping;
 using ToggleHub.Domain.Entities;
+using ToggleHub.Domain.Events;
 using ToggleHub.Domain.Exceptions;
 using ToggleHub.Domain.Repositories;
 using Environment = ToggleHub.Domain.Entities.Environment;
@@ -14,12 +15,14 @@ public class EnvironmentService : IEnvironmentService
     private readonly IValidator<CreateEnvironmentDto> _createValidator;
     private readonly IValidator<UpdateEnvironmentDto> _updateValidator;
     private readonly IEnvironmentRepository _environmentRepository;
+    private readonly IEventPublisher _eventPublisher;
 
-    public EnvironmentService(IEnvironmentRepository environmentRepository, IValidator<CreateEnvironmentDto> createValidator, IValidator<UpdateEnvironmentDto> updateValidator)
+    public EnvironmentService(IEnvironmentRepository environmentRepository, IValidator<CreateEnvironmentDto> createValidator, IValidator<UpdateEnvironmentDto> updateValidator, IEventPublisher eventPublisher)
     {
         _environmentRepository = environmentRepository;
         _createValidator = createValidator;
         _updateValidator = updateValidator;
+        _eventPublisher = eventPublisher;
     }
 
     public async Task<EnvironmentDto> CreateAsync(CreateEnvironmentDto createDto)
@@ -84,7 +87,7 @@ public class EnvironmentService : IEnvironmentService
         return Task.FromResult(values);
     }
 
-    public async Task GenerateEnvironmentsForProjectAsync(int projectId)
+    public async Task GenerateMissingEnvironmentsForProjectAsync(int projectId)
     {
         var environments = new List<Environment>();
         var existingEnvs = (await _environmentRepository.GetAllAsync(projectId))
@@ -102,5 +105,11 @@ public class EnvironmentService : IEnvironmentService
             });
         }
         await _environmentRepository.CreateAsync(environments);
+        var eventMessage = new EnvironmentsAddedToProjectEvent
+        {
+            ProjectId = projectId,
+            Environments = environments
+        };
+        await _eventPublisher.PublishAsync(eventMessage);
     }
 }

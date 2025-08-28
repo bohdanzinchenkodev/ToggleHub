@@ -4,6 +4,7 @@ using ToggleHub.Application.Mapping;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Exceptions;
 using ToggleHub.Domain.Repositories;
+using Environment = ToggleHub.Domain.Entities.Environment;
 
 namespace ToggleHub.Application.Services;
 
@@ -11,63 +12,33 @@ public class ApiKeyService : IApiKeyService
 {
     private readonly IApiKeyGenerator _apiKeyGenerator;
     private readonly IApiKeyRepository _apiKeyRepository;
-    private readonly IEnvironmentRepository _environmentRepository;
+    private readonly IProjectRepository _projectRepository;
 
-    public ApiKeyService(IApiKeyGenerator apiKeyGenerator, IApiKeyRepository apiKeyRepository, IEnvironmentRepository environmentRepository)
+    public ApiKeyService(IApiKeyGenerator apiKeyGenerator, IApiKeyRepository apiKeyRepository, IProjectRepository projectRepository)
     {
         _apiKeyGenerator = apiKeyGenerator;
         _apiKeyRepository = apiKeyRepository;
-        _environmentRepository = environmentRepository;
+        _projectRepository = projectRepository;
     }
-
-    public async Task CreateApiKeyAsync(int projectId, int environmentId, int organizationId)
+    
+    public async Task CreateApiKeysForEnvironmentsAsync(IEnumerable<Environment> environments, int projectId)
     {
-        var apiKey = await PrepareApiKeyEntityAsync(projectId, environmentId, organizationId);
-        await _apiKeyRepository.CreateAsync(apiKey);
-    }
-
-    public async Task CreateApiKeysForProjectAsync(int projectId, int organizationId)
-    {
-        var envs = await _environmentRepository.GetAllAsync(projectId);
+        var project = await _projectRepository.GetByIdAsync(projectId);
+        if (project == null)
+            throw new ApplicationException($"Project with ID {projectId} not found.");
+        
         var apiKeys = new List<ApiKey>();
-        foreach (var env in envs)
+        foreach (var env in environments)
         {
-            var apiKey = await PrepareApiKeyEntityAsync(projectId, env.Id, organizationId);
+            var apiKey = await PrepareApiKeyEntityAsync(env.ProjectId, env.Id, project.OrganizationId);
             apiKeys.Add(apiKey);
         }
         await _apiKeyRepository.CreateAsync(apiKeys);
     }
-
-    public async Task RevokeApiKeyAsync(string key)
-    {
-        var apiKey = await _apiKeyRepository.GetByKeyAsync(key);
-        if (apiKey == null)
-            throw new NotFoundException($"API key '{key}' not found.");
-        
-        apiKey.IsActive = false;
-        await _apiKeyRepository.UpdateAsync(apiKey);
-    }
-
-    public async Task RevokeApiKeysForProjectAsync(int projectId)
-    {
-        var apiKeys = (await _apiKeyRepository.GetByProjectIdAsync(projectId)).ToArray();
-        foreach (var apiKey in apiKeys)
-        {
-            apiKey.IsActive = false;
-        }
-        await _apiKeyRepository.UpdateAsync(apiKeys);
-    }
-
     public async Task<ApiKeyDto?> GetByKeyAsync(string key)
     {
         var apiKey = await _apiKeyRepository.GetByKeyAsync(key);
         return apiKey?.ToDto();
-    }
-
-    public async Task<IEnumerable<ApiKeyDto>> GetByProject(int projectId)
-    {
-        return (await _apiKeyRepository.GetByProjectIdAsync(projectId))
-            .Select(k => k.ToDto());
     }
 
     private async Task<ApiKey> PrepareApiKeyEntityAsync(int projectId, int environmentId, int organizationId)

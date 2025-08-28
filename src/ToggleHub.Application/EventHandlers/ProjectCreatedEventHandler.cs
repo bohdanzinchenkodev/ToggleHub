@@ -19,6 +19,6 @@ public class ProjectCreatedEventHandler : IConsumer<ProjectCreatedEvent>
     public async Task HandleEventAsync(ProjectCreatedEvent eventMessage)
     {
         var project = eventMessage.Project;
-        await _environmentService.GenerateEnvironmentsForProjectAsync(project.Id);
+        await _environmentService.GenerateMissingEnvironmentsForProjectAsync(project.Id);
     }
 }
