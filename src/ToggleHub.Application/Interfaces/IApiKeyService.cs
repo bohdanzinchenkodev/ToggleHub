@@ -8,6 +8,6 @@ public interface IApiKeyService
     Task CreateApiKeysForProjectAsync(int projectId, int organizationId);
     Task RevokeApiKeyAsync(string key);
     Task RevokeApiKeysForProjectAsync(int projectId);
-    Task<ApiKeyDto> GetByKeyAsync(string key);
-    Task<IEnumerable<ApiKeyDto>> GetAllAsync(int? projectId = null);
+    Task<ApiKeyDto?> GetByKeyAsync(string key);
+    Task<IEnumerable<ApiKeyDto>> GetByProject(int projectId);
 }

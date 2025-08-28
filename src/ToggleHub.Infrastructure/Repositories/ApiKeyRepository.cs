@@ -14,4 +14,14 @@ public class ApiKeyRepository : BaseRepository<ApiKey>, IApiKeyRepository
     {
         return await _dbSet.FirstOrDefaultAsync(a => a.Key == key);
     }
+
+    public Task<bool> KeyExistsAsync(string key)
+    {
+        return _dbSet.AnyAsync(a => a.Key == key);
+    }
+
+    public async Task<IEnumerable<ApiKey>> GetByProjectIdAsync(int projectId)
+    {
+        return await _dbSet.Where(a => a.ProjectId == projectId).ToListAsync();
+    }
 }
