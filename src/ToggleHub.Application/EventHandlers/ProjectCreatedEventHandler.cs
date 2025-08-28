@@ -9,22 +9,16 @@ namespace ToggleHub.Application.EventHandlers;
 
 public class ProjectCreatedEventHandler : IConsumer<ProjectCreatedEvent>
 {
-    private readonly IEnvironmentRepository _environmentRepository;
+    private readonly IEnvironmentService _environmentService;
 
-    public ProjectCreatedEventHandler(IEnvironmentRepository environmentRepository)
+    public ProjectCreatedEventHandler(IEnvironmentService environmentService)
     {
-        _environmentRepository = environmentRepository;
+        _environmentService = environmentService;
     }
 
     public async Task HandleEventAsync(ProjectCreatedEvent eventMessage)
     {
         var project = eventMessage.Project;
-        // Create default environment for the new project
-        var environment = new Environment
-        {
-            ProjectId = project.Id,
-            Type = EnvironmentType.Prod
-        };
-        await _environmentRepository.CreateAsync(environment);
+        await _environmentService.GenerateEnvironmentsForProjectAsync(project.Id);
     }
 }

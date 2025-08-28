@@ -20,4 +20,9 @@ public class EnvironmentRepository : BaseRepository<Environment>, IEnvironmentRe
 
         return await query.ToListAsync();
     }
+
+    public Task<bool> EnvironmentExistsAsync(EnvironmentType type, int projectId)
+    {
+        return _dbSet.AnyAsync(e => e.Type == type && e.ProjectId == projectId);
+    }
 }

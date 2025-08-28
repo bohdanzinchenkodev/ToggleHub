@@ -27,6 +27,9 @@ public class EnvironmentService : IEnvironmentService
         var validationResult = await _createValidator.ValidateAsync(createDto);
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
+
+        if (await _environmentRepository.EnvironmentExistsAsync(createDto.Type!.Value, createDto.ProjectId))
+            throw new ApplicationException($"Environment of type {createDto.TypeString} already exists for project");
         
         var environment = createDto.ToEntity();
         environment = await _environmentRepository.CreateAsync(environment);
@@ -79,5 +82,25 @@ public class EnvironmentService : IEnvironmentService
                 Value = (int)e
             });
         return Task.FromResult(values);
+    }
+
+    public async Task GenerateEnvironmentsForProjectAsync(int projectId)
+    {
+        var environments = new List<Environment>();
+        var existingEnvs = (await _environmentRepository.GetAllAsync(projectId))
+            .Select(e => e.Type)
+            .ToHashSet();
+        foreach (EnvironmentType envType in Enum.GetValues(typeof(EnvironmentType)))
+        {
+            if (existingEnvs.Contains(envType))
+                continue;
+            
+            environments.Add(new Environment
+            {
+                Type = envType,
+                ProjectId = projectId
+            });
+        }
+        await _environmentRepository.CreateAsync(environments);
     }
 }
