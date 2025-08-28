@@ -9,6 +9,8 @@ namespace ToggleHub.API.Controllers;
 
 [ApiController]
 [Route("api/organizations/{organizationId:int}/projects/{projectId:int}/environments")]
+//not supposed to be used directly
+[NonController]
 public class EnvironmentController : ControllerBase
 {
     private readonly IEnvironmentService _environmentService;
