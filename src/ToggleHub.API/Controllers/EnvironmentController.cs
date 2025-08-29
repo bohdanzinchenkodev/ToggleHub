@@ -63,11 +63,11 @@ public class EnvironmentController : ControllerBase
         await _environmentService.DeleteAsync(id);
         return NoContent();
     }
-    [HttpGet]
+    /*[HttpGet]
     [Route("/api/environment-types")]
     public async Task<IActionResult> GetEnvironmentTypes()
     {
         var envTypes = await _environmentService.GetEnvironmentTypesAsync();
         return Ok(envTypes);
-    }
+    }*/
 }
