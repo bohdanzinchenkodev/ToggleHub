@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using ToggleHub.Domain;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Repositories;
 using ToggleHub.Infrastructure.Data;
+using ToggleHub.Infrastructure.Extensions;
 
 namespace ToggleHub.Infrastructure.Repositories;
 
@@ -18,7 +20,7 @@ public class ProjectRepository : BaseRepository<Project>, IProjectRepository
             .AnyAsync(o => o.Name.ToLower() == name.ToLower() && (organizationId == 0 || o.OrganizationId == organizationId));
     }
 
-    public async Task<IEnumerable<Project>> GetAllAsync(int? organizationId = null)
+    public async Task<IPagedList<Project>> GetAllAsync(int? organizationId = null, int pageIndex = 0, int pageSize = Int32.MaxValue)
     {
         var query = _dbSet.AsQueryable();
 
@@ -27,6 +29,6 @@ public class ProjectRepository : BaseRepository<Project>, IProjectRepository
             query = query.Where(p => p.OrganizationId == organizationId.Value);
         }
 
-        return await query.ToListAsync();
+        return await query.ToPagedListAsync(pageIndex, pageSize);
     }
 }

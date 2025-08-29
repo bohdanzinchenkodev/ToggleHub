@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using ToggleHub.Domain;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Repositories;
 using ToggleHub.Infrastructure.Data;
+using ToggleHub.Infrastructure.Extensions;
 
 namespace ToggleHub.Infrastructure.Repositories;
 
@@ -22,12 +24,13 @@ public class OrgMemberRepository : BaseRepository<OrgMember>, IOrgMemberReposito
         await _context.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<OrgMember>> GetMembersInOrganizationAsync(int organizationId)
+    public async Task<IPagedList<OrgMember>> GetMembersInOrganizationAsync(int organizationId, int pageIndex = 0, int pageSize = Int32.MaxValue)
     {
         return await _context.OrgMembers
             .Where(om => om.OrganizationId == organizationId)
-            .ToListAsync();
+            .ToPagedListAsync(pageIndex, pageSize);
     }
+    
 
 
     public async Task<bool> IsUserInOrganizationAsync(int organizationId, int userId)

@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using ToggleHub.Domain;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Repositories;
 using ToggleHub.Infrastructure.Data;
+using ToggleHub.Infrastructure.Extensions;
 
 namespace ToggleHub.Infrastructure.Repositories;
 
@@ -21,10 +23,13 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         return await _dbSet.FindAsync(id);
     }
 
-    public virtual async Task<IEnumerable<T>> GetAllAsync()
+    public Task<IPagedList<T>> GetAllAsync(int pageIndex = 0, int pageSize = Int32.MaxValue)
     {
-        return await _dbSet.ToListAsync();
+        return _dbSet
+            .AsNoTracking()
+            .ToPagedListAsync(pageIndex, pageSize);
     }
+    
 
     public virtual async Task<T> CreateAsync(T entity)
     {
