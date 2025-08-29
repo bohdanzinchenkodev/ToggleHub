@@ -10,5 +10,5 @@ public interface IProjectService
     Task<ProjectDto> CreateAsync(CreateProjectDto createProjectDto);
     Task<ProjectDto> UpdateAsync(UpdateProjectDto updateProjectDto);
     Task DeleteAsync(int id);
-    Task<PagedListDto<ProjectDto>> GetAllAsync(int? organizationId = null);
+    Task<PagedListDto<ProjectDto>> GetAllAsync(int? organizationId = null, int pageIndex = 0, int pageSize = int.MaxValue);
 }

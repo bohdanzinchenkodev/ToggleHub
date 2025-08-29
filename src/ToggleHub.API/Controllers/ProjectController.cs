@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ToggleHub.API.Filters;
+using ToggleHub.Application.DTOs;
 using ToggleHub.Application.DTOs.Project;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Constants;
@@ -22,9 +23,9 @@ public class ProjectController : ControllerBase
     
     [HttpGet]
     [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageProjects)]
-    public async Task<IActionResult> GetAll(int organizationId)
+    public async Task<IActionResult> GetAll(int organizationId, [FromQuery] PagingQuery pagingQuery)
     {
-        var result = await _projectService.GetAllAsync(organizationId);
+        var result = await _projectService.GetAllAsync(organizationId, pagingQuery.Page - 1, pagingQuery.PageSize);
         return Ok(result);
     }
 

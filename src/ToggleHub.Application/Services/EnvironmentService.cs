@@ -61,9 +61,9 @@ public class EnvironmentService : IEnvironmentService
         return environment?.ToDto();
     }
 
-    public async Task<PagedListDto<EnvironmentDto>> GetAllAsync(int? projectId = null)
+    public async Task<PagedListDto<EnvironmentDto>> GetAllAsync(int? projectId = null, int pageIndex = 0, int pageSize = int.MaxValue)
     {
-        var entities = await _environmentRepository.GetAllAsync(projectId);
+        var entities = await _environmentRepository.GetAllAsync(projectId, pageIndex, pageSize);
         var data = entities.Select(e => e.ToDto());
         return new PagedListDto<EnvironmentDto>(data, entities.TotalCount, entities.PageIndex, entities.PageSize);
     }

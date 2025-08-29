@@ -48,9 +48,9 @@ public class OrgMemberService : IOrgMemberService
         await _orgMemberRepository.DeleteOrgMember(orgMember);
     }
 
-    public async Task<PagedListDto<OrgMemberDto>> GetMembersInOrganizationAsync(int organizationId)
+    public async Task<PagedListDto<OrgMemberDto>> GetMembersInOrganizationAsync(int organizationId, int pageIndex = 0, int pageSize = int.MaxValue)
     {
-        var orgMembers = await _orgMemberRepository.GetMembersInOrganizationAsync(organizationId);
+        var orgMembers = await _orgMemberRepository.GetMembersInOrganizationAsync(organizationId, pageIndex, pageSize);
         var userIds = orgMembers
             .Select(om => om.UserId)
             .ToList();

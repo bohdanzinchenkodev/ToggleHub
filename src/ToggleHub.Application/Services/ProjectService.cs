@@ -112,9 +112,9 @@ public class ProjectService : IProjectService
         await _projectRepository.DeleteAsync(id);
     }
 
-    public async Task<PagedListDto<ProjectDto>> GetAllAsync(int? organizationId = null)
+    public async Task<PagedListDto<ProjectDto>> GetAllAsync(int? organizationId = null, int pageIndex = 0, int pageSize = int.MaxValue)
     {
-        var projects = await _projectRepository.GetAllAsync(organizationId);
+        var projects = await _projectRepository.GetAllAsync(organizationId, pageIndex, pageSize);
         var data = projects.Select(p => p.ToDto());
         return new PagedListDto<ProjectDto>(data, projects.TotalCount, projects.PageIndex, projects.PageSize);
     }

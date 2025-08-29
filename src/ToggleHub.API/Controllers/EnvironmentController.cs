@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ToggleHub.API.Filters;
+using ToggleHub.Application.DTOs;
 using ToggleHub.Application.DTOs.Environment;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Constants;
@@ -22,9 +23,9 @@ public class EnvironmentController : ControllerBase
 
     [HttpGet]
     [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageProjects)]
-    public async Task<IActionResult> GetAll(int organizationId, int projectId)
+    public async Task<IActionResult> GetAll(int organizationId, int projectId, [FromQuery] PagingQuery pagingQuery)
     {
-        var result = await _environmentService.GetAllAsync(projectId);
+        var result = await _environmentService.GetAllAsync(projectId, pagingQuery.Page - 1, pagingQuery.PageSize);
         return Ok(result);
     }
 
