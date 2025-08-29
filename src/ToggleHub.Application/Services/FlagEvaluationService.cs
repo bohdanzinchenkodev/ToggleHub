@@ -13,12 +13,18 @@ public class FlagEvaluationService : IFlagEvaluationService
     private readonly IConditionEvaluator _conditionEvaluator;
     private readonly IFlagRepository _flagRepository;
     private readonly IValidator<FlagEvaluationRequest> _requestValidator;
-    public FlagEvaluationService(IBucketingService bucketingService, IConditionEvaluator conditionEvaluator, IFlagRepository flagRepository, IValidator<FlagEvaluationRequest> requestValidator)
+    private readonly IApiKeyContext _apiKeyContext;
+    private readonly IProjectRepository _projectRepository;
+    private readonly IEnvironmentRepository _environmentRepository;
+    public FlagEvaluationService(IBucketingService bucketingService, IConditionEvaluator conditionEvaluator, IFlagRepository flagRepository, IValidator<FlagEvaluationRequest> requestValidator, IApiKeyContext apiKeyContext, IProjectRepository projectRepository, IEnvironmentRepository environmentRepository)
     {
         _bucketingService = bucketingService;
         _conditionEvaluator = conditionEvaluator;
         _flagRepository = flagRepository;
         _requestValidator = requestValidator;
+        _apiKeyContext = apiKeyContext;
+        _projectRepository = projectRepository;
+        _environmentRepository = environmentRepository;
     }
 
     public async Task<FlagEvaluationResult> EvaluateAsync(FlagEvaluationRequest request)
@@ -27,7 +33,19 @@ public class FlagEvaluationService : IFlagEvaluationService
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
         
-        var flag = await _flagRepository.GetFlagByKeyAsync(request.FlagKey, request.EnvironmentId, request.ProjectId);
+        var organizationId = _apiKeyContext.GetCurrentOrgId();
+        if (organizationId == null)
+            throw new UnauthorizedAccessException("API key is not associated with any organization.");
+
+        var environmentId = _apiKeyContext.GetCurrentEnvironmentId();
+        if (environmentId == null)
+            throw new UnauthorizedAccessException("API key is not authorized for the specified environment.");
+        
+        var projectId = _apiKeyContext.GetCurrentProjectId();
+        if (projectId == null)
+            throw new UnauthorizedAccessException("API key is not authorized for the specified project.");
+        
+        var flag = await _flagRepository.GetFlagByKeyAsync(request.FlagKey, environmentId.Value, projectId.Value);
         if (flag == null)
             throw new NotFoundException($"Flag not found.");
 
@@ -93,6 +111,5 @@ public class FlagEvaluationService : IFlagEvaluationService
             Value = flag.DefaultValueOffRaw,
             Reason = "no-ruleset-matched"
         };
-
     }
 }

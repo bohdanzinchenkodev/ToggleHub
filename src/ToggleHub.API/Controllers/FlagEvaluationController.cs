@@ -12,12 +12,10 @@ namespace ToggleHub.API.Controllers;
 public class FlagEvaluationController : ControllerBase
 {
     private readonly IFlagEvaluationService _flagEvaluationService;
-    private readonly IApiKeyContext _apiKeyContext;
 
-    public FlagEvaluationController(IFlagEvaluationService flagEvaluationService, IApiKeyContext apiKeyContext)
+    public FlagEvaluationController(IFlagEvaluationService flagEvaluationService)
     {
         _flagEvaluationService = flagEvaluationService;
-        _apiKeyContext = apiKeyContext;
     }
 
     [HttpPost("evaluate")]
