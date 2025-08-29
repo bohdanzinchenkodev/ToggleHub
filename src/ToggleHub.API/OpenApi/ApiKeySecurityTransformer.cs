@@ -1,5 +1,8 @@
-using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.OpenApi;
+using Microsoft.OpenApi.Models;
+using ToggleHub.Infrastructure.Constants;
+
+namespace ToggleHub.API.OpenApi;
 
 public class ApiKeySecurityTransformer : IOpenApiDocumentTransformer
 {
@@ -7,13 +10,13 @@ public class ApiKeySecurityTransformer : IOpenApiDocumentTransformer
     {
         // Define security scheme
         document.Components ??= new OpenApiComponents();
-        document.Components.SecuritySchemes["ApiKey"] = new OpenApiSecurityScheme
+        document.Components.SecuritySchemes[AuthConstants.AuthSchemes.ApiKey] = new OpenApiSecurityScheme
         {
             Description = "API Key needed to access endpoints. Use: `Bearer {api_key}`",
             In = ParameterLocation.Header,
             Name = "Authorization",
             Type = SecuritySchemeType.ApiKey,
-            Scheme = "ApiKey"
+            Scheme = AuthConstants.AuthSchemes.ApiKey
         };
 
         // Apply requirement globally
@@ -25,7 +28,7 @@ public class ApiKeySecurityTransformer : IOpenApiDocumentTransformer
                     Reference = new OpenApiReference
                     {
                         Type = ReferenceType.SecurityScheme,
-                        Id = "ApiKey"
+                        Id = AuthConstants.AuthSchemes.ApiKey
                     }
                 },
                 Array.Empty<string>()

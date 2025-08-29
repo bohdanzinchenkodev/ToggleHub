@@ -1,7 +1,8 @@
 using ToggleHub.API.Extensions;
 using ToggleHub.API.Middleware;
-using ToggleHub.Application;
-using ToggleHub.Infrastructure;
+using ToggleHub.API.OpenApi;
+using ToggleHub.Application.Extensions;
+using ToggleHub.Infrastructure.Extensions;
 using ToggleHub.Infrastructure.Identity.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -2,15 +2,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ToggleHub.Application.Interfaces;
-using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Repositories;
 using ToggleHub.Infrastructure.Data;
 using ToggleHub.Infrastructure.Repositories;
 using ToggleHub.Infrastructure.Services;
 
-namespace ToggleHub.Infrastructure;
+namespace ToggleHub.Infrastructure.Extensions;
 
-public static class DependencyInjection
+public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {

@@ -4,10 +4,9 @@ using ToggleHub.Application.EventHandlers;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Application.Services;
 
+namespace ToggleHub.Application.Extensions;
 
-namespace ToggleHub.Application;
-
-public static class DependencyInjection
+public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
@@ -34,10 +33,10 @@ public static class DependencyInjection
 
         return services;
     }
-    
-    public static IServiceCollection RegisterEventHandlers(this IServiceCollection services)
+
+    private static IServiceCollection RegisterEventHandlers(this IServiceCollection services)
     {
-        var assembly = typeof(DependencyInjection).Assembly;
+        var assembly = typeof(IApplicationMaker).Assembly;
         var eventHandlerInterfaceType = typeof(IConsumer<>);
         var eventHandlerTypes = assembly.GetTypes()
             .Where(t => !t.IsAbstract && !t.IsInterface)
