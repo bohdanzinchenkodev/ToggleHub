@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Repositories;
 using ToggleHub.Infrastructure.Data;
 using ToggleHub.Infrastructure.Repositories;
+using ToggleHub.Infrastructure.Services;
 
 namespace ToggleHub.Infrastructure;
 
@@ -29,6 +31,8 @@ public static class DependencyInjection
         services.AddScoped<IRuleSetRepository, RuleSetRepository>();
         services.AddScoped<IRuleConditionRepository, RuleConditionRepository>();
         services.AddScoped<IRuleConditionItemRepository, RuleConditionItemRepository>();
+        
+        services.AddScoped<IApiKeyContext, ApiKeyContext>();
 
         return services;
     }

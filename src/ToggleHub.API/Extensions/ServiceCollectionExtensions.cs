@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
-using ToggleHub.API.Constants;
 using ToggleHub.API.Middleware;
+using ToggleHub.Infrastructure.Constants;
 
 namespace ToggleHub.API.Extensions;
 

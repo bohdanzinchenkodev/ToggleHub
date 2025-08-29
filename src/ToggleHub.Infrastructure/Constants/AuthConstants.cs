@@ -1,4 +1,4 @@
-namespace ToggleHub.API.Constants;
+namespace ToggleHub.Infrastructure.Constants;
 
 public static class AuthConstants
 {

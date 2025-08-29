@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Http;
 using ToggleHub.Application.Interfaces;
+using ToggleHub.Infrastructure.Constants;
 
-namespace ToggleHub.Application.Services;
+namespace ToggleHub.Infrastructure.Services;
 
 public class ApiKeyContext : IApiKeyContext
 {
@@ -23,7 +24,11 @@ public class ApiKeyContext : IApiKeyContext
 
     private int? TryParseClaim(string type)
     {
-        var value = _httpContextAccessor.HttpContext?.User?.FindFirst(type)?.Value;
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext?.User?.Identity?.AuthenticationType != AuthConstants.AuthSchemes.ApiKey)
+            return null;
+        
+        var value = httpContext?.User?.FindFirst(type)?.Value;
         return int.TryParse(value, out var id) ? id : null;
     }
 }

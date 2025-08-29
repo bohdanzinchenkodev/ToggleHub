@@ -6,14 +6,18 @@ using ToggleHub.Infrastructure.Identity.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer<ApiKeySecurityTransformer>();
+});
+
+
 builder.Services.AddControllers();
+
+//ToggleHub 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddAppIdentity(builder.Configuration);
 builder.Services.AddApiKeyAuth();
-
 builder.Services.AddApplication();
 
 builder.Services.AddProblemDetails();
@@ -31,7 +35,6 @@ if (app.Environment.IsDevelopment())
         x.SwaggerEndpoint("/openapi/v1.json", "ToggleHub API V1");
     });
 }
-/*app.UseMiddleware<ExceptionHandlingMiddleware>();*/
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
 

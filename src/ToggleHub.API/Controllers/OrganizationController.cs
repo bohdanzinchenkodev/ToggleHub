@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ToggleHub.API.Filters;
 using ToggleHub.Application.DTOs;
@@ -5,18 +7,23 @@ using ToggleHub.Application.DTOs.Organization;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Application.Services;
 using ToggleHub.Domain.Constants;
+using ToggleHub.Infrastructure.Constants;
 
 namespace ToggleHub.API.Controllers;
 
 [ApiController]
 [Route("api/organizations")]
+[Authorize(Policy = AuthConstants.AuthPolicies.RequireIdentity)]
+
 public class OrganizationController : ControllerBase
 {
     private readonly IOrganizationService _organizationService;
+    private readonly IApiKeyContext _apiKeyContext;
 
-    public OrganizationController(IOrganizationService organizationService)
+    public OrganizationController(IOrganizationService organizationService, IApiKeyContext apiKeyContext)
     {
         _organizationService = organizationService;
+        _apiKeyContext = apiKeyContext;
     }
     [HttpPost]
     public async Task<IActionResult> Create(CreateOrganizationDto organizationDto)
