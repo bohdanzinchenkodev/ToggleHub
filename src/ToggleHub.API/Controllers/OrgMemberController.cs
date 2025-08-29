@@ -1,13 +1,16 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ToggleHub.API.Filters;
 using ToggleHub.Application.DTOs.Organization;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Constants;
+using ToggleHub.Infrastructure.Constants;
 
 namespace ToggleHub.API.Controllers;
 
 [ApiController]
 [Route("api/organizations/{organizationId:int}/members")]
+[Authorize(Policy = AuthConstants.AuthPolicies.RequireIdentity)]
 public class OrgMemberController : ControllerBase
 {
     private readonly IOrgMemberService _organizationService;

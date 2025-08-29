@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ToggleHub.Application.DTOs.Identity;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Constants;
+using ToggleHub.Infrastructure.Constants;
 
 namespace ToggleHub.API.Controllers;
 
@@ -32,6 +33,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("logout")]
+    [Authorize(Policy = AuthConstants.AuthPolicies.RequireIdentity)]
     public async Task<IActionResult> Logout()
     {
         await _identityService.LogoutAsync();
@@ -40,7 +42,7 @@ public class AuthController : ControllerBase
 
     [HttpGet]
     [Route("/api/user/me")]
-    [Authorize(Roles = UserConstants.UserRoles.User)]
+    [Authorize(Policy = AuthConstants.AuthPolicies.RequireIdentity)]
     public async Task<IActionResult> GetUser()
     {
         var user = await _identityService.GetCurrentUserAsync();

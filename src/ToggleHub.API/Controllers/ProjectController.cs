@@ -1,13 +1,16 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ToggleHub.API.Filters;
 using ToggleHub.Application.DTOs.Project;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Constants;
+using ToggleHub.Infrastructure.Constants;
 
 namespace ToggleHub.API.Controllers;
 
 [ApiController]
 [Route("api/organizations/{organizationId:int}/projects")]
+[Authorize(Policy = AuthConstants.AuthPolicies.RequireIdentity)]
 public class ProjectController : ControllerBase
 {
     private readonly IProjectService _projectService;

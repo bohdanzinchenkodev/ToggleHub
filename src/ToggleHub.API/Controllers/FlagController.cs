@@ -1,14 +1,17 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ToggleHub.API.Filters;
 using ToggleHub.Application.DTOs.Flag.Create;
 using ToggleHub.Application.DTOs.Flag.Update;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Constants;
+using ToggleHub.Infrastructure.Constants;
 
 namespace ToggleHub.API.Controllers;
 
 [ApiController]
 [Route("api/organizations/{organizationId:int}/projects/{projectId:int}/environments{environmentId:int}/flags")]
+[Authorize(Policy = AuthConstants.AuthPolicies.RequireIdentity)]
 public class FlagController : ControllerBase
 {
     private readonly IFlagService _flagService;
