@@ -1,4 +1,5 @@
 using FluentValidation;
+using ToggleHub.Application.DTOs;
 using ToggleHub.Application.DTOs.Project;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Application.Mapping;
@@ -111,9 +112,10 @@ public class ProjectService : IProjectService
         await _projectRepository.DeleteAsync(id);
     }
 
-    public async Task<IEnumerable<ProjectDto>> GetAllAsync(int? organizationId = null)
+    public async Task<PagedListDto<ProjectDto>> GetAllAsync(int? organizationId = null)
     {
         var projects = await _projectRepository.GetAllAsync(organizationId);
-        return projects.Select(p => p.ToDto());
+        var data = projects.Select(p => p.ToDto());
+        return new PagedListDto<ProjectDto>(data, projects.TotalCount, projects.PageIndex, projects.PageSize);
     }
 }

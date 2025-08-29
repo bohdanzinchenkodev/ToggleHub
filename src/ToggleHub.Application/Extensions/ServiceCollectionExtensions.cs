@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IFlagService, FlagService>();
         services.AddScoped<IOrganizationPermissionService, OrganizationPermissionService>();
         services.AddScoped<IApiKeyService, ApiKeyService>();
+        services.AddScoped<IOrgMemberService, OrgMemberService>();
 
         services.AddScoped<IFlagEvaluationService, FlagEvaluationService>();
         services.AddScoped<IBucketingService, Sha256BucketingService>();

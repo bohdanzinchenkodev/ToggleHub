@@ -1,3 +1,4 @@
+using ToggleHub.Application.DTOs;
 using ToggleHub.Application.DTOs.Project;
 
 namespace ToggleHub.Application.Interfaces;
@@ -9,5 +10,5 @@ public interface IProjectService
     Task<ProjectDto> CreateAsync(CreateProjectDto createProjectDto);
     Task<ProjectDto> UpdateAsync(UpdateProjectDto updateProjectDto);
     Task DeleteAsync(int id);
-    Task<IEnumerable<ProjectDto>> GetAllAsync(int? organizationId = null);
+    Task<PagedListDto<ProjectDto>> GetAllAsync(int? organizationId = null);
 }

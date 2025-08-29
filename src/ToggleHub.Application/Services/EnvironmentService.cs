@@ -1,4 +1,5 @@
 using FluentValidation;
+using ToggleHub.Application.DTOs;
 using ToggleHub.Application.DTOs.Environment;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Application.Mapping;
@@ -60,10 +61,11 @@ public class EnvironmentService : IEnvironmentService
         return environment?.ToDto();
     }
 
-    public async Task<IEnumerable<EnvironmentDto>> GetAllAsync(int? projectId = null)
+    public async Task<PagedListDto<EnvironmentDto>> GetAllAsync(int? projectId = null)
     {
         var entities = await _environmentRepository.GetAllAsync(projectId);
-        return entities.Select(e => e.ToDto());
+        var data = entities.Select(e => e.ToDto());
+        return new PagedListDto<EnvironmentDto>(data, entities.TotalCount, entities.PageIndex, entities.PageSize);
     }
 
     public async Task DeleteAsync(int id)

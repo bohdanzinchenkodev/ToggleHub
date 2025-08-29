@@ -30,14 +30,14 @@ public class OrgMemberController : ControllerBase
         
         return Ok(result);
     }
-    [HttpGet("members")]
+    [HttpGet]
     [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageMembers)]
     public async Task<IActionResult> GetOrgMembers(int organizationId)
     {
         var result = await _organizationService.GetMembersInOrganizationAsync(organizationId);
         return Ok(result);
     }
-    [HttpPost("members")]
+    [HttpPost]
     [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageMembers)]
     public async Task<IActionResult> AddOrgMember(int organizationId, [FromBody] AddUserToOrganizationDto dto)
     {

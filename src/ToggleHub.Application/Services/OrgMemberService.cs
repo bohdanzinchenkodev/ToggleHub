@@ -1,3 +1,4 @@
+using ToggleHub.Application.DTOs;
 using ToggleHub.Application.DTOs.Organization;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Entities;
@@ -47,10 +48,9 @@ public class OrgMemberService : IOrgMemberService
         await _orgMemberRepository.DeleteOrgMember(orgMember);
     }
 
-    public async Task<IEnumerable<OrgMemberDto>> GetMembersInOrganizationAsync(int organizationId)
+    public async Task<PagedListDto<OrgMemberDto>> GetMembersInOrganizationAsync(int organizationId)
     {
-        var orgMembers = (await _orgMemberRepository.GetMembersInOrganizationAsync(organizationId))
-            .ToArray();
+        var orgMembers = await _orgMemberRepository.GetMembersInOrganizationAsync(organizationId);
         var userIds = orgMembers
             .Select(om => om.UserId)
             .ToList();
@@ -60,19 +60,17 @@ public class OrgMemberService : IOrgMemberService
         var orgMemberDtos = new List<OrgMemberDto>();
         foreach (var orgMember in orgMembers)
         {
-            if (!users.TryGetValue(orgMember.UserId, out var user)) 
-                continue;
             var orgMemberDto = new OrgMemberDto
             {
                 Id = orgMember.Id,
-                User = user,
+                User = users[orgMember.UserId],
                 OrganizationId = orgMember.OrganizationId,
                 OrganizationRole = orgMember.Role
             };
             orgMemberDtos.Add(orgMemberDto);
         }
             
-        return orgMemberDtos;
+        return new PagedListDto<OrgMemberDto>(orgMemberDtos, orgMembers.TotalCount, orgMembers.PageIndex, orgMembers.PageSize);
     }
 
     public async Task<OrgMemberDto?> GetOrgMemberAsync(int organizationId, int userId)
