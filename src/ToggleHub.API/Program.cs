@@ -20,6 +20,8 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddAppIdentity(builder.Configuration);
 builder.Services.AddApiKeyAuth();
 builder.Services.AddApplication();
+builder.Services.AddMemoryCache();
+
 
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
