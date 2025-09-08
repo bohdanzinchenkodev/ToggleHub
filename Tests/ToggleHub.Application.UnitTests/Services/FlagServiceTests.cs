@@ -19,6 +19,7 @@ public class FlagServiceTests
     private Mock<IFlagRepository> _mockFlagRepository;
     private Mock<IEnvironmentRepository> _mockEnvironmentRepository;
     private Mock<IProjectRepository> _mockProjectRepository;
+    private Mock<IEventPublisher> _mockEventPublisher;
     private FlagService _flagService;
 
     [SetUp]
@@ -29,13 +30,15 @@ public class FlagServiceTests
         _mockFlagRepository = new Mock<IFlagRepository>();
         _mockEnvironmentRepository = new Mock<IEnvironmentRepository>();
         _mockProjectRepository = new Mock<IProjectRepository>();
+        _mockEventPublisher = new Mock<IEventPublisher>();
 
         _flagService = new FlagService(
             _mockCreateValidator.Object,
             _mockFlagRepository.Object,
             _mockEnvironmentRepository.Object,
             _mockProjectRepository.Object,
-            _mockUpdateValidator.Object);
+            _mockUpdateValidator.Object,
+            _mockEventPublisher.Object);
     }
 
     [Test]
