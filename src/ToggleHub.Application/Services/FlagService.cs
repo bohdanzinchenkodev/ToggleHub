@@ -7,6 +7,7 @@ using ToggleHub.Application.Helpers;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Application.Mapping;
 using ToggleHub.Domain.Entities;
+using ToggleHub.Domain.Events;
 using ToggleHub.Domain.Exceptions;
 using ToggleHub.Domain.Repositories;
 
@@ -19,14 +20,16 @@ public class FlagService : IFlagService
     private readonly IFlagRepository _flagRepository;
     private readonly IEnvironmentRepository _environmentRepository;
     private readonly IProjectRepository _projectRepository;
+    private readonly IEventPublisher _eventPublisher;
 
-    public FlagService(IValidator<CreateFlagDto> createValidator, IFlagRepository flagRepository, IEnvironmentRepository environmentRepository, IProjectRepository projectRepository, IValidator<UpdateFlagDto> updateValidator)
+    public FlagService(IValidator<CreateFlagDto> createValidator, IFlagRepository flagRepository, IEnvironmentRepository environmentRepository, IProjectRepository projectRepository, IValidator<UpdateFlagDto> updateValidator, IEventPublisher eventPublisher)
     {
         _createValidator = createValidator;
         _flagRepository = flagRepository;
         _environmentRepository = environmentRepository;
         _projectRepository = projectRepository;
         _updateValidator = updateValidator;
+        _eventPublisher = eventPublisher;
     }
 
     public async Task<FlagDto> CreateAsync(CreateFlagDto createDto)
@@ -82,6 +85,13 @@ public class FlagService : IFlagService
         ReconcileRuleSets(flag, updateDto);
 
         await _flagRepository.UpdateAsync(flag);
+        
+        var eventMessage = new FlagUpdatedEvent
+        {
+            Flag = flag
+        };
+        await _eventPublisher.PublishAsync(eventMessage);
+        
         return flag.ToDto();
     }
 
@@ -90,6 +100,12 @@ public class FlagService : IFlagService
         var flag = await _flagRepository.GetByIdAsync(id);
         if (flag == null)
             throw new NotFoundException($"Flag with ID {id} not found.");
+        
+        var eventMessage = new FlagDeletedEvent
+        {
+            Flag = flag
+        };
+        await _eventPublisher.PublishAsync(eventMessage);
 
         await _flagRepository.DeleteAsync(flag.Id);
     }
