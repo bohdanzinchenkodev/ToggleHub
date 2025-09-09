@@ -16,6 +16,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToggleHub.Infrastructure", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToggleHub.Application.UnitTests", "Tests\ToggleHub.Application.UnitTests\ToggleHub.Application.UnitTests.csproj", "{6FB8ADEB-8BAD-4A97-A9FD-B803F44C66BC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ToggleHub.Web.React", "ToggleHub.Web.React", "{46F1EA06-A1D3-4CD8-B234-14CBC9D7D14F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,5 +56,6 @@ Global
 		{B331D7EB-E0C2-455B-B5A6-410104D9ECFC} = {0090A787-F379-4392-A4A9-4269E95C1190}
 		{9A40E7A3-234F-454D-962D-EC2CBC2C620D} = {0090A787-F379-4392-A4A9-4269E95C1190}
 		{6FB8ADEB-8BAD-4A97-A9FD-B803F44C66BC} = {B675A181-815C-459E-8680-179F6B97D414}
+		{46F1EA06-A1D3-4CD8-B234-14CBC9D7D14F} = {0090A787-F379-4392-A4A9-4269E95C1190}
 	EndGlobalSection
 EndGlobal
