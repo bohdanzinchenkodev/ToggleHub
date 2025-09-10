@@ -1,24 +1,26 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
-import {Button} from "@mui/material";
+import Welcome from "./pages/Welcome/Welcome.jsx";
+import {
+    Route,
+    Routes
+} from "react-router";
+import Home from "./pages/Home.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-     <Button>Pizda</Button>
-    </>
+    <Routes>
+        <Route index element={
+            <ProtectedRoute>
+                <Home />
+            </ProtectedRoute>
+        } />
+        <Route path="Welcome" element={<Welcome />} />
+
+    </Routes>
   )
 }
 
