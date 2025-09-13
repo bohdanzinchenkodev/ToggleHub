@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useState} from "react";
 import {
 	Box,
 	Card,
@@ -19,7 +19,7 @@ import {
 	Email,
 	Lock
 } from "@mui/icons-material";
-import {useGetUserQuery, useLoginMutation} from "../redux/slices/apiSlice.js";
+import {useLoginMutation} from "../redux/slices/apiSlice.js";
 import {useNavigate} from "react-router";
 
 const Login = () => {

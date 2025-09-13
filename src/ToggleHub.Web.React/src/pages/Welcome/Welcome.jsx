@@ -34,21 +34,6 @@ const Welcome = () => {
 
 
 					  <div className="relative flex flex-col items-center w-96">
-						  {/* Lamp fixture
-						  <div className="absolute left-1/2 -translate-x-1/2 w-36 h-6 rounded-md bg-gray-900 shadow-lg z-30" />
-
-						   Gradient light glow
-						  <div
-							  className={`absolute z-20 top-8 left-1/2 -translate-x-1/2 w-72 h-72 rounded-full pointer-events-none ease-in-out ${
-								  switchedOn ? "opacity-60 scale-100" : "opacity-0 scale-75"
-							  }`}
-							  style={{
-								  background: "radial-gradient(circle, rgba(255,255,200,0.8) 0%, rgba(255,255,200,0.05) 70%, transparent 100%)",
-							  }}
-						  />*/}
-
-
-						  {/* Main image */}
 						  <img
 							  src={rumblingImage}
 							  alt="toggle image"

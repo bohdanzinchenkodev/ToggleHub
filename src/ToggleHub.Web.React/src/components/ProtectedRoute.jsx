@@ -3,7 +3,7 @@ import {Navigate} from "react-router";
 import {useGetUserQuery} from "../redux/slices/apiSlice.js";
 
 const ProtectedRoute = ({ children }) => {
-	const { data: user, isError, error, isLoading } = useGetUserQuery();
+	const { data: user, isLoading } = useGetUserQuery();
 	if (isLoading)
 		return <p>Loading...</p>;
 
