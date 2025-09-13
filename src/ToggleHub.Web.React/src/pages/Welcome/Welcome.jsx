@@ -5,9 +5,11 @@ import rumblingOff from "../../assets/rumbling_off.png";
 import rumblingOn from "../../assets/rumbling_on.jpg";
 import {useState} from "react";
 import {Button} from "@mui/material";
+import {useNavigate} from "react-router";
 
 const Welcome = () => {
 	const [switchedOn, setSwitchedOn] = useState(false);
+	const navigate = useNavigate();
 
 	const switchImage = switchedOn ? switchOn : switchOff;
 	const rumblingImage = switchedOn ? rumblingOn : rumblingOff;
@@ -59,8 +61,8 @@ const Welcome = () => {
 					  </div>
 				  </div>
 				  <div className="flex flex-col items-center justify-center">
-					  <Button variant="outlined" sx={{ width: '200px', height: '48px', mb: 2 }}>Sign in</Button>
-					  <Button variant="contained" sx={{ width: '200px', height: '48px' }}>Sign up</Button>
+					  <Button onClick={() => navigate("/login")} variant="outlined" sx={{ width: '200px', height: '48px', mb: 2 }}>Sign in</Button>
+					  <Button onClick={() => navigate("/register")} variant="contained" sx={{ width: '200px', height: '48px' }}>Sign up</Button>
 				  </div>
 			  </div>
 		  </div>

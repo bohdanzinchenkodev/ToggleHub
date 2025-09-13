@@ -7,9 +7,10 @@ import {
 } from "react-router";
 import Home from "./pages/Home.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <Routes>
@@ -18,8 +19,9 @@ function App() {
                 <Home />
             </ProtectedRoute>
         } />
-        <Route path="Welcome" element={<Welcome />} />
-
+        <Route path="welcome" element={<Welcome />} />
+        <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
     </Routes>
   )
 }

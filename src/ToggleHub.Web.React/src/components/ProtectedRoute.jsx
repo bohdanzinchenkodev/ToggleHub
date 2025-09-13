@@ -1,14 +1,14 @@
 import React from "react";
-import {useAuth} from "../hooks/useAuth.js";
 import {Navigate} from "react-router";
+import {useGetUserQuery} from "../redux/slices/apiSlice.js";
 
 const ProtectedRoute = ({ children }) => {
-	const {user, loading} = useAuth();
-	if (loading) return <p>Loading...</p>;
+	const { data: user, isError, error, isLoading } = useGetUserQuery();
+	if (isLoading)
+		return <p>Loading...</p>;
 
-	if (!user) {
+	if (!user)
 		return <Navigate to="/welcome" replace />;
-	}
 
 	return children;
 }
