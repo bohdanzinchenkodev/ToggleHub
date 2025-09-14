@@ -8,6 +8,7 @@ import Home from "./pages/Home.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
+import Layout from "./components/layouts/Layout.jsx";
 
 function App() {
 
@@ -15,12 +16,22 @@ function App() {
     <Routes>
         <Route index element={
             <ProtectedRoute>
-                <Home />
+                <Layout>
+                    <Home />
+                </Layout>
             </ProtectedRoute>
         } />
-        <Route path="welcome" element={<Welcome />} />
-        <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
+        <Route path="welcome" element={
+            <Layout>
+                <Welcome />
+            </Layout>
+        } />
+        <Route path="login" element={<Layout>
+            <Login />
+        </Layout>} />
+        <Route path="register" element={<Layout>
+            <Register />
+        </Layout>} />
     </Routes>
   )
 }
