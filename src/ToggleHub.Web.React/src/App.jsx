@@ -9,6 +9,8 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Layout from "./components/layouts/Layout.jsx";
+import OrganizationsList from "./pages/OrganizationsList.jsx";
+import Organization from "./pages/Organization.jsx";
 
 function App() {
 
@@ -17,7 +19,14 @@ function App() {
         <Route index element={
             <ProtectedRoute>
                 <Layout>
-                    <Home />
+                    <OrganizationsList />
+                </Layout>
+            </ProtectedRoute>
+        } />
+        <Route path="organizations/:slug" element={
+            <ProtectedRoute>
+                <Layout>
+                    <Organization />
                 </Layout>
             </ProtectedRoute>
         } />

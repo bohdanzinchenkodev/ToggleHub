@@ -24,7 +24,17 @@ export const api = createApi({
 				body,
 			}),
 		}),
+		getOrganizationsByCurrentUser: builder.query({
+			query: () => 'user/me/organizations',
+		}),
+		createOrganization: builder.mutation({
+			query: (body) => ({
+				url: 'organizations',
+				method: 'POST',
+				body,
+			}),
+		}),
 	}),
 });
 
-export const { useGetUserQuery, useLoginMutation, useRegisterMutation } = api;
+export const { useGetUserQuery, useLoginMutation, useRegisterMutation, useGetOrganizationsByCurrentUserQuery, useCreateOrganizationMutation } = api;
