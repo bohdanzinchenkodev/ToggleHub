@@ -1,4 +1,5 @@
 using FluentValidation;
+using ToggleHub.Application.DTOs;
 using ToggleHub.Application.DTOs.Organization;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Application.Mapping;
@@ -13,13 +14,17 @@ public class OrganizationService : IOrganizationService
     private readonly IValidator<CreateOrganizationDto> _createValidator;
     private readonly IValidator<UpdateOrganizationDto> _updateValidator;
     private readonly IOrganizationRepository _organizationRepository;
+    private readonly IOrgMemberRepository _orgMemberRepository;
+    private readonly IWorkContext _workContext;
 
-    public OrganizationService(IOrganizationRepository organizationRepository, IValidator<CreateOrganizationDto> createValidator, ISlugGenerator slugGenerator, IValidator<UpdateOrganizationDto> updateValidator, IOrganizationPermissionService organizationPermissionService, IWorkContext workContext) 
+    public OrganizationService(IOrganizationRepository organizationRepository, IValidator<CreateOrganizationDto> createValidator, ISlugGenerator slugGenerator, IValidator<UpdateOrganizationDto> updateValidator, IOrganizationPermissionService organizationPermissionService, IWorkContext workContext, IOrgMemberRepository orgMemberRepository) 
     {
         _organizationRepository = organizationRepository;
         _createValidator = createValidator;
         _slugGenerator = slugGenerator;
         _updateValidator = updateValidator;
+        _workContext = workContext;
+        _orgMemberRepository = orgMemberRepository;
     }
 
     public async Task<OrganizationDto> CreateAsync(CreateOrganizationDto createDto)
@@ -36,6 +41,17 @@ public class OrganizationService : IOrganizationService
         entity.Slug = await _slugGenerator.GenerateAsync<Organization>(entity.Name);
         entity.CreatedAt = DateTime.UtcNow;
         entity = await _organizationRepository.CreateAsync(entity);
+        
+        // Assign the current user as an owner of the new organization
+        var userId = _workContext.GetCurrentUserId() ?? throw new UnauthorizedAccessException();
+        var orgMember = new OrgMember
+        {
+            OrganizationId = entity.Id,
+            UserId = userId,
+            Role = OrgMemberRole.Owner
+        };
+        await _orgMemberRepository.AddOrgMemberAsync(orgMember);
+        
         var dto = entity.ToDto();
         return dto;
     }
@@ -87,5 +103,18 @@ public class OrganizationService : IOrganizationService
     
         await _organizationRepository.DeleteAsync(id);
     }
-    
+
+    public async Task<PagedListDto<OrganizationDto>> GetOrganizationsByUserIdAsync(int userId, int pageIndex = 0, int pageSize = Int32.MaxValue)
+    {
+        var list = await _organizationRepository
+            .GetOrganizationsByUserIdAsync(userId, pageIndex, pageSize);
+        var data = list.Select(e => e.ToDto());
+        return new PagedListDto<OrganizationDto>(data, list.TotalCount, list.PageIndex, list.PageSize);
+    }
+
+    public async Task<IList<OrganizationDto>> GetOrganizationsForCurrentUserAsync()
+    {
+        var userId = _workContext.GetCurrentUserId() ?? throw new UnauthorizedAccessException();
+        return (await GetOrganizationsByUserIdAsync(userId)).Data.ToList();
+    }
 }

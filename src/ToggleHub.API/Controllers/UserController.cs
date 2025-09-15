@@ -11,10 +11,12 @@ namespace ToggleHub.API.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IOrganizationService _organizationService;
 
-    public UserController(IUserService userService)
+    public UserController(IUserService userService, IOrganizationService organizationService)
     {
         _userService = userService;
+        _organizationService = organizationService;
     }
 
     [HttpGet("{id:int}")]
@@ -26,5 +28,12 @@ public class UserController : ControllerBase
             return NotFound("User not found.");
 
         return Ok(user);
+    }
+    
+    [HttpGet("me/organizations")]
+    public async Task<IActionResult> GetOrganizationsByCurrentUser()
+    {
+        var organizations = await _organizationService.GetOrganizationsForCurrentUserAsync();
+        return Ok(organizations);
     }
 }

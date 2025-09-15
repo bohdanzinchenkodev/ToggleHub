@@ -29,7 +29,7 @@ public class OrganizationController : ControllerBase
     public async Task<IActionResult> Create(CreateOrganizationDto organizationDto)
     {
         var result = await _organizationService.CreateAsync(organizationDto);
-        return CreatedAtAction(nameof(GetBySlug), new { slug = result.Slug }, result);
+        return CreatedAtAction(nameof(GetBySlug), new { organizationSlug = result.Slug }, result);
     }
 
     [HttpGet("{organizationId:int}")]
