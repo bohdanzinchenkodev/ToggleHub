@@ -9,4 +9,5 @@ public class Project : BaseEntity, ISluggedEntity
     
     // Navigation property
     public Organization Organization { get; set; } = null!;
+    public ICollection<Environment> Environments { get; set; } = new List<Environment>();
 }

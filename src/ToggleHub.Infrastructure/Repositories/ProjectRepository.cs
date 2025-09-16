@@ -7,7 +7,7 @@ using ToggleHub.Infrastructure.Extensions;
 
 namespace ToggleHub.Infrastructure.Repositories;
 
-public class ProjectRepository : BaseRepository<Project>, IProjectRepository
+public class ProjectRepository : BaseSluggedRepository<Project>, IProjectRepository
 {
     public ProjectRepository(ToggleHubDbContext context) : base(context)
     {
@@ -30,5 +30,12 @@ public class ProjectRepository : BaseRepository<Project>, IProjectRepository
         }
 
         return await query.ToPagedListAsync(pageIndex, pageSize);
+    }
+
+    public Task<Project?> GetBySlugAsync(string slug, int organizationId)
+    {
+        return _dbSet
+            .AsNoTracking()
+            .FirstOrDefaultAsync(o => o.Slug == slug && o.OrganizationId == organizationId);
     }
 }

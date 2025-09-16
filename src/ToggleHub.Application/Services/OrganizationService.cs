@@ -90,7 +90,7 @@ public class OrganizationService : IOrganizationService
     }
     public async Task<OrganizationDto?> GetBySlugAsync(string slug)
     {
-        var organization = await _slugGenerator.GetBySlugAsync<Organization>(slug);
+        var organization = await _organizationRepository.GetBySlugAsync(slug);
         var dto = organization?.ToDto();
         return dto;
     }

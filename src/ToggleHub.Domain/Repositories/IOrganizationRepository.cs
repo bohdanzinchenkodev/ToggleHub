@@ -2,7 +2,7 @@ using ToggleHub.Domain.Entities;
 
 namespace ToggleHub.Domain.Repositories;
 
-public interface IOrganizationRepository : IBaseRepository<Organization>
+public interface IOrganizationRepository : IBaseSluggedRepository<Organization>
 {
     Task<bool> NameExistsAsync(string name);
     Task<bool> NameExistsAsync(string name, int excludeId);

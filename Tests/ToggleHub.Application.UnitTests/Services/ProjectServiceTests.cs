@@ -32,7 +32,6 @@ public class ProjectServiceTests
         _mockEventPublisher = new Mock<IEventPublisher>();
 
         _projectService = new ProjectService(
-            _mockSluggedRepository.Object,
             _mockProjectRepository.Object,
             _mockCreateValidator.Object,
             _mockSlugGenerator.Object,

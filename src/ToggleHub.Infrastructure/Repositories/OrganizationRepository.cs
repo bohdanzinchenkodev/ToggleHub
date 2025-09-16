@@ -7,7 +7,7 @@ using ToggleHub.Infrastructure.Extensions;
 
 namespace ToggleHub.Infrastructure.Repositories;
 
-public class OrganizationRepository : BaseRepository<Organization>, IOrganizationRepository
+public class OrganizationRepository : BaseSluggedRepository<Organization>, IOrganizationRepository
 {
     public OrganizationRepository(ToggleHubDbContext context) : base(context)
     {

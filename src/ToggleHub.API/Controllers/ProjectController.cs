@@ -43,7 +43,7 @@ public class ProjectController : ControllerBase
     [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageProjects)]
     public async Task<IActionResult> GetBySlug(int organizationId, string slug)
     {
-        var result = await _projectService.GetBySlugAsync(slug);
+        var result = await _projectService.GetBySlugAsync(slug, organizationId);
         if (result == null)
             return NotFound("Project not found");
         

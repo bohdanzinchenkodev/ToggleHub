@@ -12,7 +12,6 @@ namespace ToggleHub.Application.Services;
 
 public class ProjectService : IProjectService
 {
-    private readonly ISluggedRepository _sluggedRepository;
     private readonly IProjectRepository _projectRepository;
     private readonly IValidator<CreateProjectDto> _createValidator;
     private readonly IValidator<UpdateProjectDto> _updateValidator;
@@ -20,9 +19,8 @@ public class ProjectService : IProjectService
     private readonly ISlugGenerator _slugGenerator;
     private readonly IEventPublisher _eventPublisher;
 
-    public ProjectService(ISluggedRepository sluggedRepository, IProjectRepository projectRepository, IValidator<CreateProjectDto> createValidator, ISlugGenerator slugGenerator, IValidator<UpdateProjectDto> updateValidator, IOrganizationRepository organizationRepository, IEventPublisher eventPublisher)
+    public ProjectService(IProjectRepository projectRepository, IValidator<CreateProjectDto> createValidator, ISlugGenerator slugGenerator, IValidator<UpdateProjectDto> updateValidator, IOrganizationRepository organizationRepository, IEventPublisher eventPublisher)
     {
-        _sluggedRepository = sluggedRepository;
         _projectRepository = projectRepository;
         _createValidator = createValidator;
         _slugGenerator = slugGenerator;
@@ -37,9 +35,9 @@ public class ProjectService : IProjectService
         return project?.ToDto();
     }
 
-    public async Task<ProjectDto?> GetBySlugAsync(string slug)
+    public async Task<ProjectDto?> GetBySlugAsync(string slug, int organizationId)
     {
-        var project = await _sluggedRepository.GetBySlugAsync<Project>(slug);
+        var project = await _projectRepository.GetBySlugAsync(slug, organizationId);
         return project?.ToDto();
     }
 

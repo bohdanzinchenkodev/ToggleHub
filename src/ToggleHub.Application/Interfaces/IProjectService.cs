@@ -6,7 +6,7 @@ namespace ToggleHub.Application.Interfaces;
 public interface IProjectService
 {
     Task<ProjectDto?> GetByIdAsync(int id);
-    Task<ProjectDto?> GetBySlugAsync(string slug);
+    Task<ProjectDto?> GetBySlugAsync(string slug, int organizationId);
     Task<ProjectDto> CreateAsync(CreateProjectDto createProjectDto);
     Task<ProjectDto> UpdateAsync(UpdateProjectDto updateProjectDto);
     Task DeleteAsync(int id);

@@ -26,6 +26,7 @@ public class OrganizationServiceTests
         _mockSlugGenerator = new Mock<ISlugGenerator>();
         var mockOrganizationPermissionService = new Mock<IOrganizationPermissionService>();
         var mockWorkContext = new Mock<IWorkContext>();
+        var mockOrgMemberRepository = new Mock<IOrgMemberRepository>();
 
         _organizationService = new OrganizationService(
             _mockOrganizationRepository.Object,
@@ -33,7 +34,8 @@ public class OrganizationServiceTests
             _mockSlugGenerator.Object,
             _mockUpdateValidator.Object,
             mockOrganizationPermissionService.Object,
-            mockWorkContext.Object);
+            mockWorkContext.Object,
+            mockOrgMemberRepository.Object);
     }
 
     [Test]
