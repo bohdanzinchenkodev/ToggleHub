@@ -54,35 +54,31 @@ public class ToggleHubDbContext : DbContext
         // Configure Project
         modelBuilder.Entity<Project>(entity =>
         {
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.OrganizationId).IsRequired();
-            entity.Property(e => e.Name).IsRequired().HasMaxLength(255);
-            entity.Property(e => e.Slug).IsRequired().HasMaxLength(255);
-            entity.Property(e => e.CreatedAt).IsRequired();
-            entity.HasIndex(e => new { e.OrganizationId, e.Slug }).IsUnique();
-            
-            entity.HasOne(e => e.Organization)
-                  .WithMany()
-                  .HasForeignKey(e => e.OrganizationId)
-                  .OnDelete(DeleteBehavior.Cascade);
-            
-            entity.HasMany(x => x.Environments)
-                  .WithOne(e => e.Project)
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Cascade);
+              entity.HasKey(e => e.Id);
+              entity.Property(e => e.OrganizationId).IsRequired();
+              entity.Property(e => e.Name).IsRequired().HasMaxLength(255);
+              entity.Property(e => e.Slug).IsRequired().HasMaxLength(255);
+              entity.Property(e => e.CreatedAt).IsRequired();
+              entity.HasIndex(e => new { e.OrganizationId, e.Slug }).IsUnique();
+
+              entity.HasOne(e => e.Organization)
+                    .WithMany()
+                    .HasForeignKey(e => e.OrganizationId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+              // Single, paired mapping for Project↔Environment
+              entity.HasMany(p => p.Environments)
+                    .WithOne(e => e.Project)
+                    .HasForeignKey(e => e.ProjectId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // Configure Environment
         modelBuilder.Entity<Environment>(entity =>
         {
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.Type).IsRequired();
-           
-            
-            entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Restrict);
+              entity.HasKey(e => e.Id);
+              entity.Property(e => e.Type).IsRequired();
+              // Do not reconfigure the Project relation here
         });
 
         // Configure ApiKey

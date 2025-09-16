@@ -1,3 +1,5 @@
+using ToggleHub.Application.DTOs.Environment;
+
 namespace ToggleHub.Application.DTOs.Project;
 
 public class ProjectDto
@@ -7,4 +9,5 @@ public class ProjectDto
     public string Name { get; set; } = string.Empty;
     public string Slug { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
+    public IList<EnvironmentDto> Environments { get; set; } = new List<EnvironmentDto>();
 }

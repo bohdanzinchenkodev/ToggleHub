@@ -13,7 +13,10 @@ public static class ProjectMapping
             Name = project.Name,
             Slug = project.Slug,
             OrganizationId = project.OrganizationId,
-            CreatedAt = project.CreatedAt
+            CreatedAt = project.CreatedAt,
+            Environments = project.Environments
+                .Select(e => e.ToDto())
+                .ToList()
         };
     }
 

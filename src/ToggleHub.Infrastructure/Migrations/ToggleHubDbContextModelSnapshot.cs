@@ -267,7 +267,8 @@ namespace ToggleHub.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrganizationId");
+                    b.HasIndex("OrganizationId", "Slug")
+                        .IsUnique();
 
                     b.ToTable("Projects");
                 });
@@ -428,9 +429,9 @@ namespace ToggleHub.Infrastructure.Migrations
             modelBuilder.Entity("ToggleHub.Domain.Entities.Environment", b =>
                 {
                     b.HasOne("ToggleHub.Domain.Entities.Project", "Project")
-                        .WithMany()
+                        .WithMany("Environments")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Project");
@@ -513,6 +514,11 @@ namespace ToggleHub.Infrastructure.Migrations
             modelBuilder.Entity("ToggleHub.Domain.Entities.Flag", b =>
                 {
                     b.Navigation("RuleSets");
+                });
+
+            modelBuilder.Entity("ToggleHub.Domain.Entities.Project", b =>
+                {
+                    b.Navigation("Environments");
                 });
 
             modelBuilder.Entity("ToggleHub.Domain.Entities.RuleCondition", b =>

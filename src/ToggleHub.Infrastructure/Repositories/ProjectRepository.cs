@@ -36,6 +36,7 @@ public class ProjectRepository : BaseSluggedRepository<Project>, IProjectReposit
     {
         return _dbSet
             .AsNoTracking()
+            .Include(x => x.Environments)
             .FirstOrDefaultAsync(o => o.Slug == slug && o.OrganizationId == organizationId);
     }
 }
