@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
 	Box,
 	Typography,
@@ -14,20 +14,45 @@ import {
 	useCreateProjectMutation
 } from "../redux/slices/apiSlice.js";
 import { useFormHandler } from "../hooks/useFormHandler.js";
+import { useAppState } from "../hooks/useAppState.js";
 import { validateForm } from "../utils/validation.js";
 import ItemsList from "../components/shared/ItemsList.jsx";
 import CreateForm from "../components/shared/CreateForm.jsx";
+import AppStateDisplay from "../components/shared/AppStateDisplay.jsx";
 
 const Organization = () => {
 	const { slug } = useParams();
+	const { currentOrganization, updateCurrentOrganization, updateCurrentProject, clearProject } = useAppState();
 
-	// Get organization details by slug
+	// Only fetch organization if we don't have it in state or if the slug doesn't match
+	const shouldFetchOrg = !currentOrganization || currentOrganization.slug !== slug;
+
+	// Get organization details by slug (only if needed)
 	const {
-		data: organization,
+		data: fetchedOrganization,
 		isLoading: isOrgLoading,
 		isError: isOrgError,
 		error: orgError
-	} = useGetOrganizationBySlugQuery(slug);
+	} = useGetOrganizationBySlugQuery(slug, {
+		skip: !shouldFetchOrg
+	});
+
+	// Use organization from state if available, otherwise use fetched data
+	const organization = currentOrganization?.slug === slug ? currentOrganization : fetchedOrganization;
+
+	// Update global state when organization is fetched (only if we didn't have it)
+	useEffect(() => {
+		if (fetchedOrganization && shouldFetchOrg) {
+			updateCurrentOrganization(fetchedOrganization);
+		}
+	}, [fetchedOrganization, shouldFetchOrg, updateCurrentOrganization]);
+
+	// Clear current project when component unmounts or organization changes
+	useEffect(() => {
+		return () => {
+			clearProject();
+		};
+	}, [clearProject, slug]);
 
 	// Get projects for this organization
 	const {
@@ -62,7 +87,7 @@ const Organization = () => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		
+
 		// Validation
 		const validationErrors = validateForm(formData, {
 			name: { required: true, label: "Project name" }
@@ -74,7 +99,7 @@ const Organization = () => {
 		}
 
 		try {
-			await createProject({
+			const response = await createProject({
 				organizationId: organization.id,
 				body: {
 					name: formData.name.trim()
@@ -90,7 +115,12 @@ const Organization = () => {
 		}
 	};
 
-	if (isOrgLoading) {
+	const handleProjectClick = (project) => {
+		// Set project in global state when user clicks on it
+		updateCurrentProject(project);
+	};
+
+	if (shouldFetchOrg && isOrgLoading) {
 		return (
 			<Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
 				<CircularProgress />
@@ -110,6 +140,7 @@ const Organization = () => {
 
 	return (
 		<Container component="main" maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+			{/*<AppStateDisplay />*/}
 			<Box>
 				<Typography variant="h4" component="h1" sx={{ mb: 4, fontWeight: 'bold', textAlign: 'center' }}>
 					{organization?.name}
@@ -126,6 +157,7 @@ const Organization = () => {
 							error={projectsError}
 							emptyMessage="No projects found. Create your first project to get started!"
 							getItemLink={(project) => `/organizations/${slug}/projects/${project.slug}`}
+							onItemClick={handleProjectClick}
 						/>
 					</Grid>
 

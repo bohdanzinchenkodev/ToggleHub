@@ -10,12 +10,14 @@ import {
 import { useGetOrganizationsByCurrentUserQuery, useCreateOrganizationMutation } from "../redux/slices/apiSlice.js";
 import { useNavigate } from "react-router";
 import { useFormHandler } from "../hooks/useFormHandler.js";
+import { useAppState } from "../hooks/useAppState.js";
 import { validateForm } from "../utils/validation.js";
 import ItemsList from "../components/shared/ItemsList.jsx";
 import CreateForm from "../components/shared/CreateForm.jsx";
 
 const OrganizationsList = () => {
 	const navigate = useNavigate();
+	const { updateCurrentOrganization } = useAppState();
 	const { data: organizations, isLoading, isError, error } = useGetOrganizationsByCurrentUserQuery();
 	const [createOrganization, { isLoading: isCreating, error: createError, isError: isCreateError }] = useCreateOrganizationMutation();
 
@@ -50,6 +52,9 @@ const OrganizationsList = () => {
 			// Reset form
 			resetForm();
 
+			// Set the newly created organization in global state
+			updateCurrentOrganization(response);
+
 			// Redirect to the newly created organization
 			if (response.slug) {
 				navigate(`/organizations/${response.slug}`);
@@ -58,6 +63,11 @@ const OrganizationsList = () => {
 			console.error("Failed to create organization:", error);
 			handleServerErrors(error);
 		}
+	};
+
+	const handleOrganizationClick = (org) => {
+		// Set organization in global state when user clicks on it
+		updateCurrentOrganization(org);
 	};
 
 	if (isLoading) {
@@ -96,6 +106,7 @@ const OrganizationsList = () => {
 							error={error}
 							emptyMessage="No organizations found. Create your first organization to get started!"
 							getItemLink={(org) => `/organizations/${org.slug}`}
+							onItemClick={handleOrganizationClick}
 						/>
 					</Grid>
 

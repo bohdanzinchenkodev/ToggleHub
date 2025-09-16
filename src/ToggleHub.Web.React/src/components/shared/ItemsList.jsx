@@ -17,6 +17,7 @@ const ItemsList = ({
 	error, 
 	emptyMessage, 
 	getItemLink,
+	onItemClick,
 	renderCustomItem 
 }) => {
 	return (
@@ -52,6 +53,7 @@ const ItemsList = ({
 									key={item.id}
 									to={getItemLink(item)}
 									style={{ textDecoration: 'none' }}
+									onClick={() => onItemClick && onItemClick(item)}
 								>
 									<Typography
 										variant="body1"

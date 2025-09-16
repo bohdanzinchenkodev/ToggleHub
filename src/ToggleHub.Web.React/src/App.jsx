@@ -11,6 +11,7 @@ import Register from "./pages/Register.jsx";
 import Layout from "./components/layouts/Layout.jsx";
 import OrganizationsList from "./pages/OrganizationsList.jsx";
 import Organization from "./pages/Organization.jsx";
+import Project from "./pages/Project.jsx";
 
 function App() {
 
@@ -27,6 +28,13 @@ function App() {
             <ProtectedRoute>
                 <Layout>
                     <Organization />
+                </Layout>
+            </ProtectedRoute>
+        } />
+        <Route path="organizations/:orgSlug/projects/:projectSlug" element={
+            <ProtectedRoute>
+                <Layout>
+                    <Project />
                 </Layout>
             </ProtectedRoute>
         } />
