@@ -122,6 +122,17 @@ public class FlagService : IFlagService
 
     }
 
+    public async Task SetEnabledAsync(int id, bool isEnabled)
+    {
+        var flag = await _flagRepository.GetByIdAsync(id);
+        if (flag == null)
+            throw new ApplicationException($"Flag with ID {id} not found.");
+        
+        flag.Enabled = isEnabled;
+        flag.UpdatedAt = DateTimeOffset.UtcNow;
+        await _flagRepository.UpdateAsync(flag);
+    }
+
     private void ReconcileRuleSets(Flag flag, UpdateFlagDto updateDto)
     {
         var existingSets = flag.RuleSets.ToDictionary(x => x.Id);

@@ -78,5 +78,20 @@ public class FlagController : ControllerBase
             pagingQuery.PageSize);
         return Ok(result);
     }
+    [HttpPatch("{id:int}/enable")]
+    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageFlags)]
+    public async Task<IActionResult> Enable(int organizationId, int projectId, int environmentId, int id)
+    {
+        await _flagService.SetEnabledAsync(id, true);
+        return NoContent();
+    }
+
+    [HttpPatch("{id:int}/disable")]
+    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageFlags)]
+    public async Task<IActionResult> Disable(int organizationId, int projectId, int environmentId, int id)
+    {
+        await _flagService.SetEnabledAsync(id, false);
+        return NoContent();
+    }
 
 }
