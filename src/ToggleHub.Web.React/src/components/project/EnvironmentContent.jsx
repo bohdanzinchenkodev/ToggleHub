@@ -35,6 +35,7 @@ const EnvironmentContent = ({
 						error={flagsError}
 						processingFlags={processingFlags}
 						onFlagToggle={onFlagToggle}
+						hasSelectedEnvironment={!!environment}
 					/>
 				</Box>
 			</Paper>

@@ -142,7 +142,12 @@ const Project = () => {
 				</Typography>
 
 				{project?.environments && project.environments.length > 0 && (
-					<Box sx={{ display: 'flex', mt: 4, minHeight: 400 }}>
+					<Box sx={{ 
+						display: 'flex', 
+						flexDirection: { xs: 'column', md: 'row' },
+						mt: 4, 
+						minHeight: 400 
+					}}>
 						<EnvironmentTabs
 							environments={project.environments}
 							selectedTab={selectedTab}

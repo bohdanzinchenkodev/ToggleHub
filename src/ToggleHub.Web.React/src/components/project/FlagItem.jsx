@@ -29,7 +29,6 @@ const FlagItem = ({ flag, isProcessing, onToggle }) => {
 					/>
 					<Switch
 						checked={flag.enabled}
-						size="small"
 						disabled={isProcessing}
 						onChange={(event) => onToggle(flag, event.target.checked)}
 					/>
