@@ -128,6 +128,9 @@ public class FlagService : IFlagService
         if (flag == null)
             throw new ApplicationException($"Flag with ID {id} not found.");
         
+        if(flag.Enabled == isEnabled)
+            return;
+        
         flag.Enabled = isEnabled;
         flag.UpdatedAt = DateTimeOffset.UtcNow;
         await _flagRepository.UpdateAsync(flag);
