@@ -1,11 +1,13 @@
 using System.Data;
 using FluentValidation;
+using ToggleHub.Application.DTOs;
 using ToggleHub.Application.DTOs.Flag;
 using ToggleHub.Application.DTOs.Flag.Create;
 using ToggleHub.Application.DTOs.Flag.Update;
 using ToggleHub.Application.Helpers;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Application.Mapping;
+using ToggleHub.Domain;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Events;
 using ToggleHub.Domain.Exceptions;
@@ -108,6 +110,16 @@ public class FlagService : IFlagService
         await _eventPublisher.PublishAsync(eventMessage);
 
         await _flagRepository.DeleteAsync(flag.Id);
+    }
+
+    public async Task<PagedListDto<FlagDto>> GetAllAsync(int? projectId = null, int? environmentId = null, int pageIndex = 0, int pageSize = Int32.MaxValue)
+    {
+
+        var list = await _flagRepository
+            .GetAllAsync(projectId, environmentId, pageIndex, pageSize);
+        var data = list.Select(e => e.ToDto());
+        return new PagedListDto<FlagDto>(data, list.TotalCount, list.PageIndex, list.PageSize);
+
     }
 
     private void ReconcileRuleSets(Flag flag, UpdateFlagDto updateDto)

@@ -1,3 +1,4 @@
+using ToggleHub.Application.DTOs;
 using ToggleHub.Application.DTOs.Flag;
 using ToggleHub.Application.DTOs.Flag.Create;
 using ToggleHub.Application.DTOs.Flag.Update;
@@ -10,4 +11,5 @@ public interface IFlagService
     Task<FlagDto?> GetByIdAsync(int id);
     Task<FlagDto> UpdateAsync(UpdateFlagDto updateDto);
     Task DeleteAsync(int id);
+    Task<PagedListDto<FlagDto>> GetAllAsync(int? projectId = null, int? environmentId = null, int pageIndex = 0, int pageSize = int.MaxValue);
 }

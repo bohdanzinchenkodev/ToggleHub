@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using ToggleHub.Domain;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Repositories;
 using ToggleHub.Infrastructure.Data;
+using ToggleHub.Infrastructure.Extensions;
 
 namespace ToggleHub.Infrastructure.Repositories;
 
@@ -34,5 +36,19 @@ public class FlagRepository : BaseRepository<Flag>, IFlagRepository
             .ThenInclude(x => x.Conditions)
             .ThenInclude(x => x.Items)
             .FirstOrDefaultAsync(x => x.Key == key && x.EnvironmentId == environmentId && x.ProjectId == projectId);
+    }
+
+    public Task<IPagedList<Flag>> GetAllAsync(int? projectId = null, int? environmentId = null, int pageIndex = 0, int pageSize = Int32.MaxValue)
+    {
+        var query = _dbSet
+            .AsQueryable();
+
+        if (projectId.HasValue)
+            query = query.Where(x => x.ProjectId == projectId.Value);
+        
+        if (environmentId.HasValue)
+            query = query.Where(x => x.EnvironmentId == environmentId.Value);
+
+        return query.ToPagedListAsync(pageIndex, pageSize);
     }
 }

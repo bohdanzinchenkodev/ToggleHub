@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ToggleHub.API.Filters;
+using ToggleHub.Application.DTOs;
 using ToggleHub.Application.DTOs.Flag.Create;
 using ToggleHub.Application.DTOs.Flag.Update;
 using ToggleHub.Application.Interfaces;
@@ -10,7 +11,7 @@ using ToggleHub.Infrastructure.Constants;
 namespace ToggleHub.API.Controllers;
 
 [ApiController]
-[Route("api/organizations/{organizationId:int}/projects/{projectId:int}/environments{environmentId:int}/flags")]
+[Route("api/organizations/{organizationId:int}/projects/{projectId:int}/environments/{environmentId:int}/flags")]
 [Authorize(Policy = AuthConstants.AuthPolicies.RequireIdentity)]
 public class FlagController : ControllerBase
 {
@@ -61,5 +62,21 @@ public class FlagController : ControllerBase
         await _flagService.DeleteAsync(id);
         return NoContent();
     }
-    
+
+    [HttpGet]
+    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageFlags)]
+    public async Task<IActionResult> GetAll(int organizationId, int projectId, int environmentId,
+        [FromQuery] PagingQuery pagingQuery)
+    {
+        if(projectId <= 0 || environmentId <= 0)
+            return BadRequest("ProjectId and EnvironmentId are required");
+        
+        var result = await _flagService.GetAllAsync(
+            projectId,
+            environmentId,
+            pagingQuery.Page - 1, 
+            pagingQuery.PageSize);
+        return Ok(result);
+    }
+
 }
