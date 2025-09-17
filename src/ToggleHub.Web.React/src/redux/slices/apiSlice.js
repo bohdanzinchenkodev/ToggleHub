@@ -6,6 +6,7 @@ export const api = createApi({
 		baseUrl: 'http://localhost:5160/api',
 		credentials: 'include', // send cookies automatically
 	}),
+	tagTypes: ['Flags'],
 	endpoints: (builder) => ({
 		getUser: builder.query({
 			query: () => 'user/me',
@@ -47,6 +48,42 @@ export const api = createApi({
 				body,
 			}),
 		}),
+		getProjectBySlug: builder.query({
+			query: ({ orgSlug, projectSlug, organizationId }) => 
+				`organizations/${organizationId}/projects/${projectSlug}`,
+		}),
+		updateProject: builder.mutation({
+			query: ({ organizationId, projectId, body }) => ({
+				url: `organizations/${organizationId}/projects/${projectId}`,
+				method: 'PUT',
+				body,
+			}),
+		}),
+		deleteProject: builder.mutation({
+			query: ({ organizationId, projectId }) => ({
+				url: `organizations/${organizationId}/projects/${projectId}`,
+				method: 'DELETE',
+			}),
+		}),
+		getFlagsByEnvironment: builder.query({
+			query: ({ organizationId, projectId, environmentId }) => 
+				`organizations/${organizationId}/projects/${projectId}/environments/${environmentId}/flags`,
+			providesTags: (result, error, { organizationId, projectId, environmentId }) => [
+				{ type: 'Flags', id: `${organizationId}-${projectId}-${environmentId}` }
+			],
+		}),
+		enableFlag: builder.mutation({
+			query: ({ organizationId, projectId, environmentId, flagId }) => ({
+				url: `organizations/${organizationId}/projects/${projectId}/environments/${environmentId}/flags/${flagId}/enable`,
+				method: 'PATCH',
+			}),
+		}),
+		disableFlag: builder.mutation({
+			query: ({ organizationId, projectId, environmentId, flagId }) => ({
+				url: `organizations/${organizationId}/projects/${projectId}/environments/${environmentId}/flags/${flagId}/disable`,
+				method: 'PATCH',
+			}),
+		}),
 	}),
 });
 
@@ -58,5 +95,11 @@ export const {
 	useCreateOrganizationMutation,
 	useGetProjectsByOrganizationQuery,
 	useGetOrganizationBySlugQuery,
-	useCreateProjectMutation
+	useCreateProjectMutation,
+	useGetProjectBySlugQuery,
+	useUpdateProjectMutation,
+	useDeleteProjectMutation,
+	useGetFlagsByEnvironmentQuery,
+	useEnableFlagMutation,
+	useDisableFlagMutation
 } = api;
