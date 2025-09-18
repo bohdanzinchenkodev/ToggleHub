@@ -284,6 +284,9 @@ public class UpdateFlagValidatorTests
             ProjectId = 1,
             EnvironmentId = 1,
             Key = "test-flag",
+            ReturnValueTypeString = "Boolean",
+            DefaultValueOnRaw = "true",
+            DefaultValueOffRaw = "false",
             RuleSets = new List<UpdateRuleSetDto>
             {
                 new UpdateRuleSetDto
@@ -439,6 +442,9 @@ public class UpdateFlagValidatorTests
             ProjectId = 1,
             EnvironmentId = 1,
             Key = "test-flag",
+            ReturnValueTypeString = "Boolean",
+            DefaultValueOnRaw = "true",
+            DefaultValueOffRaw = "false",
             RuleSets = new List<UpdateRuleSetDto>
             {
                 new UpdateRuleSetDto
@@ -890,6 +896,9 @@ public class UpdateFlagValidatorTests
             ProjectId = 1,
             EnvironmentId = 1,
             Key = "test-flag",
+            ReturnValueTypeString = "Boolean",
+            DefaultValueOnRaw = "true",
+            DefaultValueOffRaw = "false",
             RuleSets = new List<UpdateRuleSetDto>
             {
                 new UpdateRuleSetDto
@@ -999,7 +1008,7 @@ public class UpdateFlagValidatorTests
                     {
                         new UpdateRuleConditionDto
                         {
-                            Id = 1,
+                            Id = null,
                             Field = "userRoles",
                             FieldTypeString = "List",
                             OperatorString = "In",
@@ -1188,5 +1197,143 @@ public class UpdateFlagValidatorTests
 
         // Assert
         result.ShouldNotHaveAnyValidationErrors();
+    }
+
+    [Test]
+    public void Validate_WithValidNumberValues_ShouldPass()
+    {
+        var validNumbers = new[] { "123", "3.14", "-42", "0" };
+        foreach (var num in validNumbers)
+        {
+            var flag = new UpdateFlagDto
+            {
+                Id = 1,
+                ProjectId = 1,
+                EnvironmentId = 1,
+                Key = "num-flag",
+                ReturnValueTypeString = "Number",
+                DefaultValueOnRaw = num,
+                DefaultValueOffRaw = num,
+                RuleSets = new List<UpdateRuleSetDto>()
+            };
+            var result = _validator.TestValidate(flag);
+            result.ShouldNotHaveValidationErrorFor(x => x.DefaultValueOnRaw);
+            result.ShouldNotHaveValidationErrorFor(x => x.DefaultValueOffRaw);
+        }
+    }
+
+    [Test]
+    public void Validate_WithInvalidNumberValues_ShouldFail()
+    {
+        var invalidNumbers = new[] { "abc", "", "12a", null };
+        foreach (var num in invalidNumbers)
+        {
+            var flag = new UpdateFlagDto
+            {
+                Id = 1,
+                ProjectId = 1,
+                EnvironmentId = 1,
+                Key = "num-flag",
+                ReturnValueTypeString = "Number",
+                DefaultValueOnRaw = num,
+                DefaultValueOffRaw = num,
+                RuleSets = new List<UpdateRuleSetDto>()
+            };
+            var result = _validator.TestValidate(flag);
+            result.ShouldHaveValidationErrorFor(x => x.DefaultValueOnRaw);
+            result.ShouldHaveValidationErrorFor(x => x.DefaultValueOffRaw);
+        }
+    }
+
+    [Test]
+    public void Validate_WithValidJsonValues_ShouldPass()
+    {
+        var validJsons = new[] { "{}", "{\"a\":1}", "[]", "{\"b\":true}" };
+        foreach (var json in validJsons)
+        {
+            var flag = new UpdateFlagDto
+            {
+                Id = 1,
+                ProjectId = 1,
+                EnvironmentId = 1,
+                Key = "json-flag",
+                ReturnValueTypeString = "Json",
+                DefaultValueOnRaw = json,
+                DefaultValueOffRaw = json,
+                RuleSets = new List<UpdateRuleSetDto>()
+            };
+            var result = _validator.TestValidate(flag);
+            result.ShouldNotHaveValidationErrorFor(x => x.DefaultValueOnRaw);
+            result.ShouldNotHaveValidationErrorFor(x => x.DefaultValueOffRaw);
+        }
+    }
+
+    [Test]
+    public void Validate_WithInvalidJsonValues_ShouldFail()
+    {
+        var invalidJsons = new[] { "{", "notjson", "", null };
+        foreach (var json in invalidJsons)
+        {
+            var flag = new UpdateFlagDto
+            {
+                Id = 1,
+                ProjectId = 1,
+                EnvironmentId = 1,
+                Key = "json-flag",
+                ReturnValueTypeString = "Json",
+                DefaultValueOnRaw = json,
+                DefaultValueOffRaw = json,
+                RuleSets = new List<UpdateRuleSetDto>()
+            };
+            var result = _validator.TestValidate(flag);
+            result.ShouldHaveValidationErrorFor(x => x.DefaultValueOnRaw);
+            result.ShouldHaveValidationErrorFor(x => x.DefaultValueOffRaw);
+        }
+    }
+
+    [Test]
+    public void Validate_WithValidStringValues_ShouldPass()
+    {
+        var validStrings = new[] { "abc", "hello world", "123", "!@#$%^&*()" };
+        foreach (var str in validStrings)
+        {
+            var flag = new UpdateFlagDto
+            {
+                Id = 1,
+                ProjectId = 1,
+                EnvironmentId = 1,
+                Key = "str-flag",
+                ReturnValueTypeString = "String",
+                DefaultValueOnRaw = str,
+                DefaultValueOffRaw = str,
+                RuleSets = new List<UpdateRuleSetDto>()
+            };
+            var result = _validator.TestValidate(flag);
+            result.ShouldNotHaveValidationErrorFor(x => x.DefaultValueOnRaw);
+            result.ShouldNotHaveValidationErrorFor(x => x.DefaultValueOffRaw);
+        }
+    }
+
+    [Test]
+    public void Validate_WithInvalidStringValues_ShouldFail()
+    {
+        var invalidStrings = new[] { "", null };
+        foreach (var str in invalidStrings)
+        {
+            var flag = new UpdateFlagDto
+            {
+                Id = 1,
+                ProjectId = 1,
+                EnvironmentId = 1,
+                Key = "str-flag",
+                ReturnValueTypeString = "String",
+                DefaultValueOnRaw = str,
+                DefaultValueOffRaw = str,
+                RuleSets = new List<UpdateRuleSetDto>()
+            };
+            var result = _validator.TestValidate(flag);
+            result.ShouldHaveValidationErrorFor(x => x.DefaultValueOnRaw);
+            result.ShouldHaveValidationErrorFor(x => x.DefaultValueOffRaw);
+        }
     }
 }

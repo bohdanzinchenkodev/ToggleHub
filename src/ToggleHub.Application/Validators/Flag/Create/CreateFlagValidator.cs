@@ -11,7 +11,7 @@ public class CreateFlagValidator : FlagValidatorBase<CreateFlagDto>
         When(x => x.RuleSets.Any(), () =>
         {
             RuleForEach(x => x.RuleSets)
-                .SetValidator(new CreateRuleSetValidator())
+                .SetValidator(x => new CreateRuleSetValidator(x))
                 .WithMessage("Ruleset validation failed.");
         });
         

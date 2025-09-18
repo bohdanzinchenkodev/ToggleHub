@@ -15,7 +15,9 @@ public class OrganizationServiceTests
     private Mock<IValidator<CreateOrganizationDto>> _mockCreateValidator;
     private Mock<IValidator<UpdateOrganizationDto>> _mockUpdateValidator;
     private Mock<ISlugGenerator> _mockSlugGenerator;
+    private Mock<IWorkContext> _mockWorkContext;
     private OrganizationService _organizationService;
+    
 
     [SetUp]
     public void SetUp()
@@ -25,7 +27,7 @@ public class OrganizationServiceTests
         _mockUpdateValidator = new Mock<IValidator<UpdateOrganizationDto>>();
         _mockSlugGenerator = new Mock<ISlugGenerator>();
         var mockOrganizationPermissionService = new Mock<IOrganizationPermissionService>();
-        var mockWorkContext = new Mock<IWorkContext>();
+        _mockWorkContext = new Mock<IWorkContext>();
         var mockOrgMemberRepository = new Mock<IOrgMemberRepository>();
 
         _organizationService = new OrganizationService(
@@ -34,7 +36,7 @@ public class OrganizationServiceTests
             _mockSlugGenerator.Object,
             _mockUpdateValidator.Object,
             mockOrganizationPermissionService.Object,
-            mockWorkContext.Object,
+            _mockWorkContext.Object,
             mockOrgMemberRepository.Object);
     }
 
@@ -70,6 +72,8 @@ public class OrganizationServiceTests
         _mockOrganizationRepository.Setup(r => r.CreateAsync(It.IsAny<Organization>()))
             .ReturnsAsync(createdOrganization);
 
+        _mockWorkContext.Setup(wc => wc.GetCurrentUserId())
+            .Returns(42); // Simulate a logged-in user with ID 42
         // Act
         var result = await _organizationService.CreateAsync(createDto);
 

@@ -15,7 +15,7 @@ public class UpdateFlagValidator : FlagValidatorBase<UpdateFlagDto>
         When(x => x.RuleSets.Any(), () =>
         {
             RuleForEach(x => x.RuleSets)
-                .SetValidator(new UpdateRuleSetValidator())
+                .SetValidator(x => new UpdateRuleSetValidator(x))
                 .WithMessage("Ruleset validation failed.");
         });
     }
