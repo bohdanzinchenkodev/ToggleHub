@@ -4,6 +4,6 @@ using ToggleHub.Application.Validators.Flag.Base;
 
 namespace ToggleHub.Application.Validators.Flag.Create;
 
-public class CreateRuleConditionItemValidator : RuleConditionItemValidatorBase<CreateRuleConditionItemDto>
+public class CreateRuleConditionItemValidator : RuleConditionItemValidatorBase<CreateRuleConditionItemDto>, IIgnoreValidator
 {
 }

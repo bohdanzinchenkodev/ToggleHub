@@ -7,7 +7,7 @@ using ToggleHub.Domain.Helpers;
 
 namespace ToggleHub.Application.Validators.Flag.Base;
 
-public abstract class RuleConditionValidatorBase<T> : AbstractValidator<T> where T : BaseRuleConditionDto
+public abstract class RuleConditionValidatorBase<T> : AbstractValidator<T>, IIgnoreValidator where T : BaseRuleConditionDto
 {
     protected RuleConditionValidatorBase()
     {

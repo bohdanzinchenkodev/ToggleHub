@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ToggleHub.Application.EventHandlers;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Application.Services;
+using ToggleHub.Application.Validators;
 
 namespace ToggleHub.Application.Extensions;
 
@@ -11,7 +12,10 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         // Register FluentValidation
-        services.AddValidatorsFromAssemblyContaining<IApplicationMaker>();
+        services.AddValidatorsFromAssemblyContaining<IApplicationMaker>(
+            includeInternalTypes: true,
+            filter: result => !typeof(IIgnoreValidator).IsAssignableFrom(result.ValidatorType)
+        );
 
         // Register all services
         services.AddScoped<IOrganizationService, OrganizationService>();

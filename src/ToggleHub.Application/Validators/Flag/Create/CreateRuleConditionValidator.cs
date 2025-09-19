@@ -6,7 +6,7 @@ using ToggleHub.Domain.Entities;
 
 namespace ToggleHub.Application.Validators.Flag.Create;
 
-public class CreateRuleConditionValidator : RuleConditionValidatorBase<CreateRuleConditionDto>
+public class CreateRuleConditionValidator : RuleConditionValidatorBase<CreateRuleConditionDto>, IIgnoreValidator
 {
     public CreateRuleConditionValidator() : base()
     {

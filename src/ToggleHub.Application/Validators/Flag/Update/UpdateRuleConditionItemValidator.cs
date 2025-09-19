@@ -4,7 +4,7 @@ using ToggleHub.Application.Validators.Flag.Base;
 
 namespace ToggleHub.Application.Validators.Flag.Update;
 
-public class UpdateRuleConditionItemValidator : RuleConditionItemValidatorBase<UpdateRuleConditionItemDto>
+public class UpdateRuleConditionItemValidator : RuleConditionItemValidatorBase<UpdateRuleConditionItemDto>, IIgnoreValidator
 {
     public UpdateRuleConditionItemValidator() : base()
     {

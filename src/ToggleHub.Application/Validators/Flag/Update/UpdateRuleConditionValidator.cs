@@ -6,7 +6,7 @@ using ToggleHub.Domain.Entities;
 
 namespace ToggleHub.Application.Validators.Flag.Update;
 
-public class UpdateRuleConditionValidator : RuleConditionValidatorBase<UpdateRuleConditionDto>
+public class UpdateRuleConditionValidator : RuleConditionValidatorBase<UpdateRuleConditionDto>, IIgnoreValidator
 {
     public UpdateRuleConditionValidator() : base()
     {

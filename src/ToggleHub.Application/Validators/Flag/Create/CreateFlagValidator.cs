@@ -11,23 +11,8 @@ public class CreateFlagValidator : FlagValidatorBase<CreateFlagDto>
         When(x => x.RuleSets.Any(), () =>
         {
             RuleForEach(x => x.RuleSets)
-                .Custom((ruleSet, context) => {
-                    var flag = context.InstanceToValidate;
-                    var validator = new CreateRuleSetValidator();
-                    
-                    // Create validation context with parent data
-                    var ruleSetContext = new ValidationContext<CreateRuleSetDto>(ruleSet);
-                    ruleSetContext.RootContextData["ParentReturnValueType"] = flag.ReturnValueType;
-                    
-                    var result = validator.Validate(ruleSetContext);
-                    if (!result.IsValid)
-                    {
-                        foreach (var error in result.Errors)
-                        {
-                            context.AddFailure(error.PropertyName, error.ErrorMessage);
-                        }
-                    }
-                });
+                .SetValidator(x => new CreateRuleSetValidator(x))
+                .WithMessage("Ruleset validation failed.");
         });
     }
 }

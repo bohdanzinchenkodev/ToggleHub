@@ -6,7 +6,7 @@ namespace ToggleHub.Application.Validators.Flag.Update;
 
 public class UpdateFlagValidator : FlagValidatorBase<UpdateFlagDto>
 {
-    public UpdateFlagValidator()
+    public UpdateFlagValidator() : base()
     {
         RuleFor(x => x.Id)
             .GreaterThan(0)
@@ -15,23 +15,8 @@ public class UpdateFlagValidator : FlagValidatorBase<UpdateFlagDto>
         When(x => x.RuleSets.Any(), () =>
         {
             RuleForEach(x => x.RuleSets)
-                .Custom((ruleSet, context) => {
-                    var flag = context.InstanceToValidate;
-                    var validator = new UpdateRuleSetValidator();
-                    
-                    // Create validation context with parent data
-                    var ruleSetContext = new ValidationContext<UpdateRuleSetDto>(ruleSet);
-                    ruleSetContext.RootContextData["ParentReturnValueType"] = flag.ReturnValueType;
-                    
-                    var result = validator.Validate(ruleSetContext);
-                    if (!result.IsValid)
-                    {
-                        foreach (var error in result.Errors)
-                        {
-                            context.AddFailure(error.PropertyName, error.ErrorMessage);
-                        }
-                    }
-                });
+                .SetValidator(x => new UpdateRuleSetValidator(x))
+                .WithMessage("Ruleset validation failed.");
         });
     }
 }

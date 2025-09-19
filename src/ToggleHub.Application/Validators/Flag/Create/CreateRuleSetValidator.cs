@@ -4,9 +4,9 @@ using ToggleHub.Application.Validators.Flag.Base;
 
 namespace ToggleHub.Application.Validators.Flag.Create;
 
-public class CreateRuleSetValidator : RuleSetValidatorBase<CreateRuleSetDto>
+public class CreateRuleSetValidator : RuleSetValidatorBase<CreateRuleSetDto>, IIgnoreValidator
 {
-    public CreateRuleSetValidator() : base()
+    public CreateRuleSetValidator(CreateFlagDto parentFlag) : base(parentFlag)
     {
         When(x => x.Conditions.Any(), () =>
         {

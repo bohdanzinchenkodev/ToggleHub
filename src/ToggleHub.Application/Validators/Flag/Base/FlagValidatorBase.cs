@@ -30,53 +30,53 @@ public abstract class FlagValidatorBase<T> : AbstractValidator<T> where T : Base
 
         RuleFor(x => x.ReturnValueType)
             .NotNull()
-            .WithMessage("ReturnValueType is required.");
+            .WithMessage("Is required.");
         // STRING
         When(x => x.ReturnValueType == ReturnValueType.String, () =>
         {
             RuleFor(x => x.DefaultValueOffRaw)
-                .NotEmpty().WithMessage("DefaultValueOffRaw is required for String type.")
-                .MaximumLength(500).WithMessage("DefaultValueOffRaw must not exceed 500 characters.");
+                .NotEmpty().WithMessage("Is required for String type.")
+                .MaximumLength(500).WithMessage("Must not exceed 500 characters.");
 
             RuleFor(x => x.DefaultValueOnRaw)
-                .NotEmpty().WithMessage("DefaultValueOnRaw is required for String type.")
-                .MaximumLength(500).WithMessage("DefaultValueOnRaw must not exceed 500 characters.");
+                .NotEmpty().WithMessage("Is required for String type.")
+                .MaximumLength(500).WithMessage("Must not exceed 500 characters.");
         });
 
         // BOOLEAN
         When(x => x.ReturnValueType == ReturnValueType.Boolean, () =>
         {
             RuleFor(x => x.DefaultValueOffRaw)
-                .NotEmpty().WithMessage("DefaultValueOffRaw is required for Boolean type.")
-                .Must(FlagValueTypeHelper.IsBoolean).WithMessage("DefaultValueOffRaw must be 'true' or 'false' for Boolean type.");
+                .NotEmpty().WithMessage("Is required for Boolean type.")
+                .Must(FlagValueTypeHelper.IsBoolean).WithMessage("Must be 'true' or 'false' for Boolean type.");
 
             RuleFor(x => x.DefaultValueOnRaw)
                 .NotEmpty().WithMessage("DefaultValueOnRaw is required for Boolean type.")
-                .Must(FlagValueTypeHelper.IsBoolean).WithMessage("DefaultValueOnRaw must be 'true' or 'false' for Boolean type.");
+                .Must(FlagValueTypeHelper.IsBoolean).WithMessage("Must be 'true' or 'false' for Boolean type.");
         });
 
         // NUMBER
         When(x => x.ReturnValueType == ReturnValueType.Number, () =>
         {
             RuleFor(x => x.DefaultValueOffRaw)
-                .NotEmpty().WithMessage("DefaultValueOffRaw is required for Number type.")
-                .Must(FlagValueTypeHelper.IsNumber).WithMessage("DefaultValueOffRaw must be a valid number.");
+                .NotEmpty().WithMessage("Is required for Number type.")
+                .Must(FlagValueTypeHelper.IsNumber).WithMessage("Must be a valid number.");
 
             RuleFor(x => x.DefaultValueOnRaw)
-                .NotEmpty().WithMessage("DefaultValueOnRaw is required for Number type.")
-                .Must(FlagValueTypeHelper.IsNumber).WithMessage("DefaultValueOnRaw must be a valid number.");
+                .NotEmpty().WithMessage("Is required for Number type.")
+                .Must(FlagValueTypeHelper.IsNumber).WithMessage("Must be a valid number.");
         });
 
         // JSON
         When(x => x.ReturnValueType == ReturnValueType.Json, () =>
         {
             RuleFor(x => x.DefaultValueOffRaw)
-                .NotEmpty().WithMessage("DefaultValueOffRaw is required for Json type.")
-                .Must(FlagValueTypeHelper.IsJson).WithMessage("DefaultValueOffRaw must be valid JSON.");
+                .NotEmpty().WithMessage("Is required for Json type.")
+                .Must(FlagValueTypeHelper.IsJson).WithMessage("Must be valid JSON.");
 
             RuleFor(x => x.DefaultValueOnRaw)
-                .NotEmpty().WithMessage("DefaultValueOnRaw is required for Json type.")
-                .Must(FlagValueTypeHelper.IsJson).WithMessage("DefaultValueOnRaw must be valid JSON.");
+                .NotEmpty().WithMessage("Is required for Json type.")
+                .Must(FlagValueTypeHelper.IsJson).WithMessage("Must be valid JSON.");
         });
     }
 }

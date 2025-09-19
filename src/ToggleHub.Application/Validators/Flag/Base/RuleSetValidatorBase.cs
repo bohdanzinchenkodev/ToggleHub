@@ -5,9 +5,9 @@ using ToggleHub.Domain.Entities;
 
 namespace ToggleHub.Application.Validators.Flag.Base;
 
-public abstract class RuleSetValidatorBase<T> : AbstractValidator<T> where T : BaseRuleSetDto
+public abstract class RuleSetValidatorBase<T> : AbstractValidator<T>, IIgnoreValidator where T : BaseRuleSetDto
 {
-    protected RuleSetValidatorBase()
+    protected RuleSetValidatorBase(BaseCreateOrUpdateFlagDto parentFlag)
     {
         RuleFor(x => x.Priority)
             .GreaterThan(0)
@@ -18,35 +18,18 @@ public abstract class RuleSetValidatorBase<T> : AbstractValidator<T> where T : B
             .WithMessage("Percentage must be between 0 and 100.");
      
         RuleFor(x => x.ReturnValueRaw)
-            .NotEmpty().WithMessage("ReturnValueRaw is required.");
+            .NotEmpty().WithMessage("Is required.");
 
         RuleFor(x => x.OffReturnValueRaw)
-            .NotEmpty().WithMessage("OffReturnValueRaw is required.");
+            .NotEmpty().WithMessage("Is required.");
 
-        // Type-specific validation using root context data
         RuleFor(x => x.ReturnValueRaw)
-            .Custom((value, context) => {
-                if (context.RootContextData.TryGetValue("ParentReturnValueType", out var typeObj) && 
-                    typeObj is ReturnValueType type)
-                {
-                    if (!IsValidForType(value, type))
-                    {
-                        context.AddFailure(BuildErr("ReturnValueRaw", type));
-                    }
-                }
-            });
+            .Must(x => IsValidForType(x, parentFlag.ReturnValueType))
+            .WithMessage(BuildErr(parentFlag.ReturnValueType));
 
         RuleFor(x => x.OffReturnValueRaw)
-            .Custom((value, context) => {
-                if (context.RootContextData.TryGetValue("ParentReturnValueType", out var typeObj) && 
-                    typeObj is ReturnValueType type)
-                {
-                    if (!IsValidForType(value, type))
-                    {
-                        context.AddFailure(BuildErr("OffReturnValueRaw", type));
-                    }
-                }
-            });
+            .Must(x => IsValidForType(x, parentFlag.ReturnValueType))
+            .WithMessage(BuildErr(parentFlag.ReturnValueType));
     }
 
     private static bool IsValidForType(string? raw, ReturnValueType? type)
@@ -62,6 +45,6 @@ public abstract class RuleSetValidatorBase<T> : AbstractValidator<T> where T : B
         };
     }
 
-    private static string BuildErr(string field, ReturnValueType? type) =>
-        FlagValueTypeHelper.BuildErr(field, type);
+    private static string BuildErr(ReturnValueType? type) =>
+        FlagValueTypeHelper.BuildErr(type);
 }

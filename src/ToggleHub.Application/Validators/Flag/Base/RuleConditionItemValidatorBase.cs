@@ -3,7 +3,7 @@ using ToggleHub.Application.DTOs.Flag;
 
 namespace ToggleHub.Application.Validators.Flag.Base;
 
-public abstract class RuleConditionItemValidatorBase<T> : AbstractValidator<T> where T : BaseRuleConditionItemDto
+public abstract class RuleConditionItemValidatorBase<T> : AbstractValidator<T>, IIgnoreValidator where T : BaseRuleConditionItemDto
 {
     protected RuleConditionItemValidatorBase()
     {

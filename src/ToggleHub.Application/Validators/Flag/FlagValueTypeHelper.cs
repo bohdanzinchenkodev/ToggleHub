@@ -35,14 +35,14 @@ public static class FlagValueTypeHelper
         }
     }
 
-    public static string BuildErr(string field, ReturnValueType? type) =>
+    public static string BuildErr(ReturnValueType? type) =>
         type switch
         {
-            ReturnValueType.Boolean => $"{field} must be 'true' or 'false' for Boolean flags.",
-            ReturnValueType.Number => $"{field} must be a valid number for Number flags.",
-            ReturnValueType.Json => $"{field} must be valid JSON for Json flags.",
-            ReturnValueType.String => $"{field} must be a non-empty string for String flags.",
-            _ => $"{field} has invalid value."
+            ReturnValueType.Boolean => $"must be 'true' or 'false' for Boolean flags.",
+            ReturnValueType.Number => $"must be a valid number for Number flags.",
+            ReturnValueType.Json => $"must be valid JSON for Json flags.",
+            ReturnValueType.String => $"must be a non-empty string for String flags.",
+            _ => $"has invalid value."
         };
 }
 
