@@ -84,6 +84,16 @@ export const api = createApi({
 				method: 'PATCH',
 			}),
 		}),
+		createFlag: builder.mutation({
+			query: ({ organizationId, projectId, environmentId, body }) => ({
+				url: `organizations/${organizationId}/projects/${projectId}/environments/${environmentId}/flags`,
+				method: 'POST',
+				body,
+			}),
+			invalidatesTags: (result, error, { organizationId, projectId, environmentId }) => [
+				{ type: 'Flags', id: `${organizationId}-${projectId}-${environmentId}` }
+			],
+		}),
 	}),
 });
 
@@ -101,5 +111,6 @@ export const {
 	useDeleteProjectMutation,
 	useGetFlagsByEnvironmentQuery,
 	useEnableFlagMutation,
-	useDisableFlagMutation
+	useDisableFlagMutation,
+	useCreateFlagMutation
 } = api;

@@ -1,5 +1,7 @@
 import React from 'react';
-import { Box, Typography, Paper, Divider } from '@mui/material';
+import { Box, Typography, Paper, Divider, Button } from '@mui/material';
+import { Add as AddIcon } from '@mui/icons-material';
+import { Link } from 'react-router';
 import { getEnvironmentStyle } from '../../constants/environmentConfig.js';
 import FlagsList from './FlagsList.jsx';
 
@@ -10,7 +12,9 @@ const EnvironmentContent = ({
 	isFlagsError,
 	flagsError,
 	processingFlags,
-	onFlagToggle
+	onFlagToggle,
+	orgSlug,
+	projectSlug
 }) => {
 	if (!environment) {
 		return null;
@@ -20,11 +24,28 @@ const EnvironmentContent = ({
 		<Box sx={{ flexGrow: 1 }}>
 			<Paper sx={{ p: 3, minHeight: 400 }}>
 				<Box>
-					<Typography variant="h5" sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-						<Box sx={getEnvironmentStyle(environment.type, 'CONTENT_CHIP')}>
-							{`${environment.type} Environment`}
-						</Box>
-					</Typography>
+					<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+						<Typography variant="h5" sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+							<Box sx={getEnvironmentStyle(environment.type, 'CONTENT_CHIP')}>
+								{`${environment.type} Environment`}
+							</Box>
+						</Typography>
+						
+						<Button
+							component={Link}
+							to={`/organizations/${orgSlug}/projects/${projectSlug}/environments/${environment.type}/flags/create`}
+							variant="contained"
+							startIcon={<AddIcon />}
+							sx={{
+								backgroundColor: 'primary.main',
+								'&:hover': {
+									backgroundColor: 'primary.dark',
+								},
+							}}
+						>
+							Create New Flag
+						</Button>
+					</Box>
 
 					<Divider sx={{ my: 3 }} />
 

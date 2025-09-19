@@ -5,7 +5,8 @@ export const useFormHandler = (initialData = {}) => {
 	const [formErrors, setFormErrors] = useState({});
 
 	const handleInputChange = (e) => {
-		const { name, value } = e.target;
+		const name = e.target.name;
+		const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
 		setFormData(prev => ({
 			...prev,
 			[name]: value
@@ -28,6 +29,7 @@ export const useFormHandler = (initialData = {}) => {
 					serverErrors[field] = errorMessages[0]; // Take the first error message
 				}
 			});
+			console.log("serverErrors:", serverErrors);
 			setFormErrors(serverErrors);
 		}
 	};

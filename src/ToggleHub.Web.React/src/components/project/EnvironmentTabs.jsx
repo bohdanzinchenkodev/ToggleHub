@@ -22,9 +22,6 @@ const EnvironmentTabs = ({ environments, selectedTab, onTabChange }) => {
 				value={selectedTab}
 				onChange={onTabChange}
 				sx={{ 
-					borderRight: { xs: 0, md: 1 }, 
-					borderBottom: { xs: 1, md: 0 },
-					borderColor: 'divider', 
 					minHeight: { xs: 'auto', md: 400 }
 				}}
 			>

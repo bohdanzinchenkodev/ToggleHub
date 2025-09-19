@@ -161,6 +161,8 @@ const Project = () => {
 							flagsError={flagsError}
 							processingFlags={processingFlags}
 							onFlagToggle={handleFlagToggle}
+							orgSlug={orgSlug}
+							projectSlug={projectSlug}
 						/>
 					</Box>
 				)}
