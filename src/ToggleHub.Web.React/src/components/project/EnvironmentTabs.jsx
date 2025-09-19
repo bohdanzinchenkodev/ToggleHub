@@ -11,8 +11,8 @@ const EnvironmentTabs = ({ environments, selectedTab, onTabChange }) => {
 	}
 
 	return (
-		<Paper sx={{ 
-			width: { xs: '100%', md: 240 }, 
+		<Paper sx={{
+			width: { xs: '100%', md: 240 },
 			mr: { xs: 0, md: 2 },
 			mb: { xs: 2, md: 0 }
 		}}>
@@ -21,11 +21,11 @@ const EnvironmentTabs = ({ environments, selectedTab, onTabChange }) => {
 				variant="scrollable"
 				value={selectedTab}
 				onChange={onTabChange}
-				sx={{ 
+				sx={{
 					minHeight: { xs: 'auto', md: 400 }
 				}}
 			>
-				{environments.map((environment, index) => (
+				{environments.map((environment) => (
 					<Tab
 						key={environment.id}
 						label={

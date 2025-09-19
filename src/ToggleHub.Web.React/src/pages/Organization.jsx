@@ -99,7 +99,7 @@ const Organization = () => {
 		}
 
 		try {
-			const response = await createProject({
+			await createProject({
 				organizationId: organization.id,
 				body: {
 					name: formData.name.trim()

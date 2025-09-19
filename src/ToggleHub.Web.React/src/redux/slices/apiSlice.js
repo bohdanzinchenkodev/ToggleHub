@@ -49,7 +49,7 @@ export const api = createApi({
 			}),
 		}),
 		getProjectBySlug: builder.query({
-			query: ({ orgSlug, projectSlug, organizationId }) => 
+			query: ({ projectSlug, organizationId }) =>
 				`organizations/${organizationId}/projects/${projectSlug}`,
 		}),
 		updateProject: builder.mutation({
@@ -66,7 +66,7 @@ export const api = createApi({
 			}),
 		}),
 		getFlagsByEnvironment: builder.query({
-			query: ({ organizationId, projectId, environmentId }) => 
+			query: ({ organizationId, projectId, environmentId }) =>
 				`organizations/${organizationId}/projects/${projectId}/environments/${environmentId}/flags`,
 			providesTags: (result, error, { organizationId, projectId, environmentId }) => [
 				{ type: 'Flags', id: `${organizationId}-${projectId}-${environmentId}` }
@@ -97,11 +97,11 @@ export const api = createApi({
 	}),
 });
 
-export const { 
-	useGetUserQuery, 
-	useLoginMutation, 
-	useRegisterMutation, 
-	useGetOrganizationsByCurrentUserQuery, 
+export const {
+	useGetUserQuery,
+	useLoginMutation,
+	useRegisterMutation,
+	useGetOrganizationsByCurrentUserQuery,
 	useCreateOrganizationMutation,
 	useGetProjectsByOrganizationQuery,
 	useGetOrganizationBySlugQuery,

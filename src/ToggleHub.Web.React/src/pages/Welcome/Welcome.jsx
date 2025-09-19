@@ -5,7 +5,7 @@ import rumblingOff from "../../assets/rumbling_off.png";
 import rumblingOn from "../../assets/rumbling_on.jpg";
 import {useState} from "react";
 import {Button, Box, Typography, Grid, IconButton, Container} from "@mui/material";
-import {useNavigate, Link} from "react-router";
+import {Link} from "react-router";
 
 const Welcome = () => {
 	const [switchedOn, setSwitchedOn] = useState(false);
