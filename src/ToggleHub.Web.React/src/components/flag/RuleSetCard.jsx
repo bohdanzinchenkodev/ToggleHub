@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { Delete as DeleteIcon } from '@mui/icons-material';
 import ReturnValueInput from './ReturnValueInput';
+import ConditionsManager from './ConditionsManager';
 import { RETURN_VALUE_TYPES, RULESET_FIELDS } from '../../constants/flagConstants';
 
 /**
@@ -21,7 +22,11 @@ const RuleSetCard = ({
   returnValueType, 
   onUpdate, 
   onRemove, 
-  getError 
+  getError,
+  onAddCondition,
+  onUpdateCondition,
+  onRemoveCondition,
+  getConditionError
 }) => {
   
   const handleUpdate = (field, value) => {
@@ -118,12 +123,15 @@ const RuleSetCard = ({
           </Grid>
         </Grid>
 
-        {/* Conditions placeholder */}
-        <Box sx={{ mt: 2, p: 2, borderRadius: 1 }}>
-          <Typography variant="body2" color="text.secondary">
-            Conditions will be added in the next step
-          </Typography>
-        </Box>
+        {/* Conditions */}
+        <ConditionsManager
+          conditions={ruleSet.conditions || []}
+          onAdd={onAddCondition}
+          onUpdate={onUpdateCondition}
+          onRemove={onRemoveCondition}
+          getError={getConditionError}
+          ruleSetIndex={index}
+        />
       </CardContent>
     </Card>
   );

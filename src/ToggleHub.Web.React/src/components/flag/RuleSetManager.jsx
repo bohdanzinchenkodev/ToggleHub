@@ -12,7 +12,11 @@ const RuleSetManager = ({
   onAdd, 
   onUpdate, 
   onRemove, 
-  getError 
+  getError,
+  onAddCondition,
+  onUpdateCondition,
+  onRemoveCondition,
+  getConditionError
 }) => {
   
   return (
@@ -44,6 +48,10 @@ const RuleSetManager = ({
               onUpdate={onUpdate}
               onRemove={onRemove}
               getError={getError}
+              onAddCondition={onAddCondition}
+              onUpdateCondition={onUpdateCondition}
+              onRemoveCondition={onRemoveCondition}
+              getConditionError={getConditionError}
             />
           ))}
         </Box>

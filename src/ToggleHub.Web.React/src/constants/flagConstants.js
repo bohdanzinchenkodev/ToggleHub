@@ -52,3 +52,49 @@ export const FORM_FIELDS = {
   DEFAULT_VALUE_OFF_RAW: 'defaultValueOffRaw',
   RULE_SETS: 'ruleSets'
 };
+
+/**
+ * Rule field types for conditions
+ */
+export const RULE_FIELD_TYPES = {
+  BOOLEAN: 'Boolean',
+  STRING: 'String', 
+  NUMBER: 'Number',
+  LIST: 'List'
+};
+
+/**
+ * Operator types for conditions
+ */
+export const OPERATOR_TYPES = {
+  EQUALS: 'Equals',
+  NOT_EQUALS: 'NotEquals',
+  GREATER_THAN: 'GreaterThan',
+  LESS_THAN: 'LessThan',
+  CONTAINS: 'Contains',
+  STARTS_WITH: 'StartsWith',
+  ENDS_WITH: 'EndsWith',
+  IN: 'In',
+  NOT_IN: 'NotIn'
+};
+
+/**
+ * Valid operators for each field type
+ */
+export const VALID_OPERATORS = {
+  [RULE_FIELD_TYPES.BOOLEAN]: [OPERATOR_TYPES.EQUALS, OPERATOR_TYPES.NOT_EQUALS],
+  [RULE_FIELD_TYPES.STRING]: [
+    OPERATOR_TYPES.EQUALS, 
+    OPERATOR_TYPES.NOT_EQUALS, 
+    OPERATOR_TYPES.CONTAINS, 
+    OPERATOR_TYPES.STARTS_WITH, 
+    OPERATOR_TYPES.ENDS_WITH
+  ],
+  [RULE_FIELD_TYPES.NUMBER]: [
+    OPERATOR_TYPES.EQUALS, 
+    OPERATOR_TYPES.NOT_EQUALS, 
+    OPERATOR_TYPES.GREATER_THAN, 
+    OPERATOR_TYPES.LESS_THAN
+  ],
+  [RULE_FIELD_TYPES.LIST]: [OPERATOR_TYPES.IN, OPERATOR_TYPES.NOT_IN]
+};

@@ -80,6 +80,8 @@ export const useFlagForm = (initialData = {}) => {
   // Prepare flag data for submission
   const prepareFlagData = useCallback(() => {
     return {
+      projectId: 0, // Will be set by the API call
+      environmentId: 0, // Will be set by the API call
       key: formData.key,
       description: formData.description,
       enabled: formData.enabled,
@@ -91,7 +93,15 @@ export const useFlagForm = (initialData = {}) => {
         offReturnValueRaw: ruleSet.offReturnValueRaw,
         priority: ruleSet.priority,
         percentage: ruleSet.percentage,
-        conditions: ruleSet.conditions
+        conditions: ruleSet.conditions.map(condition => ({
+          items: condition.items || [],
+          field: condition.field,
+          fieldType: condition.fieldType,
+          operator: condition.operator,
+          valueString: condition.valueString,
+          valueNumber: condition.valueNumber,
+          valueBoolean: condition.valueBoolean
+        }))
       }))
     };
   }, [formData]);

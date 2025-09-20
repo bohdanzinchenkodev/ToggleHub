@@ -99,6 +99,10 @@ const FlagForm = ({
         onUpdate={ruleSetManager.updateRuleSet}
         onRemove={ruleSetManager.removeRuleSet}
         getError={ruleSetManager.getRuleSetError}
+        onAddCondition={ruleSetManager.addCondition}
+        onUpdateCondition={ruleSetManager.updateCondition}
+        onRemoveCondition={ruleSetManager.removeCondition}
+        getConditionError={ruleSetManager.getConditionError}
       />
 
       {/* Initial State */}

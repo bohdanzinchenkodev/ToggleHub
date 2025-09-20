@@ -79,12 +79,64 @@ export const useRuleSetManager = (formData, setFormData, formErrors, setFormErro
     return formErrors[errorKey] || null;
   }, [formErrors]);
 
+  // Condition management functions
+  const addCondition = useCallback((ruleSetIndex, newCondition) => {
+    setFormData(prev => ({
+      ...prev,
+      ruleSets: prev.ruleSets.map((ruleSet, index) =>
+        index === ruleSetIndex
+          ? { ...ruleSet, conditions: [...(ruleSet.conditions || []), newCondition] }
+          : ruleSet
+      )
+    }));
+  }, [setFormData]);
+
+  const updateCondition = useCallback((ruleSetIndex, conditionIndex, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      ruleSets: prev.ruleSets.map((ruleSet, index) =>
+        index === ruleSetIndex
+          ? {
+              ...ruleSet,
+              conditions: ruleSet.conditions.map((condition, cIndex) =>
+                cIndex === conditionIndex ? { ...condition, [field]: value } : condition
+              )
+            }
+          : ruleSet
+      )
+    }));
+  }, [setFormData]);
+
+  const removeCondition = useCallback((ruleSetIndex, conditionIndex) => {
+    setFormData(prev => ({
+      ...prev,
+      ruleSets: prev.ruleSets.map((ruleSet, index) =>
+        index === ruleSetIndex
+          ? {
+              ...ruleSet,
+              conditions: ruleSet.conditions.filter((_, cIndex) => cIndex !== conditionIndex)
+            }
+          : ruleSet
+      )
+    }));
+  }, [setFormData]);
+
+  const getConditionError = useCallback((ruleSetIndex, conditionIndex, field) => {
+    if (!formErrors) return null;
+    const errorKey = `ruleSets[${ruleSetIndex}].conditions[${conditionIndex}].${field}`;
+    return formErrors[errorKey] || null;
+  }, [formErrors]);
+
   return {
     addRuleSet,
     removeRuleSet,
     updateRuleSet,
     updateRuleSetsForTypeChange,
     getRuleSetError,
+    addCondition,
+    updateCondition,
+    removeCondition,
+    getConditionError,
     ruleSets: formData.ruleSets
   };
 };
