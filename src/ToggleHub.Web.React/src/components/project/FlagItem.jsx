@@ -1,7 +1,16 @@
 import React from 'react';
-import { Box, Typography, Chip, Switch, ListItem } from '@mui/material';
+import { Box, Typography, Chip, Switch, ListItem, IconButton, Tooltip } from '@mui/material';
+import { Edit as EditIcon } from '@mui/icons-material';
+import { useNavigate, useParams } from 'react-router';
 
-const FlagItem = ({ flag, isProcessing, onToggle }) => {
+const FlagItem = ({ flag, isProcessing, onToggle, environmentType }) => {
+	const navigate = useNavigate();
+	const { orgSlug, projectSlug } = useParams();
+
+	const handleEdit = () => {
+		navigate(`/organizations/${orgSlug}/projects/${projectSlug}/environments/${environmentType}/flags/${flag.id}/edit`);
+	};
+
 	return (
 		<ListItem 
 			sx={{
@@ -21,12 +30,21 @@ const FlagItem = ({ flag, isProcessing, onToggle }) => {
 						ID: {flag.id}
 					</Typography>
 				</Box>
-				<Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+				<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
 					<Chip
 						label={flag.enabled ? 'Enabled' : 'Disabled'}
 						color={flag.enabled ? 'success' : 'default'}
 						size="small"
 					/>
+					<Tooltip title="Edit flag">
+						<IconButton 
+							size="small" 
+							onClick={handleEdit}
+							color="primary"
+						>
+							<EditIcon fontSize="small" />
+						</IconButton>
+					</Tooltip>
 					<Switch
 						checked={flag.enabled}
 						disabled={isProcessing}

@@ -89,12 +89,18 @@ export const useFlagForm = (initialData = {}) => {
       defaultValueOnRaw: formData.defaultValueOnRaw,
       defaultValueOffRaw: formData.defaultValueOffRaw,
       ruleSets: formData.ruleSets.map(ruleSet => ({
+        ...(ruleSet.id && { id: ruleSet.id }), // Include id if it exists (for updates)
         returnValueRaw: ruleSet.returnValueRaw,
         offReturnValueRaw: ruleSet.offReturnValueRaw,
         priority: ruleSet.priority,
         percentage: ruleSet.percentage,
         conditions: ruleSet.conditions.map(condition => ({
-          items: condition.items || [],
+          ...(condition.id && { id: condition.id }), // Include id if it exists (for updates)
+          items: (condition.items || []).map(item => ({
+            ...(item.id && { id: item.id }), // Include id if it exists (for updates)
+            valueString: item.valueString,
+            valueNumber: item.valueNumber
+          })),
           field: condition.field,
           fieldType: condition.fieldType,
           operator: condition.operator,

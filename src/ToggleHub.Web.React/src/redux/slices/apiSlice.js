@@ -94,6 +94,24 @@ export const api = createApi({
 				{ type: 'Flags', id: `${organizationId}-${projectId}-${environmentId}` }
 			],
 		}),
+		updateFlag: builder.mutation({
+			query: ({ organizationId, projectId, environmentId, flagId, body }) => ({
+				url: `organizations/${organizationId}/projects/${projectId}/environments/${environmentId}/flags`,
+				method: 'PUT',
+				body: { ...body, id: flagId },
+			}),
+			invalidatesTags: (result, error, { organizationId, projectId, environmentId, flagId }) => [
+				{ type: 'Flags', id: `${organizationId}-${projectId}-${environmentId}` },
+				{ type: 'Flag', id: `${organizationId}-${projectId}-${environmentId}-${flagId}` }
+			],
+		}),
+		getFlagById: builder.query({
+			query: ({ organizationId, projectId, environmentId, flagId }) =>
+				`organizations/${organizationId}/projects/${projectId}/environments/${environmentId}/flags/${flagId}`,
+			providesTags: (result, error, { organizationId, projectId, environmentId, flagId }) => [
+				{ type: 'Flag', id: `${organizationId}-${projectId}-${environmentId}-${flagId}` }
+			],
+		}),
 	}),
 });
 
@@ -112,5 +130,7 @@ export const {
 	useGetFlagsByEnvironmentQuery,
 	useEnableFlagMutation,
 	useDisableFlagMutation,
-	useCreateFlagMutation
+	useCreateFlagMutation,
+	useUpdateFlagMutation,
+	useGetFlagByIdQuery
 } = api;

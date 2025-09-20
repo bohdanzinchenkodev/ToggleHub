@@ -13,6 +13,7 @@ import OrganizationsList from "./pages/OrganizationsList.jsx";
 import Organization from "./pages/Organization.jsx";
 import Project from "./pages/Project.jsx";
 import CreateFlag from "./pages/CreateFlag.jsx";
+import UpdateFlag from "./pages/UpdateFlag.jsx";
 
 function App() {
 
@@ -43,6 +44,13 @@ function App() {
             <ProtectedRoute>
                 <Layout>
                     <CreateFlag />
+                </Layout>
+            </ProtectedRoute>
+        } />
+        <Route path="organizations/:orgSlug/projects/:projectSlug/environments/:envType/flags/:flagId/edit" element={
+            <ProtectedRoute>
+                <Layout>
+                    <UpdateFlag />
                 </Layout>
             </ProtectedRoute>
         } />

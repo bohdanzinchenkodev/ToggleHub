@@ -9,7 +9,8 @@ const FlagsList = ({
 	error, 
 	processingFlags, 
 	onFlagToggle,
-	hasSelectedEnvironment = false
+	hasSelectedEnvironment = false,
+	environmentType
 }) => {
 	// Show loading if explicitly loading OR if we have a selected environment but no flags yet
 	const shouldShowLoading = isLoading || (hasSelectedEnvironment && !flags && !isError);
@@ -46,6 +47,7 @@ const FlagsList = ({
 							flag={flag}
 							isProcessing={processingFlags.has(flag.id)}
 							onToggle={onFlagToggle}
+							environmentType={environmentType}
 						/>
 					))}
 				</List>
