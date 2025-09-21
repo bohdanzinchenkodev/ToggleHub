@@ -14,6 +14,7 @@ import Organization from "./pages/Organization.jsx";
 import Project from "./pages/Project.jsx";
 import CreateFlag from "./pages/CreateFlag.jsx";
 import UpdateFlag from "./pages/UpdateFlag.jsx";
+import ApiKeys from "./pages/ApiKeys.jsx";
 import NotificationContainer from "./components/notifications/NotificationContainer.jsx";
 
 function App() {
@@ -53,6 +54,13 @@ function App() {
             <ProtectedRoute>
                 <Layout>
                     <UpdateFlag />
+                </Layout>
+            </ProtectedRoute>
+        } />
+        <Route path="organizations/:orgSlug/projects/:projectSlug/environments/:envType/apikeys" element={
+            <ProtectedRoute>
+                <Layout>
+                    <ApiKeys />
                 </Layout>
             </ProtectedRoute>
         } />

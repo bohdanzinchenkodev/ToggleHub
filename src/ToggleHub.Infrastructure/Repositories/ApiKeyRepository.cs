@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using ToggleHub.Domain;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Repositories;
 using ToggleHub.Infrastructure.Data;
+using ToggleHub.Infrastructure.Extensions;
 
 namespace ToggleHub.Infrastructure.Repositories;
 
@@ -18,6 +20,22 @@ public class ApiKeyRepository : BaseRepository<ApiKey>, IApiKeyRepository
     public async Task<bool> KeyExistsAsync(string key)
     {
         return await _dbSet.AnyAsync(a => a.Key == key);
+    }
+
+    public Task<IPagedList<ApiKey>> GetApiKeysAsync(int organizationId, int projectId, int environmentId, int pageNumber, int pageSize)
+    {
+        var query = _dbSet.AsQueryable();
+
+        if (organizationId > 0)
+            query = query.Where(a => a.OrganizationId == organizationId);
+
+        if (projectId > 0)
+            query = query.Where(a => a.ProjectId == projectId);
+
+        if (environmentId > 0)
+            query = query.Where(a => a.EnvironmentId == environmentId);
+
+        return query.ToPagedListAsync(pageNumber, pageSize);
     }
 
     public async Task<IEnumerable<ApiKey>> GetByProjectIdAsync(int projectId)

@@ -112,6 +112,10 @@ export const api = createApi({
 				{ type: 'Flag', id: `${organizationId}-${projectId}-${environmentId}-${flagId}` }
 			],
 		}),
+		getApiKeys: builder.query({
+			query: ({ organizationId, projectId, environmentId }) =>
+				`organizations/${organizationId}/projects/${projectId}/environments/${environmentId}/apikeys`,
+		}),
 	}),
 });
 
@@ -132,5 +136,6 @@ export const {
 	useDisableFlagMutation,
 	useCreateFlagMutation,
 	useUpdateFlagMutation,
-	useGetFlagByIdQuery
+	useGetFlagByIdQuery,
+	useGetApiKeysQuery
 } = api;

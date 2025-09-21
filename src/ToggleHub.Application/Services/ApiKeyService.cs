@@ -1,3 +1,4 @@
+using ToggleHub.Application.DTOs;
 using ToggleHub.Application.DTOs.ApiKey;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Application.Mapping;
@@ -39,6 +40,13 @@ public class ApiKeyService : IApiKeyService
     {
         var apiKey = await _apiKeyRepository.GetByKeyAsync(key);
         return apiKey?.ToDto();
+    }
+
+    public async Task<PagedListDto<ApiKeyDto>> GetApiKeysAsync(int organizationId, int projectId, int environmentId, int pageNumber, int pageSize)
+    {
+        var list = await _apiKeyRepository.GetApiKeysAsync(organizationId, projectId, environmentId, pageNumber, pageSize);
+        var dtos = list.Select(ak => ak.ToDto()).ToList();
+        return new PagedListDto<ApiKeyDto>(dtos, list.TotalCount, list.PageIndex, list.PageSize);
     }
 
     private async Task<ApiKey> PrepareApiKeyEntityAsync(int projectId, int environmentId, int organizationId)

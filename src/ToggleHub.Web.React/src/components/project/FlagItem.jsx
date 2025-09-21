@@ -26,9 +26,6 @@ const FlagItem = ({ flag, isProcessing, onToggle, environmentType }) => {
 					<Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
 						{flag.key}
 					</Typography>
-					<Typography variant="caption" color="text.secondary">
-						ID: {flag.id}
-					</Typography>
 				</Box>
 				<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
 					<Chip

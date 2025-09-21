@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography, Paper, Divider, Button } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
+import { Add as AddIcon, Key as KeyIcon } from '@mui/icons-material';
 import { Link } from 'react-router';
 import { getEnvironmentStyle } from '../../constants/environmentConfig.js';
 import FlagsList from './FlagsList.jsx';
@@ -31,20 +31,30 @@ const EnvironmentContent = ({
 							</Box>
 						</Typography>
 						
-						<Button
-							component={Link}
-							to={`/organizations/${orgSlug}/projects/${projectSlug}/environments/${environment.type}/flags/create`}
-							variant="contained"
-							startIcon={<AddIcon />}
-							sx={{
-								backgroundColor: 'primary.main',
-								'&:hover': {
-									backgroundColor: 'primary.dark',
-								},
-							}}
-						>
-							Create New Flag
-						</Button>
+						<Box sx={{ display: 'flex', gap: 2 }}>
+							<Button
+								component={Link}
+								to={`/organizations/${orgSlug}/projects/${projectSlug}/environments/${environment.type}/apikeys`}
+								variant="outlined"
+								startIcon={<KeyIcon />}
+							>
+								API Keys
+							</Button>
+							<Button
+								component={Link}
+								to={`/organizations/${orgSlug}/projects/${projectSlug}/environments/${environment.type}/flags/create`}
+								variant="contained"
+								startIcon={<AddIcon />}
+								sx={{
+									backgroundColor: 'primary.main',
+									'&:hover': {
+										backgroundColor: 'primary.dark',
+									},
+								}}
+							>
+								Create New Flag
+							</Button>
+						</Box>
 					</Box>
 
 					<Divider sx={{ my: 3 }} />
