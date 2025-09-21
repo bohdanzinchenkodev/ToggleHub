@@ -17,7 +17,7 @@ import {
 	IconButton,
 	Tooltip
 } from '@mui/material';
-import { useParams, useNavigate } from 'react-router';
+import { useParams } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { ArrowBack as ArrowBackIcon, Key as KeyIcon, ContentCopy as CopyIcon } from '@mui/icons-material';
 import {
@@ -26,10 +26,10 @@ import {
 	useGetApiKeysQuery
 } from '../redux/slices/apiSlice';
 import { showSuccess, showError } from '../redux/slices/notificationsSlice';
+import { Link } from 'react-router';
 
 const ApiKeys = () => {
 	const { orgSlug, projectSlug, envType } = useParams();
-	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
 	const { data: organization, isLoading: isOrgLoading, isError: isOrgError, error: orgError } = useGetOrganizationBySlugQuery(orgSlug);
@@ -57,10 +57,6 @@ const ApiKeys = () => {
 			skip: !organization?.id || !project?.id || !environment?.id
 		}
 	);
-
-	const handleGoBack = () => {
-		navigate(`/organizations/${orgSlug}/projects/${projectSlug}`);
-	};
 
 	const maskApiKey = (key) => {
 		if (!key || key.length <= 8) return key;
@@ -125,7 +121,8 @@ const ApiKeys = () => {
 				<Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
 					<Button
 						startIcon={<ArrowBackIcon />}
-						onClick={handleGoBack}
+						component={Link}
+						to={`/organizations/${orgSlug}/projects/${projectSlug}`}
 						variant="outlined"
 					>
 						Back to Project

@@ -8,7 +8,7 @@ import {
 	Container,
 	CircularProgress
 } from '@mui/material';
-import { useParams, useNavigate } from 'react-router';
+import { useParams } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import {
@@ -19,6 +19,7 @@ import {
 import { showSuccess, showError } from '../redux/slices/notificationsSlice';
 import { useFlagForm } from '../hooks/useFlagForm';
 import FlagForm from '../components/flag/FlagForm';
+import { Link, useNavigate } from 'react-router';
 
 const CreateFlag = () => {
 	const { orgSlug, projectSlug, envType } = useParams();
@@ -103,10 +104,6 @@ const CreateFlag = () => {
 		}
 	};
 
-	const handleGoBack = () => {
-		navigate(`/organizations/${orgSlug}/projects/${projectSlug}`);
-	};
-
 	// Loading states
 	if (isOrgLoading || isProjectLoading) {
 		return (
@@ -155,7 +152,8 @@ const CreateFlag = () => {
 				<Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
 					<Button
 						startIcon={<ArrowBackIcon />}
-						onClick={handleGoBack}
+						component={Link}
+						to={`/organizations/${orgSlug}/projects/${projectSlug}`}
 						variant="outlined"
 					>
 						Back to Project

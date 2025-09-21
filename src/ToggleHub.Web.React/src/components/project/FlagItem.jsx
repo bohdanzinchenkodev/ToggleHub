@@ -1,15 +1,10 @@
 import React from 'react';
 import { Box, Typography, Chip, Switch, ListItem, IconButton, Tooltip } from '@mui/material';
 import { Edit as EditIcon } from '@mui/icons-material';
-import { useNavigate, useParams } from 'react-router';
+import { useParams, Link } from 'react-router';
 
 const FlagItem = ({ flag, isProcessing, onToggle, environmentType }) => {
-	const navigate = useNavigate();
 	const { orgSlug, projectSlug } = useParams();
-
-	const handleEdit = () => {
-		navigate(`/organizations/${orgSlug}/projects/${projectSlug}/environments/${environmentType}/flags/${flag.id}/edit`);
-	};
 
 	return (
 		<ListItem 
@@ -36,7 +31,8 @@ const FlagItem = ({ flag, isProcessing, onToggle, environmentType }) => {
 					<Tooltip title="Edit flag">
 						<IconButton 
 							size="small" 
-							onClick={handleEdit}
+							component={Link}
+							to={`/organizations/${orgSlug}/projects/${projectSlug}/environments/${environmentType}/flags/${flag.id}/edit`}
 							color="primary"
 						>
 							<EditIcon fontSize="small" />

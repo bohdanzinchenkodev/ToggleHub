@@ -1,34 +1,43 @@
 import React from "react";
 import { AppBar, Toolbar, Box, Typography } from "@mui/material";
-import { useNavigate } from "react-router";
+import { Link } from "react-router";
 import logo from "../../assets/th-logo.png";
 
 const Navbar = () => {
-	const navigate = useNavigate();
-
 	return (
 		<AppBar position="static" sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
 			<Toolbar>
 				<Box
-					component="img"
-					src={logo}
-					alt="ToggleHub Logo"
+					component={Link}
+					to="/"
 					sx={{
 						height: 70,
 						width: 'auto',
 						cursor: 'pointer',
+						display: 'block'
 					}}
-					onClick={() => navigate('/')}
-				/>
+				>
+					<Box
+						component="img"
+						src={logo}
+						alt="ToggleHub Logo"
+						sx={{
+							height: 70,
+							width: 'auto',
+							display: 'block'
+						}}
+					/>
+				</Box>
 				<Typography
 					variant="h4"
-					component="div"
+					component={Link}
+					to="/"
 					sx={{
 						fontWeight: 'bold',
 						cursor: 'pointer',
-						color: 'inherit'
+						color: 'inherit',
+						textDecoration: 'none'
 					}}
-					onClick={() => navigate('/')}
 				>
 					ToggleHub
 				</Typography>
