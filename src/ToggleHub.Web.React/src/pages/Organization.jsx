@@ -5,9 +5,12 @@ import {
 	Grid,
 	CircularProgress,
 	Alert,
-	Container
+	Container,
+	Button
 } from "@mui/material";
 import { useParams } from "react-router";
+import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
+import { Link } from 'react-router';
 import {
 	useGetOrganizationBySlugQuery,
 	useGetProjectsByOrganizationQuery,
@@ -140,7 +143,20 @@ const Organization = () => {
 
 	return (
 		<Container component="main" maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-			{/*<AppStateDisplay />*/}
+			<Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 2 }}>
+				<Box sx={{ '& > *': { mb: 0 } }}>
+					<AppStateDisplay />
+				</Box>
+				<Button
+					startIcon={<ArrowBackIcon />}
+					component={Link}
+					to="/"
+					variant="outlined"
+				>
+					Back to Organizations
+				</Button>
+			</Box>
+
 			<Box>
 				<Typography variant="h4" component="h1" sx={{ mb: 4, fontWeight: 'bold', textAlign: 'center' }}>
 					{organization?.name}
