@@ -9,18 +9,21 @@ import {
 	CircularProgress
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router';
+import { useDispatch } from 'react-redux';
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import {
 	useGetOrganizationBySlugQuery,
 	useGetProjectBySlugQuery,
 	useCreateFlagMutation
 } from '../redux/slices/apiSlice';
+import { showSuccess, showError } from '../redux/slices/notificationsSlice';
 import { useFlagForm } from '../hooks/useFlagForm';
 import FlagForm from '../components/flag/FlagForm';
 
 const CreateFlag = () => {
 	const { orgSlug, projectSlug, envType } = useParams();
 	const navigate = useNavigate();
+	const dispatch = useDispatch();
 
 	// Get organization details by slug
 	const {
@@ -82,18 +85,20 @@ const CreateFlag = () => {
 		try {
 			const flagData = prepareFlagData();
 
-			await createFlag({
+			const result = await createFlag({
 				organizationId: organization.id,
 				projectId: project.id,
 				environmentId: environment.id,
 				body: flagData
 			}).unwrap();
 
-			// Navigate back to project page on success
-			navigate(`/organizations/${orgSlug}/projects/${projectSlug}`);
+			// Show success notification and redirect to edit page
+			dispatch(showSuccess(`Flag "${result.key}" created successfully!`));
+			navigate(`/organizations/${orgSlug}/projects/${projectSlug}/environments/${envType}/flags/${result.id}/edit`);
 		} catch (error) {
 			// Handle server validation errors
 			handleServerErrors(error);
+			dispatch(showError('Failed to create flag. Please check the form for errors.'));
 			console.error('Error creating flag:', error);
 		}
 	};

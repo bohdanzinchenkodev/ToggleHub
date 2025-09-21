@@ -14,11 +14,13 @@ import Organization from "./pages/Organization.jsx";
 import Project from "./pages/Project.jsx";
 import CreateFlag from "./pages/CreateFlag.jsx";
 import UpdateFlag from "./pages/UpdateFlag.jsx";
+import NotificationContainer from "./components/notifications/NotificationContainer.jsx";
 
 function App() {
 
   return (
-    <Routes>
+    <>
+      <Routes>
         <Route index element={
             <ProtectedRoute>
                 <Layout>
@@ -66,6 +68,8 @@ function App() {
             <Register />
         </Layout>} />
     </Routes>
+    <NotificationContainer />
+    </>
   )
 }
 

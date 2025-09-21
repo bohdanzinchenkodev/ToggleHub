@@ -9,6 +9,7 @@ import {
 	CircularProgress
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router';
+import { useDispatch } from 'react-redux';
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import {
 	useGetOrganizationBySlugQuery,
@@ -16,12 +17,14 @@ import {
 	useGetFlagByIdQuery,
 	useUpdateFlagMutation
 } from '../redux/slices/apiSlice';
+import { showSuccess, showError } from '../redux/slices/notificationsSlice';
 import { useFlagForm } from '../hooks/useFlagForm';
 import FlagForm from '../components/flag/FlagForm';
 
 const UpdateFlag = () => {
 	const { orgSlug, projectSlug, envType, flagId } = useParams();
 	const navigate = useNavigate();
+	const dispatch = useDispatch();
 
 	// Get organization details by slug
 	const {
@@ -124,7 +127,7 @@ const UpdateFlag = () => {
 		try {
 			const flagData = prepareFlagData();
 
-			await updateFlag({
+			const result = await updateFlag({
 				organizationId: organization.id,
 				projectId: project.id,
 				environmentId: environment.id,
@@ -132,11 +135,12 @@ const UpdateFlag = () => {
 				body: flagData
 			}).unwrap();
 
-			// Navigate back to project page on success
-			navigate(`/organizations/${orgSlug}/projects/${projectSlug}`);
+			// Show success notification
+			dispatch(showSuccess(`Flag "${result.key}" updated successfully!`));
 		} catch (error) {
 			// Handle server validation errors
 			handleServerErrors(error);
+			dispatch(showError('Failed to update flag. Please check the form for errors.'));
 			console.error('Error updating flag:', error);
 		}
 	};
