@@ -4,7 +4,7 @@ using System.Text.Json;
 using ToggleHub.Application.DTOs.Flag.Evaluation;
 using ToggleHub.Application.Interfaces;
 
-namespace ToggleHub.Application.Services;
+namespace ToggleHub.Infrastructure.Cache;
 
 public class FlagEvaluationCacheKeyFactory : IFlagEvaluationCacheKeyFactory
 {

@@ -31,8 +31,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IBucketingService, Sha256BucketingService>();
         services.AddScoped<IConditionEvaluator, ConditionEvaluator>();
         services.AddScoped<IApiKeyGenerator, ApiKeyGenerator>();
-        services.AddScoped<IFlagEvaluationCacheKeyFactory, FlagEvaluationCacheKeyFactory>();
-        services.AddScoped<IFlagEvaluationCacheManager, FlagEvaluationCacheManager>();
         
         // Register SlugGenerator
         services.AddScoped<ISlugGenerator, SlugGenerator>();

@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Repositories;
+using ToggleHub.Infrastructure.Cache;
 using ToggleHub.Infrastructure.Data;
 using ToggleHub.Infrastructure.Repositories;
 using ToggleHub.Infrastructure.Services;
@@ -32,6 +33,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRuleSetRepository, RuleSetRepository>();
         services.AddScoped<IRuleConditionRepository, RuleConditionRepository>();
         services.AddScoped<IRuleConditionItemRepository, RuleConditionItemRepository>();
+        
+        services.AddScoped<IFlagEvaluationCacheKeyFactory, FlagEvaluationCacheKeyFactory>();
+        services.AddScoped<IFlagEvaluationCacheManager, FlagEvaluationCacheManager>();
         
         services.AddScoped<IApiKeyContext, ApiKeyContext>();
         
