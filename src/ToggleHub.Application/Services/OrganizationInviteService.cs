@@ -106,7 +106,11 @@ public class OrganizationInviteService : IOrganizationInviteService
         };
 
         await _orgMemberRepository.CreateAsync(orgMember);
-        await _inviteRepository.MarkAsAcceptedAsync(invite.Id);
+        
+        // Update invite status directly
+        invite.Status = InviteStatus.Accepted;
+        invite.AcceptedAt = DateTime.UtcNow;
+        await _inviteRepository.UpdateAsync(invite);
     }
 
     public async Task DeclineInviteAsync(string token)
@@ -119,7 +123,10 @@ public class OrganizationInviteService : IOrganizationInviteService
         if (invite.Status != InviteStatus.Pending)
             throw new ApplicationException($"Invite cannot be declined. Current status: {invite.Status}");
 
-        await _inviteRepository.MarkAsDeclinedAsync(invite.Id);
+        // Update invite status directly
+        invite.Status = InviteStatus.Declined;
+        invite.DeclinedAt = DateTime.UtcNow;
+        await _inviteRepository.UpdateAsync(invite);
     }
 
     public async Task RevokeInviteAsync(int inviteId)
@@ -132,7 +139,9 @@ public class OrganizationInviteService : IOrganizationInviteService
         if (invite.Status != InviteStatus.Pending)
             throw new ApplicationException($"Invite cannot be revoked. Current status: {invite.Status}");
 
-        await _inviteRepository.MarkAsRevokedAsync(inviteId);
+        // Update invite status directly
+        invite.Status = InviteStatus.Revoked;
+        await _inviteRepository.UpdateAsync(invite);
     }
 
     public async Task ResendInviteAsync(int inviteId)
@@ -158,8 +167,10 @@ public class OrganizationInviteService : IOrganizationInviteService
         
         foreach (var invite in expiredInvites)
         {
-            await _inviteRepository.MarkAsExpiredAsync(invite.Id);
+            invite.ExpiresAt = DateTime.UtcNow;
+            invite.Status = InviteStatus.Expired;
         }
+        await _inviteRepository.UpdateAsync(expiredInvites);
     }
 
     public async Task<bool> HasPendingInviteAsync(string email, int organizationId)

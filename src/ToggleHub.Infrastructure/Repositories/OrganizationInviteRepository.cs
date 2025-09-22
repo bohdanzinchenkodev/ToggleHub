@@ -52,46 +52,4 @@ public class OrganizationInviteRepository : BaseRepository<OrganizationInvite>, 
                           && i.Status == InviteStatus.Pending
                           && i.ExpiresAt > DateTime.UtcNow);
     }
-
-    public async Task MarkAsExpiredAsync(int inviteId)
-    {
-        var invite = await GetByIdAsync(inviteId);
-        if (invite != null)
-        {
-            invite.Status = InviteStatus.Expired;
-            await UpdateAsync(invite);
-        }
-    }
-
-    public async Task MarkAsAcceptedAsync(int inviteId)
-    {
-        var invite = await GetByIdAsync(inviteId);
-        if (invite != null)
-        {
-            invite.Status = InviteStatus.Accepted;
-            invite.AcceptedAt = DateTime.UtcNow;
-            await UpdateAsync(invite);
-        }
-    }
-
-    public async Task MarkAsDeclinedAsync(int inviteId)
-    {
-        var invite = await GetByIdAsync(inviteId);
-        if (invite != null)
-        {
-            invite.Status = InviteStatus.Declined;
-            invite.DeclinedAt = DateTime.UtcNow;
-            await UpdateAsync(invite);
-        }
-    }
-
-    public async Task MarkAsRevokedAsync(int inviteId)
-    {
-        var invite = await GetByIdAsync(inviteId);
-        if (invite != null)
-        {
-            invite.Status = InviteStatus.Revoked;
-            await UpdateAsync(invite);
-        }
-    }
 }

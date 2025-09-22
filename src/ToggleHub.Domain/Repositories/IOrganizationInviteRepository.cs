@@ -9,8 +9,4 @@ public interface IOrganizationInviteRepository : IBaseRepository<OrganizationInv
     Task<IPagedList<OrganizationInvite>> GetByOrganizationIdAsync(int organizationId, int pageIndex = 0, int pageSize = int.MaxValue);
     Task<List<OrganizationInvite>> GetExpiredInvitesAsync();
     Task<bool> HasPendingInviteAsync(string email, int organizationId);
-    Task MarkAsExpiredAsync(int inviteId);
-    Task MarkAsAcceptedAsync(int inviteId);
-    Task MarkAsDeclinedAsync(int inviteId);
-    Task MarkAsRevokedAsync(int inviteId);
 }
