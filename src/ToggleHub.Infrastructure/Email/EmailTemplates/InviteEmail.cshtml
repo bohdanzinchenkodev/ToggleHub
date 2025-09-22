@@ -1,0 +1,13 @@
+@model ToggleHub.Application.DTOs.OrganizationInvite.InviteEmailDto
+
+<!DOCTYPE html>
+<html lang="en">
+<body>
+  <p>Hello,</p>
+  <p>You’ve been invited to join <strong>@Model.OrganizationName</strong>.</p>
+  <p>
+    Click <a href="@Model.InviteLink">here</a> to accept your invitation.
+  </p>
+  <p>This link will expire on @Model.ExpiresAt.ToString("yyyy-MM-dd").</p>
+</body>
+</html>
