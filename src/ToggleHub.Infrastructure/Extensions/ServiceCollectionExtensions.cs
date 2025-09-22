@@ -1,11 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Repositories;
 using ToggleHub.Infrastructure.Data;
 using ToggleHub.Infrastructure.Repositories;
 using ToggleHub.Infrastructure.Services;
+using ToggleHub.Infrastructure.Settings;
 
 namespace ToggleHub.Infrastructure.Extensions;
 
@@ -32,6 +34,12 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRuleConditionItemRepository, RuleConditionItemRepository>();
         
         services.AddScoped<IApiKeyContext, ApiKeyContext>();
+        
+        // Register SendGrid settings
+        
+        services.Configure<SendGridSettings>(configuration.GetSection("SendGrid"));
+        services.AddSingleton(registeredServices =>
+            registeredServices.GetRequiredService<IOptions<SendGridSettings>>().Value);
 
         return services;
     }

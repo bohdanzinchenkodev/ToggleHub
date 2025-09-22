@@ -1,4 +1,5 @@
 using FluentValidation;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ToggleHub.Application.EventHandlers;
 using ToggleHub.Application.Interfaces;
@@ -9,7 +10,7 @@ namespace ToggleHub.Application.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services)
+    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
         // Register FluentValidation
         services.AddValidatorsFromAssemblyContaining<IApplicationMaker>(
@@ -35,6 +36,7 @@ public static class ServiceCollectionExtensions
         
         // Register SlugGenerator
         services.AddScoped<ISlugGenerator, SlugGenerator>();
+        
         // Register Event Handlers
         services.RegisterEventHandlers();
 
