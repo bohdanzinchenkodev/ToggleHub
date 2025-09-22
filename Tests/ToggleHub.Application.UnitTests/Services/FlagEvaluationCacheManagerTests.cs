@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Caching.Memory;
 using ToggleHub.Application.DTOs.Flag.Evaluation;
 using ToggleHub.Application.Services;
+using ToggleHub.Infrastructure.Cache;
 
 namespace ToggleHub.Application.UnitTests.Services;
 

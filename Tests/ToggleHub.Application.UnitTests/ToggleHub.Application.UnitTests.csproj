@@ -27,6 +27,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\src\ToggleHub.Application\ToggleHub.Application.csproj" />
       <ProjectReference Include="..\..\src\ToggleHub.Domain\ToggleHub.Domain.csproj" />
+      <ProjectReference Include="..\..\src\ToggleHub.Infrastructure\ToggleHub.Infrastructure.csproj" />
     </ItemGroup>
 
     <ItemGroup>
