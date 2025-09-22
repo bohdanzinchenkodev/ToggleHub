@@ -39,6 +39,16 @@ public class UserService : IUserService
         
         return users.ToUserDtos();
     }
+    public async Task<UserDto?> GetUserByEmailAsync(string email)
+    {
+        var user = await _toggleHubIdentityDbContext
+            .Users
+            .Include(x => x.UserRoles)
+            .ThenInclude(x => x.Role)
+            .FirstOrDefaultAsync(u => u.Email!.ToLower() == email.ToLower());
+        
+        return user?.ToUserDto();
+    }
     
     
 }

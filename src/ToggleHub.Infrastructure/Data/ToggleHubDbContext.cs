@@ -20,6 +20,7 @@ public class ToggleHubDbContext : DbContext
     public DbSet<RuleCondition> RuleConditions { get; set; }
     public DbSet<RuleConditionItem> RuleConditionItems { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
+    public DbSet<OrganizationInvite> OrganizationInvites { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -218,6 +219,23 @@ public class ToggleHubDbContext : DbContext
                   .HasForeignKey(e => e.EnvironmentId)
                   .OnDelete(DeleteBehavior.Cascade);
             
+        });
+
+        // Configure OrganizationInvite
+        modelBuilder.Entity<OrganizationInvite>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.OrganizationId).IsRequired();
+            entity.Property(e => e.Email).IsRequired().HasMaxLength(255);
+            entity.Property(e => e.Token).IsRequired().HasMaxLength(255);
+            entity.Property(e => e.CreatedAt).IsRequired();
+            entity.Property(e => e.ExpiresAt).IsRequired();
+            entity.Property(e => e.Status).IsRequired();
+            
+            entity.HasOne(e => e.Organization)
+                  .WithMany()
+                  .HasForeignKey(e => e.OrganizationId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }
