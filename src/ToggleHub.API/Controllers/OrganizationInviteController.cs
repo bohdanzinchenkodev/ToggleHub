@@ -29,14 +29,14 @@ public class OrganizationInviteController : ControllerBase
     public async Task<IActionResult> AcceptInvite(AcceptInviteDto acceptDto)
     {
         await _organizationInviteService.AcceptInviteAsync(acceptDto);
-        return Ok(new { message = "Invite accepted successfully" });
+        return Ok();
     }
 
     [HttpPost("decline/{token}")]
     public async Task<IActionResult> DeclineInvite(string token)
     {
         await _organizationInviteService.DeclineInviteAsync(token);
-        return Ok(new { message = "Invite declined successfully" });
+        return Ok();
     }
 
     [HttpGet("{token}")]
@@ -45,7 +45,7 @@ public class OrganizationInviteController : ControllerBase
         var invite = await _organizationInviteService.GetByTokenAsync(token);
         if (invite == null)
         {
-            return NotFound(new { message = "Invite not found" });
+            return NotFound("Invite not found");
         }
         return Ok(invite);
     }
@@ -61,13 +61,13 @@ public class OrganizationInviteController : ControllerBase
     public async Task<IActionResult> RevokeInvite(int inviteId)
     {
         await _organizationInviteService.RevokeInviteAsync(inviteId);
-        return Ok(new { message = "Invite revoked successfully" });
+        return Ok();
     }
 
     [HttpPost("resend/{inviteId:int}")]
     public async Task<IActionResult> ResendInvite(int inviteId)
     {
         await _organizationInviteService.ResendInviteAsync(inviteId);
-        return Ok(new { message = "Invite resent successfully" });
+        return Ok();
     }
 }
