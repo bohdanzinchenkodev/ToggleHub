@@ -2,12 +2,110 @@
 
 <!DOCTYPE html>
 <html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>You’re invited to join @Model.OrganizationName</title>
+  <style>
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      background-color: #121212;
+      margin: 0;
+      padding: 20px;
+      color: #e0e0e0 !important;
+    }
+    p, span, div {
+      color: #e0e0e0 !important;
+      margin: 0 0 12px 0;
+    }
+    strong {
+      color: #ffffff !important;
+    }
+    a {
+      color: #90caf9 !important;
+      text-decoration: none;
+    }
+    a.button {
+      text-decoration: none !important;
+      display: inline-block;
+      padding: 12px 28px;
+      margin: 6px;
+      border-radius: 0;
+      font-weight: 500;
+      font-size: 14px;
+    }
+    .accept {
+      background: #6366F1;
+      color: #ffffff !important;
+    }
+    .decline {
+      background: #d32f2f;
+      color: #ffffff !important;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #1e1e1e;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+    .header {
+      background: #1e1e1e;
+      color: #ffffff;
+      padding: 20px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 600;
+      border-bottom: 1px solid #2c2c2c;
+    }
+    .content {
+      padding: 30px;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .button-container {
+      text-align: center;
+      margin: 30px 0;
+    }
+    .footer {
+      background: #1e1e1e;
+      color: #9e9e9e;
+      font-size: 12px;
+      text-align: center;
+      padding: 15px;
+      border-top: 1px solid #2c2c2c;
+    }
+    
+  </style>
+</head>
 <body>
-  <p>Hello,</p>
-  <p>You’ve been invited to join <strong>@Model.OrganizationName</strong>.</p>
-  <p>
-    Click <a href="@Model.InviteLink">here</a> to accept your invitation.
-  </p>
-  <p>This link will expire on @Model.ExpiresAt.ToString("yyyy-MM-dd").</p>
+  <div class="container">
+    <div class="header">
+      ToggleHub Invitation
+    </div>
+    <div class="content">
+      <p>Hello,</p>
+      <p>
+        You’ve been invited to join <strong>@Model.OrganizationName</strong> on <strong>ToggleHub</strong>.
+      </p>
+
+      <div class="button-container">
+        <a href="@Model.InviteLink" class="button accept">Accept Invitation</a>
+        <a href="@Model.DeclineLink" class="button decline">Decline</a>
+      </div>
+
+      <p>
+        This invitation link will expire on <strong>@Model.ExpiresAt.ToString("MMMM dd, yyyy")</strong>.
+      </p>
+      <p>If you did not expect this invitation, you can safely ignore this email.</p>
+    </div>
+    <div class="footer">
+      <p>You are receiving this email because someone invited you to join <strong>ToggleHub</strong>.</p>
+      <p>&copy; @DateTime.UtcNow.Year ToggleHub • <a href="https://toggle-hub.com">toggle-hub.com</a></p>
+    </div>
+  </div>
 </body>
 </html>
+
+
