@@ -15,6 +15,7 @@ import Project from "./pages/Project.jsx";
 import CreateFlag from "./pages/CreateFlag.jsx";
 import UpdateFlag from "./pages/UpdateFlag.jsx";
 import ApiKeys from "./pages/ApiKeys.jsx";
+import OrganizationMembers from "./pages/OrganizationMembers.jsx";
 import NotificationContainer from "./components/notifications/NotificationContainer.jsx";
 
 function App() {
@@ -33,6 +34,13 @@ function App() {
             <ProtectedRoute>
                 <Layout>
                     <Organization />
+                </Layout>
+            </ProtectedRoute>
+        } />
+        <Route path="organizations/:orgSlug/members" element={
+            <ProtectedRoute>
+                <Layout>
+                    <OrganizationMembers />
                 </Layout>
             </ProtectedRoute>
         } />

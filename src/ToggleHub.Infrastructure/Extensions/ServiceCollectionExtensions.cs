@@ -6,6 +6,7 @@ using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Repositories;
 using ToggleHub.Infrastructure.Cache;
 using ToggleHub.Infrastructure.Data;
+using ToggleHub.Infrastructure.Email;
 using ToggleHub.Infrastructure.Repositories;
 using ToggleHub.Infrastructure.Services;
 using ToggleHub.Infrastructure.Settings;
@@ -36,6 +37,9 @@ public static class ServiceCollectionExtensions
         
         services.AddScoped<IFlagEvaluationCacheKeyFactory, FlagEvaluationCacheKeyFactory>();
         services.AddScoped<IFlagEvaluationCacheManager, FlagEvaluationCacheManager>();
+
+        services.AddScoped<IEmailTemplateRenderer, RazorEmailTemplateRenderer>();
+        services.AddScoped<IEmailSender, SendGridEmailSender>();
         
         services.AddScoped<IApiKeyContext, ApiKeyContext>();
         

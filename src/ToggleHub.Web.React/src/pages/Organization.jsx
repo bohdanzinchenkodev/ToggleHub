@@ -9,7 +9,7 @@ import {
 	Button
 } from "@mui/material";
 import { useParams } from "react-router";
-import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
+import { ArrowBack as ArrowBackIcon, People as PeopleIcon } from '@mui/icons-material';
 import { Link } from 'react-router';
 import {
 	useGetOrganizationBySlugQuery,
@@ -143,17 +143,31 @@ const Organization = () => {
 
 	return (
 		<Container component="main" maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-			<Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 2 }}>
-				<Box sx={{ '& > *': { mb: 0 } }}>
-					<AppStateDisplay />
+			<Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+				<Box sx={{ display: 'flex', alignItems: 'center', gap: 2, minHeight: '40px' }}>
+					<Box sx={{ 
+						'& > *': { mb: 0 },
+						display: 'flex',
+						alignItems: 'center'
+					}}>
+						<AppStateDisplay />
+					</Box>
+					<Button
+						startIcon={<ArrowBackIcon />}
+						component={Link}
+						to="/"
+						variant="outlined"
+					>
+						Back to Organizations
+					</Button>
 				</Box>
 				<Button
-					startIcon={<ArrowBackIcon />}
+					startIcon={<PeopleIcon />}
 					component={Link}
-					to="/"
-					variant="outlined"
+					to={`/organizations/${slug}/members`}
+					variant="contained"
 				>
-					Back to Organizations
+					Manage Members
 				</Button>
 			</Box>
 

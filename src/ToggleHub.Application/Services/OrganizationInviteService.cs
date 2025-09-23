@@ -4,6 +4,7 @@ using ToggleHub.Application.DTOs.OrganizationInvite;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Application.Mapping;
 using ToggleHub.Domain.Entities;
+using ToggleHub.Domain.Events;
 using ToggleHub.Domain.Repositories;
 
 namespace ToggleHub.Application.Services;
@@ -16,13 +17,14 @@ public class OrganizationInviteService : IOrganizationInviteService
     private readonly IValidator<CreateOrganizationInviteDto> _createValidator;
     private readonly IWorkContext _workContext;
     private readonly IUserService _userService;
+    private readonly IEventPublisher _eventPublisher;
 
     public OrganizationInviteService(
         IOrganizationInviteRepository inviteRepository,
         IOrganizationRepository organizationRepository,
         IOrgMemberRepository orgMemberRepository,
         IValidator<CreateOrganizationInviteDto> createValidator,
-        IWorkContext workContext, IUserService userService)
+        IWorkContext workContext, IUserService userService, IEventPublisher eventPublisher)
     {
         _inviteRepository = inviteRepository;
         _organizationRepository = organizationRepository;
@@ -30,6 +32,7 @@ public class OrganizationInviteService : IOrganizationInviteService
         _createValidator = createValidator;
         _workContext = workContext;
         _userService = userService;
+        _eventPublisher = eventPublisher;
     }
 
     public async Task<OrganizationInviteDto> CreateInviteAsync(CreateOrganizationInviteDto createDto)
@@ -62,6 +65,9 @@ public class OrganizationInviteService : IOrganizationInviteService
         invite.Organization = organization;
 
         await _inviteRepository.CreateAsync(invite);
+        
+        // Publish event
+        await _eventPublisher.PublishAsync(new OrganizationInviteCreatedEvent(invite));
 
         return invite.ToDto();
     }
