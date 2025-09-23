@@ -21,43 +21,22 @@ public class OrganizationInviteController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> SendInvite(CreateOrganizationInviteDto createDto)
     {
-        try
-        {
-            var result = await _organizationInviteService.CreateInviteAsync(createDto);
-            return Ok(result);
-        }
-        catch (ApplicationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var result = await _organizationInviteService.CreateInviteAsync(createDto);
+        return Ok(result);
     }
 
     [HttpPost("accept")]
     public async Task<IActionResult> AcceptInvite(AcceptInviteDto acceptDto)
     {
-        try
-        {
-            await _organizationInviteService.AcceptInviteAsync(acceptDto);
-            return Ok(new { message = "Invite accepted successfully" });
-        }
-        catch (ApplicationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        await _organizationInviteService.AcceptInviteAsync(acceptDto);
+        return Ok(new { message = "Invite accepted successfully" });
     }
 
     [HttpPost("decline/{token}")]
     public async Task<IActionResult> DeclineInvite(string token)
     {
-        try
-        {
-            await _organizationInviteService.DeclineInviteAsync(token);
-            return Ok(new { message = "Invite declined successfully" });
-        }
-        catch (ApplicationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        await _organizationInviteService.DeclineInviteAsync(token);
+        return Ok(new { message = "Invite declined successfully" });
     }
 
     [HttpGet("{token}")]
@@ -81,28 +60,14 @@ public class OrganizationInviteController : ControllerBase
     [HttpPost("revoke/{inviteId:int}")]
     public async Task<IActionResult> RevokeInvite(int inviteId)
     {
-        try
-        {
-            await _organizationInviteService.RevokeInviteAsync(inviteId);
-            return Ok(new { message = "Invite revoked successfully" });
-        }
-        catch (ApplicationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        await _organizationInviteService.RevokeInviteAsync(inviteId);
+        return Ok(new { message = "Invite revoked successfully" });
     }
 
     [HttpPost("resend/{inviteId:int}")]
     public async Task<IActionResult> ResendInvite(int inviteId)
     {
-        try
-        {
-            await _organizationInviteService.ResendInviteAsync(inviteId);
-            return Ok(new { message = "Invite resent successfully" });
-        }
-        catch (ApplicationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        await _organizationInviteService.ResendInviteAsync(inviteId);
+        return Ok(new { message = "Invite resent successfully" });
     }
 }
