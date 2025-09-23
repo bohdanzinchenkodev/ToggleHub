@@ -35,7 +35,7 @@ public class GlobalExceptionHandler : IExceptionHandler
             ProblemDetails = new ProblemDetails
             {
                 Type = exception.GetType().Name,
-                Detail = exception.Message,
+                Detail = httpContext.Response.StatusCode == StatusCodes.Status500InternalServerError ? "An error occurred" : exception.Message,
                 Title = "An error occurred",
                 Status = httpContext.Response.StatusCode
             }
