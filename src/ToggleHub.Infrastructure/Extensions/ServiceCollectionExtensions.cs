@@ -34,6 +34,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRuleSetRepository, RuleSetRepository>();
         services.AddScoped<IRuleConditionRepository, RuleConditionRepository>();
         services.AddScoped<IRuleConditionItemRepository, RuleConditionItemRepository>();
+        services.AddScoped<IOrganizationInviteRepository, OrganizationInviteRepository>();
         
         services.AddScoped<IFlagEvaluationCacheKeyFactory, FlagEvaluationCacheKeyFactory>();
         services.AddScoped<IFlagEvaluationCacheManager, FlagEvaluationCacheManager>();

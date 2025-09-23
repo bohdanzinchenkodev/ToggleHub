@@ -10,7 +10,8 @@ public class RazorEmailTemplateRenderer : IEmailTemplateRenderer
     public RazorEmailTemplateRenderer()
     {
         _engine = new RazorLightEngineBuilder()
-            .UseFileSystemProject(Path.Combine(AppContext.BaseDirectory, "Templates"))
+            .UseFileSystemProject(Path.Combine(AppContext.BaseDirectory, "Email", "EmailTemplates"))
+            .SetOperatingAssembly(typeof(RazorEmailTemplateRenderer).Assembly)
             .UseMemoryCachingProvider()
             .Build();
     }
