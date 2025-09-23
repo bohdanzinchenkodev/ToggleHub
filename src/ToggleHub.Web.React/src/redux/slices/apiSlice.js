@@ -6,10 +6,11 @@ export const api = createApi({
 		baseUrl: 'http://localhost:5160/api',
 		credentials: 'include', // send cookies automatically
 	}),
-	tagTypes: ['Flags'],
+	tagTypes: ['Flags', 'User'],
 	endpoints: (builder) => ({
 		getUser: builder.query({
 			query: () => 'user/me',
+			providesTags: ['User'],
 		}),
 		login: builder.mutation({
 			query: (body) => ({
@@ -17,6 +18,7 @@ export const api = createApi({
 				method: 'POST',
 				body,
 			}),
+			invalidatesTags: ['User'],
 		}),
 		register: builder.mutation({
 			query: (body) => ({
@@ -24,6 +26,7 @@ export const api = createApi({
 				method: 'POST',
 				body,
 			}),
+			invalidatesTags: ['User'],
 		}),
 		getOrganizationsByCurrentUser: builder.query({
 			query: () => 'user/me/organizations',
@@ -130,6 +133,12 @@ export const api = createApi({
 				body,
 			}),
 		}),
+		declineOrganizationInvite: builder.mutation({
+			query: ({ organizationId, token }) => ({
+				url: `organizations/${organizationId}/invites/decline/${token}`,
+				method: 'POST',
+			}),
+		}),
 	}),
 });
 
@@ -153,5 +162,6 @@ export const {
 	useGetFlagByIdQuery,
 	useGetApiKeysQuery,
 	useSendOrganizationInviteMutation,
-	useAcceptOrganizationInviteMutation
+	useAcceptOrganizationInviteMutation,
+	useDeclineOrganizationInviteMutation
 } = api;

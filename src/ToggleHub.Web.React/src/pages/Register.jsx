@@ -21,10 +21,12 @@ import {
 	Person
 } from "@mui/icons-material";
 import { useRegisterMutation } from "../redux/slices/apiSlice.js";
-import { useNavigate } from "react-router";
+import { Link as RouterLink } from "react-router";
+import { useAuthRedirect } from "../hooks/useAuthRedirect.js";
+import { useAuthForm } from "../hooks/useAuthForm.js";
 
 const Register = () => {
-	const [formData, setFormData] = useState({
+	const { formData, errors, handleChange, validateRegisterForm } = useAuthForm({
 		firstName: "",
 		lastName: "",
 		email: "",
@@ -33,70 +35,26 @@ const Register = () => {
 	});
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-	const [errors, setErrors] = useState({});
 	const [register, { error, isError, isLoading }] = useRegisterMutation();
-	const navigate = useNavigate();
-
-	const handleChange = (e) => {
-		const { name, value } = e.target;
-		setFormData(prev => ({
-			...prev,
-			[name]: value
-		}));
-		// Clear error when user starts typing
-		if (errors[name]) {
-			setErrors(prev => ({
-				...prev,
-				[name]: ""
-			}));
-		}
-	};
+	const { redirectAfterAuth, getAuthLinkUrl } = useAuthRedirect();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		const newErrors = {};
-
-		// Basic validation
-		if (!formData.firstName) {
-			newErrors.firstName = "First name is required";
+		
+		if (!validateRegisterForm()) {
+			return;
 		}
 
-		if (!formData.lastName) {
-			newErrors.lastName = "Last name is required";
-		}
-
-		if (!formData.email) {
-			newErrors.email = "Email is required";
-		} else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-			newErrors.email = "Email is invalid";
-		}
-
-		if (!formData.password) {
-			newErrors.password = "Password is required";
-		} else if (formData.password.length < 6) {
-			newErrors.password = "Password must be at least 6 characters";
-		}
-
-		if (!formData.confirmPassword) {
-			newErrors.confirmPassword = "Please confirm your password";
-		} else if (formData.password !== formData.confirmPassword) {
-			newErrors.confirmPassword = "Passwords do not match";
-		}
-
-		setErrors(newErrors);
-
-		if (Object.keys(newErrors).length === 0) {
-			try {
-				await register({
-					firstName: formData.firstName,
-					lastName: formData.lastName,
-					email: formData.email,
-					password: formData.password
-				}).unwrap();
-				navigate("/");
-			} catch (err) {
-				console.error("Registration failed:", err);
-			}
+		try {
+			await register({
+				firstName: formData.firstName,
+				lastName: formData.lastName,
+				email: formData.email,
+				password: formData.password
+			}).unwrap();
+			redirectAfterAuth();
+		} catch (err) {
+			console.error("Registration failed:", err);
 		}
 	};
 
@@ -296,7 +254,11 @@ const Register = () => {
 							<Box sx={{ textAlign: "center", mt: 2 }}>
 								<Typography variant="body2">
 									Already have an account?{" "}
-									<Link href="/login" variant="body2">
+									<Link
+										component={RouterLink}
+										to={getAuthLinkUrl('register')}
+										variant="body2"
+									>
 										Sign in here
 									</Link>
 								</Typography>

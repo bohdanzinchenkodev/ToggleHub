@@ -16,6 +16,8 @@ import CreateFlag from "./pages/CreateFlag.jsx";
 import UpdateFlag from "./pages/UpdateFlag.jsx";
 import ApiKeys from "./pages/ApiKeys.jsx";
 import OrganizationMembers from "./pages/OrganizationMembers.jsx";
+import AcceptInvite from "./pages/AcceptInvite.jsx";
+import DeclineInvite from "./pages/DeclineInvite.jsx";
 import NotificationContainer from "./components/notifications/NotificationContainer.jsx";
 
 function App() {
@@ -43,6 +45,16 @@ function App() {
                     <OrganizationMembers />
                 </Layout>
             </ProtectedRoute>
+        } />
+        <Route path="organizations/:organizationId/invites/accept/:token" element={
+            <Layout>
+                <AcceptInvite />
+            </Layout>
+        } />
+        <Route path="organizations/:organizationId/invites/decline/:token" element={
+            <Layout>
+                <DeclineInvite />
+            </Layout>
         } />
         <Route path="organizations/:orgSlug/projects/:projectSlug" element={
             <ProtectedRoute>

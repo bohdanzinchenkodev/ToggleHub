@@ -20,64 +20,34 @@ import {
 	Lock
 } from "@mui/icons-material";
 import {useLoginMutation} from "../redux/slices/apiSlice.js";
-import {useNavigate} from "react-router";
+import {Link as RouterLink} from "react-router";
+import { useAuthRedirect } from "../hooks/useAuthRedirect.js";
+import { useAuthForm } from "../hooks/useAuthForm.js";
 
 const Login = () => {
-	const [formData, setFormData] = useState({
+	const { formData, errors, handleChange, validateLoginForm } = useAuthForm({
 		email: "",
 		password: ""
 	});
 	const [showPassword, setShowPassword] = useState(false);
-	const [errors, setErrors] = useState({});
 	const [login, { error, isError, isLoading }] = useLoginMutation();
-	const navigate = useNavigate();
-
-	const handleChange = (e) => {
-		const { name, value } = e.target;
-		setFormData(prev => ({
-			...prev,
-			[name]: value
-		}));
-		// Clear error when user starts typing
-		if (errors[name]) {
-			setErrors(prev => ({
-				...prev,
-				[name]: ""
-			}));
-		}
-	};
+	const { redirectAfterAuth, getAuthLinkUrl } = useAuthRedirect();
 
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		const newErrors = {};
-
-		// Basic validation
-		if (!formData.email) {
-			newErrors.email = "Email is required";
-		} else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-			newErrors.email = "Email is invalid";
-		}
-
-		if (!formData.password) {
-			newErrors.password = "Password is required";
-		} else if (formData.password.length < 6) {
-			newErrors.password = "Password must be at least 6 characters";
-		}
-
-		setErrors(newErrors);
-
-		if (Object.keys(newErrors).length > 0)
+		
+		if (!validateLoginForm()) {
 			return;
+		}
 
 		try {
 			await login({...formData}).unwrap();
-			navigate("/");
+			redirectAfterAuth();
 		}
 		catch (err) {
 			console.log(err)
 		}
-
 	};
 
 	const togglePasswordVisibility = () => {
@@ -187,7 +157,11 @@ const Login = () => {
 								<Box sx={{ textAlign: "center", mt: 2 }}>
 									<Typography variant="body2">
 										Don't have an account?{" "}
-										<Link href="#" variant="body2">
+										<Link 
+											component={RouterLink} 
+											to={getAuthLinkUrl('login')}
+											variant="body2"
+										>
 											Sign up here
 										</Link>
 									</Typography>
