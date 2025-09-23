@@ -126,6 +126,24 @@ export const api = createApi({
 				body,
 			}),
 		}),
+		getOrganizationInvites: builder.query({
+			query: ({ organizationId, page = 1, pageSize = 10 }) => ({
+				url: `organizations/${organizationId}/invites`,
+				params: {
+					page,
+					pageSize,
+				},
+			}),
+		}),
+		getOrganizationMembers: builder.query({
+			query: ({ organizationId, page = 1, pageSize = 10 }) => ({
+				url: `organizations/${organizationId}/members`,
+				params: {
+					page,
+					pageSize,
+				},
+			}),
+		}),
 		acceptOrganizationInvite: builder.mutation({
 			query: ({ organizationId, body }) => ({
 				url: `organizations/${organizationId}/invites/accept`,
@@ -162,6 +180,8 @@ export const {
 	useGetFlagByIdQuery,
 	useGetApiKeysQuery,
 	useSendOrganizationInviteMutation,
+	useGetOrganizationInvitesQuery,
+	useGetOrganizationMembersQuery,
 	useAcceptOrganizationInviteMutation,
 	useDeclineOrganizationInviteMutation
 } = api;

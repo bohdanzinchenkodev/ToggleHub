@@ -7,14 +7,18 @@ import {
 	Alert,
 	Container,
 	CircularProgress,
-	TextField
+	TextField,
+	Chip
 } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
 import { useParams } from 'react-router';
 import { ArrowBack as ArrowBackIcon, Send as SendIcon } from '@mui/icons-material';
 import { Link } from 'react-router';
 import {
 	useGetOrganizationBySlugQuery,
-	useSendOrganizationInviteMutation
+	useSendOrganizationInviteMutation,
+	useGetOrganizationInvitesQuery,
+	useGetOrganizationMembersQuery
 } from '../redux/slices/apiSlice';
 import { useDispatch } from 'react-redux';
 import {addNotification, showError, showSuccess} from '../redux/slices/notificationsSlice';
@@ -24,6 +28,8 @@ const OrganizationMembers = () => {
 	const { orgSlug } = useParams();
 	const [email, setEmail] = useState('');
 	const [emailError, setEmailError] = useState('');
+	const [invitesPaginationModel, setInvitesPaginationModel] = useState({ page: 0, pageSize: 10 });
+	const [membersPaginationModel, setMembersPaginationModel] = useState({ page: 0, pageSize: 10 });
 	const dispatch = useDispatch();
 
 	// Email validation function
@@ -60,6 +66,108 @@ const OrganizationMembers = () => {
 		isError: isSendInviteError,
 	}] = useSendOrganizationInviteMutation();
 
+	// Get organization invites
+	const {
+		data: invitesData,
+		isLoading: isInvitesLoading,
+		error: invitesError
+	} = useGetOrganizationInvitesQuery({
+		organizationId: organization?.id,
+		page: invitesPaginationModel.page + 1, // DataGrid uses 0-based, API uses 1-based
+		pageSize: invitesPaginationModel.pageSize
+	}, {
+		skip: !organization?.id
+	});
+
+	// Get organization members
+	const {
+		data: membersData,
+		isLoading: isMembersLoading,
+		error: membersError
+	} = useGetOrganizationMembersQuery({
+		organizationId: organization?.id,
+		page: membersPaginationModel.page + 1, // DataGrid uses 0-based, API uses 1-based
+		pageSize: membersPaginationModel.pageSize
+	}, {
+		skip: !organization?.id
+	});
+
+	// Define columns for invites grid
+	const invitesColumns = [
+		{
+			field: 'email',
+			headerName: 'Email',
+			flex: 1,
+			minWidth: 200
+		},
+		{
+			field: 'status',
+			headerName: 'Status',
+			width: 120,
+			renderCell: (params) => {
+				const status = params.value;
+				let color = 'default';
+				if (status === 'Pending') color = 'warning';
+				else if (status === 'Accepted') color = 'success';
+				else if (status === 'Declined') color = 'error';
+				else if (status === 'Expired') color = 'error';
+
+				return <Chip label={status} color={color} size="small" />;
+			}
+		},
+		{
+			field: 'createdAt',
+			headerName: 'Sent',
+			width: 150,
+			valueFormatter: (value) => new Date(value).toLocaleDateString()
+		},
+		{
+			field: 'expiresAt',
+			headerName: 'Expires',
+			width: 150,
+			valueFormatter: (value) => new Date(value).toLocaleDateString()
+		}
+	];
+
+	// Define columns for members grid
+	const membersColumns = [
+		{
+			field: 'userFirstName',
+			headerName: 'First Name',
+			flex: 1,
+			minWidth: 150,
+			valueGetter: (value, row) => row.user?.firstName || ''
+		},
+		{
+			field: 'userLastName',
+			headerName: 'Last Name',
+			flex: 1,
+			minWidth: 150,
+			valueGetter: (value, row) => row.user?.lastName || ''
+		},
+		{
+			field: 'userEmail',
+			headerName: 'Email',
+			flex: 1,
+			minWidth: 200,
+			valueGetter: (value, row) => row.user?.email || ''
+		},
+		{
+			field: 'orgRole',
+			headerName: 'Role',
+			width: 120,
+			renderCell: (params) => {
+				const role = params.value;
+				let color = 'default';
+				if (role === 'Owner') color = 'primary';
+				else if (role === 'Admin') color = 'secondary';
+				else if (role === 'Member') color = 'default';
+
+				return <Chip label={role} color={color} size="small" />;
+			}
+		}
+	];
+
 	const handleSendInvite = async () => {
 		// Validate email before sending
 		const validationError = validateEmail(email);
@@ -86,10 +194,10 @@ const OrganizationMembers = () => {
 		} catch (error) {
 			// Don't show actual error details for server errors (500)
 			const isServerError = error?.status === 500;
-			const errorMessage = isServerError 
+			const errorMessage = isServerError
 				? 'An internal server error occurred. Please try again later.'
 				: error?.data?.detail || 'Failed to send invitation';
-			
+
 			dispatch(showError(errorMessage));
 		}
 	};
@@ -148,17 +256,62 @@ const OrganizationMembers = () => {
 						<strong>Organization:</strong> {organization?.name}
 					</Typography>
 				</Box>
+			</Paper>
 
-				{/* TODO: Add members list/table here */}
-				<Alert severity="info">
-					Members management functionality will be implemented here.
-					This will include:
-					<ul>
-						<li>List of current organization members</li>
-						<li>Member roles and permissions</li>
-						<li>Remove/manage existing members</li>
-					</ul>
-				</Alert>
+			{/* Members Grid */}
+			<Paper sx={{ p: 4, mt: 3 }}>
+				<Typography variant="h6" sx={{ mb: 2 }}>
+					Members
+				</Typography>
+				{membersError ? (
+					<Alert severity="error">
+						Failed to load members: {membersError?.data?.detail || 'Unknown error'}
+					</Alert>
+				) : (
+					<Box sx={{ width: '100%' }}>
+						<DataGrid
+							rows={membersData?.data || []}
+							columns={membersColumns}
+							loading={isMembersLoading}
+							paginationModel={membersPaginationModel}
+							onPaginationModelChange={setMembersPaginationModel}
+							rowCount={membersData?.total || 0}
+							paginationMode="server"
+							pageSizeOptions={[5, 10, 25]}
+							disableRowSelectionOnClick
+							disableColumnSorting
+							disableColumnFilter
+						/>
+					</Box>
+				)}
+			</Paper>
+
+			{/* Invites Grid */}
+			<Paper sx={{ p: 4, mt: 3 }}>
+				<Typography variant="h6" sx={{ mb: 2 }}>
+					Invites
+				</Typography>
+				{invitesError ? (
+					<Alert severity="error">
+						Failed to load invites: {invitesError?.data?.detail || 'Unknown error'}
+					</Alert>
+				) : (
+					<Box sx={{ width: '100%' }}>
+						<DataGrid
+							rows={invitesData?.data || []}
+							columns={invitesColumns}
+							loading={isInvitesLoading}
+							paginationModel={invitesPaginationModel}
+							onPaginationModelChange={setInvitesPaginationModel}
+							rowCount={invitesData?.total || 0}
+							paginationMode="server"
+							pageSizeOptions={[5, 10, 25]}
+							disableRowSelectionOnClick
+							disableColumnSorting
+							disableColumnFilter
+						/>
+					</Box>
+				)}
 			</Paper>
 
 			{/* Invite Member Card */}
