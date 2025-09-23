@@ -116,6 +116,20 @@ export const api = createApi({
 			query: ({ organizationId, projectId, environmentId }) =>
 				`organizations/${organizationId}/projects/${projectId}/environments/${environmentId}/apikeys`,
 		}),
+		sendOrganizationInvite: builder.mutation({
+			query: ({ organizationId, body }) => ({
+				url: `organizations/${organizationId}/invites`,
+				method: 'POST',
+				body,
+			}),
+		}),
+		acceptOrganizationInvite: builder.mutation({
+			query: ({ organizationId, body }) => ({
+				url: `organizations/${organizationId}/invites/accept`,
+				method: 'POST',
+				body,
+			}),
+		}),
 	}),
 });
 
@@ -137,5 +151,7 @@ export const {
 	useCreateFlagMutation,
 	useUpdateFlagMutation,
 	useGetFlagByIdQuery,
-	useGetApiKeysQuery
+	useGetApiKeysQuery,
+	useSendOrganizationInviteMutation,
+	useAcceptOrganizationInviteMutation
 } = api;
