@@ -169,6 +169,7 @@ public class OrganizationInviteService : IOrganizationInviteService
         invite.ExpiresAt = DateTime.UtcNow.AddDays(7);
         
         await _inviteRepository.UpdateAsync(invite);
+        await _eventPublisher.PublishAsync(new OrganizationInviteCreatedEvent(invite));
     }
 
     public async Task ProcessExpiredInvitesAsync()

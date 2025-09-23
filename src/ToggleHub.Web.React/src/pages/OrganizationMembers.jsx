@@ -18,7 +18,9 @@ import {
 	useGetOrganizationBySlugQuery,
 	useSendOrganizationInviteMutation,
 	useGetOrganizationInvitesQuery,
-	useGetOrganizationMembersQuery
+	useGetOrganizationMembersQuery,
+	useResendOrganizationInviteMutation,
+	useRevokeOrganizationInviteMutation
 } from '../redux/slices/apiSlice';
 import { useDispatch } from 'react-redux';
 import {addNotification, showError, showSuccess} from '../redux/slices/notificationsSlice';
@@ -65,6 +67,9 @@ const OrganizationMembers = () => {
 		isLoading: isSendingInvite,
 		isError: isSendInviteError,
 	}] = useSendOrganizationInviteMutation();
+
+	const [revokeInvite] = useRevokeOrganizationInviteMutation();
+	const [resendInvite] = useResendOrganizationInviteMutation();
 
 	// Get organization invites
 	const {
@@ -126,6 +131,55 @@ const OrganizationMembers = () => {
 			headerName: 'Expires',
 			width: 150,
 			valueFormatter: (value) => new Date(value).toLocaleDateString()
+		},
+		{
+			field: 'actions',
+			headerName: 'Actions',
+			width: 200,
+			sortable: false,
+			renderCell: (params) => {
+				const { id: inviteId, status } = params.row;
+
+				const handleRevoke = async () => {
+					try {
+						await revokeInvite({ organizationId: organization.id, inviteId }).unwrap();
+						dispatch(showSuccess('Invitation revoked successfully'));
+					} catch (err) {
+						dispatch(showError(err.data?.detail || 'Failed to revoke invitation'));
+					}
+				};
+
+				const handleResend = async () => {
+					try {
+						await resendInvite({ organizationId: organization.id, inviteId }).unwrap();
+						dispatch(showSuccess('Invitation resent successfully'));
+					} catch (err) {
+						dispatch(showError(err.data?.detail || 'Failed to resend invitation'));
+					}
+				};
+
+				return (
+					<Box sx={{ display: 'flex', gap: 1, alignItems: 'center', height: '100%', justifyContent: 'center' }}>
+						<Button
+							variant="outlined"
+							size="small"
+							onClick={handleResend}
+							disabled={status !== 'Pending'}
+						>
+							Resend
+						</Button>
+						<Button
+							variant="outlined"
+							size="small"
+							color="error"
+							onClick={handleRevoke}
+							disabled={status !== 'Pending'}
+						>
+							Revoke
+						</Button>
+					</Box>
+				);
+			}
 		}
 	];
 

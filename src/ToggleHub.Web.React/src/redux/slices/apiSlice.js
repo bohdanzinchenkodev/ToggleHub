@@ -6,7 +6,7 @@ export const api = createApi({
 		baseUrl: 'http://localhost:5160/api',
 		credentials: 'include', // send cookies automatically
 	}),
-	tagTypes: ['Flags', 'User'],
+	tagTypes: ['Flags', 'User', 'OrganizationInvites', 'OrganizationMembers'],
 	endpoints: (builder) => ({
 		getUser: builder.query({
 			query: () => 'user/me',
@@ -125,6 +125,21 @@ export const api = createApi({
 				method: 'POST',
 				body,
 			}),
+			invalidatesTags: ['OrganizationInvites'],
+		}),
+		resendOrganizationInvite: builder.mutation({
+			query: ({ organizationId, inviteId }) => ({
+				url: `organizations/${organizationId}/invites/resend/${inviteId}`,
+				method: 'POST',
+			}),
+			invalidatesTags: ['OrganizationInvites'],
+		}),
+		revokeOrganizationInvite: builder.mutation({
+			query: ({ organizationId, inviteId }) => ({
+				url: `organizations/${organizationId}/invites/revoke/${inviteId}`,
+				method: 'POST',
+			}),
+			invalidatesTags: ['OrganizationInvites'],
 		}),
 		getOrganizationInvites: builder.query({
 			query: ({ organizationId, page = 1, pageSize = 10 }) => ({
@@ -134,6 +149,7 @@ export const api = createApi({
 					pageSize,
 				},
 			}),
+			providesTags: ['OrganizationInvites'],
 		}),
 		getOrganizationMembers: builder.query({
 			query: ({ organizationId, page = 1, pageSize = 10 }) => ({
@@ -180,6 +196,8 @@ export const {
 	useGetFlagByIdQuery,
 	useGetApiKeysQuery,
 	useSendOrganizationInviteMutation,
+	useResendOrganizationInviteMutation,
+	useRevokeOrganizationInviteMutation,
 	useGetOrganizationInvitesQuery,
 	useGetOrganizationMembersQuery,
 	useAcceptOrganizationInviteMutation,
