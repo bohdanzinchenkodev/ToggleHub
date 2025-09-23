@@ -102,7 +102,11 @@ public class OrganizationInviteService : IOrganizationInviteService
         
         if (invite.ExpiresAt < DateTime.UtcNow)
             throw new ApplicationException("Invite has expired");
-
+        
+        // Check if user is already a member of the organization
+        if (await _orgMemberRepository.IsUserInOrganizationAsync(invite.OrganizationId, acceptDto.UserId))
+            throw new ApplicationException("User is already a member of this organization");
+        
         // Create organization member
         var orgMember = new OrgMember
         {

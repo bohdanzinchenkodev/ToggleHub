@@ -24,8 +24,8 @@ public class InvitationEmailWorkflowService : IInvitationEmailWorkflowService
         //add class to build url
         var model = new InviteEmailDto
         {
-            InviteLink = $"http://localhost:5173/organizations/{invite.OrganizationId}/invites/accept/token={invite.Token}",
-            DeclineLink = $"http://localhost:5173/organizations/{invite.OrganizationId}/invites/decline/token={invite.Token}",
+            InviteLink = $"http://localhost:5173/organizations/{invite.OrganizationId}/invites/accept/{invite.Token}",
+            DeclineLink = $"http://localhost:5173/organizations/{invite.OrganizationId}/invites/decline/{invite.Token}",
             ExpiresAt = invite.ExpiresAt,
             OrganizationName = invite.Organization.Name
         };
