@@ -15,7 +15,6 @@ public static class OrganizationInviteMapping
             OrganizationId = entity.OrganizationId,
             OrganizationName = entity.Organization?.Name ?? string.Empty,
             Email = entity.Email,
-            Token = entity.Token,
             CreatedAt = entity.CreatedAt,
             CreatedByUserId = entity.CreatedByUserId,
             ExpiresAt = entity.ExpiresAt,

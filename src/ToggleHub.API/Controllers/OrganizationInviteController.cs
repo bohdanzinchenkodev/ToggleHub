@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ToggleHub.Application.DTOs;
 using ToggleHub.Application.DTOs.OrganizationInvite;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Infrastructure.Constants;
@@ -51,9 +52,9 @@ public class OrganizationInviteController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetByOrganization(int organizationId, int pageIndex = 0, int pageSize = 20)
+    public async Task<IActionResult> GetByOrganization(int organizationId, [FromQuery] PagingQuery pagingQuery)
     {
-        var result = await _organizationInviteService.GetByOrganizationIdAsync(organizationId, pageIndex, pageSize);
+        var result = await _organizationInviteService.GetByOrganizationIdAsync(organizationId, pagingQuery.Page - 1, pagingQuery.PageSize);
         return Ok(result);
     }
 
