@@ -128,8 +128,8 @@ export const api = createApi({
 			],
 		}),
 		getApiKeys: builder.query({
-			query: ({ organizationId, projectId, environmentId }) =>
-				`organizations/${organizationId}/projects/${projectId}/environments/${environmentId}/apikeys`,
+			query: ({ organizationId, projectId, environmentId, page = 1, pageSize = 25 }) =>
+				`organizations/${organizationId}/projects/${projectId}/environments/${environmentId}/apikeys?page=${page}&pageSize=${pageSize}`,
 		}),
 		sendOrganizationInvite: builder.mutation({
 			query: ({ organizationId, body }) => ({

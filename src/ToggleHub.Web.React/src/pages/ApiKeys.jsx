@@ -7,16 +7,11 @@ import {
 	Alert,
 	Container,
 	CircularProgress,
-	Table,
-	TableBody,
-	TableCell,
-	TableContainer,
-	TableHead,
-	TableRow,
 	Chip,
 	IconButton,
 	Tooltip
 } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
 import { useAppState } from '../hooks/useAppState';
 import { useParams } from 'react-router';
 import { useDispatch } from 'react-redux';
@@ -29,6 +24,10 @@ import { Link } from 'react-router';
 
 const ApiKeys = () => {
 	const dispatch = useDispatch();
+	const [paginationModel, setPaginationModel] = useState({
+		page: 0,
+		pageSize: 25,
+	});
 
 	const {
 		currentOrganization: organization,
@@ -56,7 +55,9 @@ const ApiKeys = () => {
 		{
 			organizationId: organization?.id,
 			projectId: project?.id,
-			environmentId: environment?.id
+			environmentId: environment?.id,
+			page: paginationModel.page + 1, // DataGrid uses 0-based, API uses 1-based
+			pageSize: paginationModel.pageSize
 		},
 		{
 			skip: !organization?.id || !project?.id || !environment?.id
@@ -77,6 +78,59 @@ const ApiKeys = () => {
 			console.error('Failed to copy to clipboard:', error);
 		}
 	};
+
+	const columns = [
+		{
+			field: 'key',
+			headerName: 'API Key',
+			flex: 1,
+			renderCell: (params) => (
+				<Box sx={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>
+					{maskApiKey(params.value)}
+				</Box>
+			),
+		},
+		{
+			field: 'isActive',
+			headerName: 'Status',
+			width: 120,
+			renderCell: (params) => (
+				<Chip
+					label={params.value ? 'Active' : 'Inactive'}
+					color={params.value ? 'success' : 'default'}
+					size="small"
+				/>
+			),
+		},
+		{
+			field: 'environment',
+			headerName: 'Environment',
+			width: 150,
+			valueGetter: () => envType,
+		},
+		{
+			field: 'actions',
+			headerName: 'Actions',
+			width: 100,
+			sortable: false,
+			renderCell: (params) => (
+				<Tooltip title="Copy API key to clipboard">
+					<IconButton
+						size="small"
+						onClick={() => handleCopyApiKey(params.row.key)}
+						color="primary"
+					>
+						<CopyIcon fontSize="small" />
+					</IconButton>
+				</Tooltip>
+			),
+		},
+	];
+
+	const rows = apiKeysData?.data?.map((apiKey, index) => ({
+		id: index,
+		...apiKey
+	})) || [];
 
 	if (isOrgLoading || isProjectLoading) {
 		return (
@@ -151,63 +205,54 @@ const ApiKeys = () => {
 					<Alert severity="error" sx={{ mb: 2 }}>
 						Failed to load API keys: {apiKeysError?.data?.detail || 'Unknown error'}
 					</Alert>
-				) : apiKeysData && apiKeysData.data && apiKeysData.data.length > 0 ? (
-					<TableContainer component={Paper} variant="outlined">
-						<Table>
-							<TableHead>
-								<TableRow>
-									<TableCell>API Key</TableCell>
-									<TableCell>Status</TableCell>
-									<TableCell>Environment</TableCell>
-									<TableCell align="center">Actions</TableCell>
-								</TableRow>
-							</TableHead>
-							<TableBody>
-								{apiKeysData.data.map((apiKey, index) => (
-									<TableRow key={index} hover>
-										<TableCell>
-											<Box sx={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>
-												{maskApiKey(apiKey.key)}
-											</Box>
-										</TableCell>
-										<TableCell>
-											<Chip
-												label={apiKey.isActive ? 'Active' : 'Inactive'}
-												color={apiKey.isActive ? 'success' : 'default'}
-												size="small"
-											/>
-										</TableCell>
-										<TableCell>
-											{envType}
-										</TableCell>
-										<TableCell align="center">
-											<Tooltip title="Copy API key to clipboard">
-												<IconButton
-													size="small"
-													onClick={() => handleCopyApiKey(apiKey.key)}
-													color="primary"
-												>
-													<CopyIcon fontSize="small" />
-												</IconButton>
-											</Tooltip>
-										</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
-
-						{apiKeysData.total > 0 && (
-							<Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
-								<Typography variant="caption" color="text.secondary">
-									Showing {apiKeysData.data.length} of {apiKeysData.total} API keys
-								</Typography>
-							</Box>
-						)}
-					</TableContainer>
 				) : (
-					<Alert severity="info">
-						No API keys found for this environment.
-					</Alert>
+					<Box sx={{ height: 600, width: '100%' }}>
+						<DataGrid
+							rows={rows}
+							columns={columns}
+							paginationMode="server"
+							paginationModel={paginationModel}
+							onPaginationModelChange={setPaginationModel}
+							pageSizeOptions={[10, 25, 50, 100]}
+							rowCount={apiKeysData?.total || 0}
+							loading={isApiKeysLoading}
+							disableRowSelectionOnClick
+							disableColumnMenu
+							disableColumnSorting
+							sx={{
+								border: 1,
+								borderColor: 'divider',
+								'& .MuiDataGrid-cell:focus': {
+									outline: 'none',
+								},
+								'& .MuiDataGrid-row:hover': {
+									backgroundColor: 'action.hover',
+								},
+							}}
+							slots={{
+								noRowsOverlay: () => (
+									<Box
+										sx={{
+											display: 'flex',
+											flexDirection: 'column',
+											alignItems: 'center',
+											justifyContent: 'center',
+											height: '100%',
+											gap: 2,
+										}}
+									>
+										<KeyIcon sx={{ fontSize: 48, color: 'text.secondary' }} />
+										<Typography variant="h6" color="text.secondary">
+											No API keys found
+										</Typography>
+										<Typography variant="body2" color="text.secondary">
+											No API keys found for this environment.
+										</Typography>
+									</Box>
+								),
+							}}
+						/>
+					</Box>
 				)}
 			</Paper>
 		</Container>
