@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
 	Box,
 	Typography,
@@ -17,9 +17,11 @@ import {
 import { useFormHandler } from "../hooks/useFormHandler.js";
 import { useAppState } from "../hooks/useAppState.js";
 import { validateForm } from "../utils/validation.js";
-import ItemsList from "../components/shared/ItemsList.jsx";
+import InfiniteItemsList from "../components/shared/InfiniteItemsList.jsx";
 import CreateForm from "../components/shared/CreateForm.jsx";
 import AppStateDisplay from "../components/shared/AppStateDisplay.jsx";
+import useInfiniteScrollQuery from "../hooks/useInfiniteScrollQuery.js";
+import { PAGINATION_CONFIG } from "../constants/organizationConstants.js";
 
 const Organization = () => {
 	const {
@@ -31,17 +33,24 @@ const Organization = () => {
 		updateCurrentProject
 	} = useAppState();
 
+	// Use the reusable infinite scroll hook
 	const {
-		data: projectsResponse,
+		allItems: allProjects,
 		isLoading: isProjectsLoading,
 		isError: isProjectsError,
 		error: projectsError,
+		hasNextPage: hasMore,
+		isFetchingNextPage,
+		loadingRef,
 		refetch: refetchProjects
-	} = useGetProjectsByOrganizationQuery(organization?.id, {
-		skip: !organization?.id
+	} = useInfiniteScrollQuery({
+		useQuery: useGetProjectsByOrganizationQuery,
+		baseQueryParams: {
+			organizationId: organization?.id,
+			pageSize: PAGINATION_CONFIG.DEFAULT_PAGE_SIZE
+		},
+		skipCondition: !organization?.id
 	});
-
-	const projects = projectsResponse?.data || [];
 
 	const [createProject, {
 		isLoading: isCreating,
@@ -79,6 +88,7 @@ const Organization = () => {
 			}).unwrap();
 
 			resetForm();
+			// Reset pagination and refetch
 			refetchProjects();
 		} catch (error) {
 			console.error('Failed to create project:', error);
@@ -107,7 +117,6 @@ const Organization = () => {
 			</Container>
 		);
 	}
-
 	return (
 		<Container component="main" maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
 			<Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -146,15 +155,18 @@ const Organization = () => {
 				<Grid container spacing={4}>
 					{/* Left Column - Available Projects */}
 					<Grid item size={{xs: 12, md: 6}}>
-						<ItemsList
+						<InfiniteItemsList
 							title="Projects"
-							items={projects}
+							items={allProjects}
 							isLoading={isProjectsLoading}
 							isError={isProjectsError}
 							error={projectsError}
 							emptyMessage="No projects found. Create your first project to get started!"
 							getItemLink={(project) => `/organizations/${orgSlug}/projects/${project.slug}`}
 							onItemClick={handleProjectClick}
+							hasNextPage={hasMore}
+							isFetchingNextPage={isFetchingNextPage}
+							loadingRef={loadingRef}
 						/>
 					</Grid>
 

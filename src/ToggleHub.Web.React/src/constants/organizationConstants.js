@@ -1,8 +1,8 @@
 // Pagination Configuration
 export const PAGINATION_CONFIG = {
 	DEFAULT_PAGE: 0,
-	DEFAULT_PAGE_SIZE: 10,
-	PAGE_SIZE_OPTIONS: [5, 10, 25]
+	DEFAULT_PAGE_SIZE: 25,
+	PAGE_SIZE_OPTIONS: [5, 10, 25, 50]
 };
 
 // Invite Status Constants

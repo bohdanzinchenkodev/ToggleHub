@@ -29,7 +29,13 @@ export const api = createApi({
 			invalidatesTags: ['User'],
 		}),
 		getOrganizationsByCurrentUser: builder.query({
-			query: () => 'user/me/organizations',
+			query: ({ page = 1, pageSize = 25 } = {}) => ({
+				url: 'user/me/organizations',
+				params: {
+					page,
+					pageSize
+				}
+			}),
 		}),
 		createOrganization: builder.mutation({
 			query: (body) => ({
@@ -39,7 +45,13 @@ export const api = createApi({
 			}),
 		}),
 		getProjectsByOrganization: builder.query({
-			query: (organizationId) => `organizations/${organizationId}/projects`,
+			query: ({ organizationId, page = 1, pageSize = 25 }) => ({
+				url: `organizations/${organizationId}/projects`,
+				params: {
+					page,
+					pageSize
+				}
+			}),
 		}),
 		getOrganizationBySlug: builder.query({
 			query: (slug) => `organizations/${slug}`,

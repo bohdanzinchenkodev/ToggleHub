@@ -3,8 +3,6 @@ import {
 	Box,
 	Typography,
 	Grid,
-	CircularProgress,
-	Alert,
 	Container
 } from "@mui/material";
 import { useGetOrganizationsByCurrentUserQuery, useCreateOrganizationMutation } from "../redux/slices/apiSlice.js";
@@ -12,13 +10,30 @@ import { useNavigate } from "react-router";
 import { useFormHandler } from "../hooks/useFormHandler.js";
 import { useAppState } from "../hooks/useAppState.js";
 import { validateForm } from "../utils/validation.js";
-import ItemsList from "../components/shared/ItemsList.jsx";
+import InfiniteItemsList from "../components/shared/InfiniteItemsList.jsx";
 import CreateForm from "../components/shared/CreateForm.jsx";
+import useInfiniteScrollQuery from "../hooks/useInfiniteScrollQuery.js";
+import { PAGINATION_CONFIG } from "../constants/organizationConstants.js";
 
 const OrganizationsList = () => {
 	const navigate = useNavigate();
 	const { updateCurrentOrganization } = useAppState();
-	const { data: organizations, isLoading, isError, error } = useGetOrganizationsByCurrentUserQuery();
+	
+	// Use the reusable infinite scroll hook
+	const {
+		allItems: allOrganizations,
+		isLoading: isOrganizationsLoading,
+		isError: isOrganizationsError,
+		error: organizationsError,
+		hasNextPage: hasMore,
+		isFetchingNextPage,
+		loadingRef,
+		refetch: refetchOrganizations
+	} = useInfiniteScrollQuery({
+		useQuery: useGetOrganizationsByCurrentUserQuery,
+		baseQueryParams: { pageSize: PAGINATION_CONFIG.DEFAULT_PAGE_SIZE }
+	});
+
 	const [createOrganization, { isLoading: isCreating, error: createError, isError: isCreateError }] = useCreateOrganizationMutation();
 
 	const {
@@ -50,10 +65,14 @@ const OrganizationsList = () => {
 
 		resetForm();
 
-		updateCurrentOrganization(response);			// Redirect to the newly created organization
-			if (response.slug) {
-				navigate(`/organizations/${response.slug}`);
-			}
+		updateCurrentOrganization(response);
+
+		// Reset pagination and refetch
+		refetchOrganizations();
+
+		if (response.slug) {
+			navigate(`/organizations/${response.slug}`);
+		}
 		} catch (error) {
 			console.error("Failed to create organization:", error);
 			handleServerErrors(error);
@@ -63,25 +82,7 @@ const OrganizationsList = () => {
 	const handleOrganizationClick = (org) => {
 		updateCurrentOrganization(org);
 	};
-
-	if (isLoading) {
-		return (
-			<Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
-				<CircularProgress />
-			</Box>
-		);
-	}
-
-	if (isError) {
-		return (
-			<Box sx={{ p: 3 }}>
-				<Alert severity="error">
-					Failed to load organizations: {error?.data?.detail || 'Unknown error'}
-				</Alert>
-			</Box>
-		);
-	}
-
+	console.log(hasMore)
 	return (
 		<Container component="main" maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
 			<Box>
@@ -92,15 +93,18 @@ const OrganizationsList = () => {
 				<Grid container spacing={4}>
 					{/* Left Column - Available Organizations */}
 					<Grid item size={{xs: 12, md: 6}}>
-						<ItemsList
+						<InfiniteItemsList
 							title="Your Organizations"
-							items={organizations}
-							isLoading={isLoading}
-							isError={isError}
-							error={error}
+							items={allOrganizations}
+							isLoading={isOrganizationsLoading}
+							isError={isOrganizationsError}
+							error={organizationsError}
 							emptyMessage="No organizations found. Create your first organization to get started!"
 							getItemLink={(org) => `/organizations/${org.slug}`}
 							onItemClick={handleOrganizationClick}
+							hasNextPage={hasMore}
+							isFetchingNextPage={isFetchingNextPage}
+							loadingRef={loadingRef}
 						/>
 					</Grid>
 
