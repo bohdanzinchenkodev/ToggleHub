@@ -7,10 +7,7 @@ import {
 	Container,
 	Paper
 } from "@mui/material";
-import { useParams } from "react-router";
 import {
-	useGetOrganizationBySlugQuery,
-	useGetProjectBySlugQuery,
 	useGetFlagsByEnvironmentQuery
 } from "../redux/slices/apiSlice.js";
 import { useAppState } from "../hooks/useAppState.js";
@@ -20,48 +17,25 @@ import EnvironmentTabs from "../components/project/EnvironmentTabs.jsx";
 import EnvironmentContent from "../components/project/EnvironmentContent.jsx";
 
 const Project = () => {
-	const { orgSlug, projectSlug } = useParams();
-	const { currentOrganization, currentProject, updateCurrentOrganization, updateCurrentProject } = useAppState();
 	const [selectedTab, setSelectedTab] = useState(0);
+
+	const {
+		currentOrganization: organization,
+		currentProject: project,
+		orgSlug,
+		projectSlug,
+		isLoadingOrganization: isOrgLoading,
+		isLoadingProject: isProjectLoading,
+		isOrganizationError: isOrgError,
+		isProjectError: isProjectError,
+		organizationError: orgError,
+		projectError: projectError
+	} = useAppState();
 
 	const handleTabChange = (event, newValue) => {
 		setSelectedTab(newValue);
 	};
 
-	// Only fetch organization if we don't have it in state or if the slug doesn't match
-	const shouldFetchOrg = !currentOrganization || currentOrganization.slug !== orgSlug;
-
-	// Get organization details by slug (only if needed)
-	const {
-		data: fetchedOrganization,
-		isLoading: isOrgLoading,
-		isError: isOrgError,
-		error: orgError
-	} = useGetOrganizationBySlugQuery(orgSlug, {
-		skip: !shouldFetchOrg
-	});
-
-	// Use organization from state if available, otherwise use fetched data
-	const organization = currentOrganization?.slug === orgSlug ? currentOrganization : fetchedOrganization;
-
-	// Only fetch project if we don't have it in state or if the slug doesn't match
-	const shouldFetchProject = !currentProject || currentProject.slug !== projectSlug;
-
-	const {
-		data: fetchedProject,
-		isLoading: isProjectLoading,
-		isError: isProjectError,
-		error: projectError
-	} = useGetProjectBySlugQuery(
-		{ orgSlug, projectSlug, organizationId: organization?.id },
-		{
-			skip: !shouldFetchProject || !organization?.id
-		}
-	);
-
-	const project = currentProject?.slug === projectSlug ? currentProject : fetchedProject;
-
-	// Get flags for the currently selected environment
 	const selectedEnvironment = project?.environments?.[selectedTab];
 	const {
 		data: flags,
@@ -79,33 +53,17 @@ const Project = () => {
 		}
 	);
 
-	// Flag operations hook
 	const { localFlags, processingFlags, handleFlagToggle, syncFlags } = useFlagOperations(
 		organization, 
 		project, 
 		selectedEnvironment
 	);
 
-	// Sync API flags to local state
 	useEffect(() => {
 		syncFlags(flags);
 	}, [flags, syncFlags]);
 
-	// Update global state when organization is fetched (only if we didn't have it)
-	useEffect(() => {
-		if (fetchedOrganization && shouldFetchOrg) {
-			updateCurrentOrganization(fetchedOrganization);
-		}
-	}, [fetchedOrganization, shouldFetchOrg, updateCurrentOrganization]);
-
-	// Update global state when project is fetched (only if we didn't have it)
-	useEffect(() => {
-		if (fetchedProject && shouldFetchProject) {
-			updateCurrentProject(fetchedProject);
-		}
-	}, [fetchedProject, shouldFetchProject, updateCurrentProject]);
-
-	if (shouldFetchOrg && isOrgLoading || shouldFetchProject && isProjectLoading) {
+	if (isOrgLoading || isProjectLoading) {
 		return (
 			<Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
 				<CircularProgress />
@@ -167,7 +125,7 @@ const Project = () => {
 					</Box>
 				)}
 
-				{!project && !shouldFetchProject && (
+				{!project && isProjectLoading && (
 					<Typography variant="body1" sx={{ textAlign: 'center', color: 'text.secondary' }}>
 						Loading project information...
 					</Typography>

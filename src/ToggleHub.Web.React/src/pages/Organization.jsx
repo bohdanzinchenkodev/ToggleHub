@@ -8,11 +8,9 @@ import {
 	Container,
 	Button
 } from "@mui/material";
-import { useParams } from "react-router";
 import { ArrowBack as ArrowBackIcon, People as PeopleIcon } from '@mui/icons-material';
 import { Link } from 'react-router';
 import {
-	useGetOrganizationBySlugQuery,
 	useGetProjectsByOrganizationQuery,
 	useCreateProjectMutation
 } from "../redux/slices/apiSlice.js";
@@ -24,40 +22,15 @@ import CreateForm from "../components/shared/CreateForm.jsx";
 import AppStateDisplay from "../components/shared/AppStateDisplay.jsx";
 
 const Organization = () => {
-	const { slug } = useParams();
-	const { currentOrganization, updateCurrentOrganization, updateCurrentProject, clearProject } = useAppState();
-
-	// Only fetch organization if we don't have it in state or if the slug doesn't match
-	const shouldFetchOrg = !currentOrganization || currentOrganization.slug !== slug;
-
-	// Get organization details by slug (only if needed)
 	const {
-		data: fetchedOrganization,
-		isLoading: isOrgLoading,
-		isError: isOrgError,
-		error: orgError
-	} = useGetOrganizationBySlugQuery(slug, {
-		skip: !shouldFetchOrg
-	});
+		currentOrganization: organization,
+		orgSlug,
+		isLoadingOrganization: isOrgLoading,
+		isOrganizationError: isOrgError,
+		organizationError: orgError,
+		updateCurrentProject
+	} = useAppState();
 
-	// Use organization from state if available, otherwise use fetched data
-	const organization = currentOrganization?.slug === slug ? currentOrganization : fetchedOrganization;
-
-	// Update global state when organization is fetched (only if we didn't have it)
-	useEffect(() => {
-		if (fetchedOrganization && shouldFetchOrg) {
-			updateCurrentOrganization(fetchedOrganization);
-		}
-	}, [fetchedOrganization, shouldFetchOrg, updateCurrentOrganization]);
-
-	// Clear current project when component unmounts or organization changes
-	useEffect(() => {
-		return () => {
-			clearProject();
-		};
-	}, [clearProject, slug]);
-
-	// Get projects for this organization
 	const {
 		data: projectsResponse,
 		isLoading: isProjectsLoading,
@@ -68,17 +41,14 @@ const Organization = () => {
 		skip: !organization?.id
 	});
 
-	// Extract projects array from the paginated response
 	const projects = projectsResponse?.data || [];
 
-	// Create project mutation
 	const [createProject, {
 		isLoading: isCreating,
 		error: createError,
 		isError: isCreateError
 	}] = useCreateProjectMutation();
 
-	// Form handling
 	const {
 		formData,
 		formErrors,
@@ -91,7 +61,6 @@ const Organization = () => {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
-		// Validation
 		const validationErrors = validateForm(formData, {
 			name: { required: true, label: "Project name" }
 		});
@@ -109,7 +78,6 @@ const Organization = () => {
 				}
 			}).unwrap();
 
-			// Reset form and refetch projects
 			resetForm();
 			refetchProjects();
 		} catch (error) {
@@ -119,11 +87,10 @@ const Organization = () => {
 	};
 
 	const handleProjectClick = (project) => {
-		// Set project in global state when user clicks on it
 		updateCurrentProject(project);
 	};
 
-	if (shouldFetchOrg && isOrgLoading) {
+	if (isOrgLoading) {
 		return (
 			<Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
 				<CircularProgress />
@@ -145,7 +112,7 @@ const Organization = () => {
 		<Container component="main" maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
 			<Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 				<Box sx={{ display: 'flex', alignItems: 'center', gap: 2, minHeight: '40px' }}>
-					<Box sx={{ 
+					<Box sx={{
 						'& > *': { mb: 0 },
 						display: 'flex',
 						alignItems: 'center'
@@ -164,7 +131,7 @@ const Organization = () => {
 				<Button
 					startIcon={<PeopleIcon />}
 					component={Link}
-					to={`/organizations/${slug}/members`}
+					to={`/organizations/${orgSlug}/members`}
 					variant="contained"
 				>
 					Manage Members
@@ -186,7 +153,7 @@ const Organization = () => {
 							isError={isProjectsError}
 							error={projectsError}
 							emptyMessage="No projects found. Create your first project to get started!"
-							getItemLink={(project) => `/organizations/${slug}/projects/${project.slug}`}
+							getItemLink={(project) => `/organizations/${orgSlug}/projects/${project.slug}`}
 							onItemClick={handleProjectClick}
 						/>
 					</Grid>

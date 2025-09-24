@@ -18,7 +18,6 @@ const AcceptInvite = () => {
 	const [successMessage, setSuccessMessage] = useState('');
 	const [isProcessed, setIsProcessed] = useState(false);
 
-	// Get current user using query
 	const { data: user, isLoading: isUserLoading, error: userError } = useGetUserQuery();
 
 	const [acceptInvite, { isLoading: isAccepting }] = useAcceptOrganizationInviteMutation();

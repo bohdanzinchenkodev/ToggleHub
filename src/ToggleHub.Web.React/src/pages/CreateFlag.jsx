@@ -12,38 +12,31 @@ import { useParams } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import {
-	useGetOrganizationBySlugQuery,
-	useGetProjectBySlugQuery,
 	useCreateFlagMutation
 } from '../redux/slices/apiSlice';
 import { showSuccess, showError } from '../redux/slices/notificationsSlice';
+import { useAppState } from '../hooks/useAppState';
 import { useFlagForm } from '../hooks/useFlagForm';
 import FlagForm from '../components/flag/FlagForm';
 import { Link, useNavigate } from 'react-router';
 
 const CreateFlag = () => {
-	const { orgSlug, projectSlug, envType } = useParams();
+	const { envType } = useParams();
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
-	// Get organization details by slug
 	const {
-		data: organization,
-		isLoading: isOrgLoading,
-		isError: isOrgError,
-		error: orgError
-	} = useGetOrganizationBySlugQuery(orgSlug);
-
-	// Get project details by slug
-	const {
-		data: project,
-		isLoading: isProjectLoading,
-		isError: isProjectError,
-		error: projectError
-	} = useGetProjectBySlugQuery(
-		{ orgSlug, projectSlug, organizationId: organization?.id },
-		{ skip: !organization?.id }
-	);
+		currentOrganization: organization,
+		currentProject: project,
+		orgSlug,
+		projectSlug,
+		isLoadingOrganization: isOrgLoading,
+		isLoadingProject: isProjectLoading,
+		isOrganizationError: isOrgError,
+		isProjectError: isProjectError,
+		organizationError: orgError,
+		projectError: projectError
+	} = useAppState();
 
 	// Find the environment by type
 	const environment = project?.environments?.find(env => env.type === envType);
@@ -55,7 +48,6 @@ const CreateFlag = () => {
 		isError: isCreateError
 	}] = useCreateFlagMutation();
 
-	// Flag form management
 	const {
 		formData,
 		formErrors,
@@ -97,14 +89,16 @@ const CreateFlag = () => {
 			dispatch(showSuccess(`Flag "${result.key}" created successfully!`));
 			navigate(`/organizations/${orgSlug}/projects/${projectSlug}/environments/${envType}/flags/${result.id}/edit`);
 		} catch (error) {
-			// Handle server validation errors
 			handleServerErrors(error);
 			dispatch(showError('Failed to create flag. Please check the form for errors.'));
 			console.error('Error creating flag:', error);
 		}
 	};
 
-	// Loading states
+	const handleGoBack = () => {
+		navigate(`/organizations/${orgSlug}/projects/${projectSlug}`);
+	};
+
 	if (isOrgLoading || isProjectLoading) {
 		return (
 			<Container maxWidth="lg" sx={{ py: 3 }}>
@@ -115,7 +109,6 @@ const CreateFlag = () => {
 		);
 	}
 
-	// Error states
 	if (isOrgError) {
 		return (
 			<Container maxWidth="lg" sx={{ py: 3 }}>

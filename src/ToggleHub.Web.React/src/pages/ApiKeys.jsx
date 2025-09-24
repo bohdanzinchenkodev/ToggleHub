@@ -17,36 +17,41 @@ import {
 	IconButton,
 	Tooltip
 } from '@mui/material';
+import { useAppState } from '../hooks/useAppState';
 import { useParams } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { ArrowBack as ArrowBackIcon, Key as KeyIcon, ContentCopy as CopyIcon } from '@mui/icons-material';
 import {
-	useGetOrganizationBySlugQuery,
-	useGetProjectBySlugQuery,
 	useGetApiKeysQuery
 } from '../redux/slices/apiSlice';
 import { showSuccess, showError } from '../redux/slices/notificationsSlice';
 import { Link } from 'react-router';
 
 const ApiKeys = () => {
-	const { orgSlug, projectSlug, envType } = useParams();
 	const dispatch = useDispatch();
 
-	const { data: organization, isLoading: isOrgLoading, isError: isOrgError, error: orgError } = useGetOrganizationBySlugQuery(orgSlug);
-	
-	const { data: project, isLoading: isProjectLoading, isError: isProjectError, error: projectError } = useGetProjectBySlugQuery(
-		{ projectSlug, organizationId: organization?.id },
-		{ skip: !organization?.id }
-	);
+	const {
+		currentOrganization: organization,
+		currentProject: project,
+		orgSlug,
+		projectSlug,
+		isLoadingOrganization: isOrgLoading,
+		isLoadingProject: isProjectLoading,
+		isOrganizationError: isOrgError,
+		isProjectError: isProjectError,
+		organizationError: orgError,
+		projectError: projectError
+	} = useAppState();
 
-	// Get the environment from the project
+	const { envType } = useParams();
+
 	const environment = project?.environments?.find(env => env.type === envType);
 
-	const { 
-		data: apiKeysData, 
-		isLoading: isApiKeysLoading, 
-		isError: isApiKeysError, 
-		error: apiKeysError 
+	const {
+		data: apiKeysData,
+		isLoading: isApiKeysLoading,
+		isError: isApiKeysError,
+		error: apiKeysError
 	} = useGetApiKeysQuery(
 		{
 			organizationId: organization?.id,
@@ -73,7 +78,6 @@ const ApiKeys = () => {
 		}
 	};
 
-	// Loading states
 	if (isOrgLoading || isProjectLoading) {
 		return (
 			<Container maxWidth="lg" sx={{ py: 3 }}>
@@ -84,7 +88,6 @@ const ApiKeys = () => {
 		);
 	}
 
-	// Error states
 	if (isOrgError) {
 		return (
 			<Container maxWidth="lg" sx={{ py: 3 }}>
@@ -192,7 +195,7 @@ const ApiKeys = () => {
 								))}
 							</TableBody>
 						</Table>
-						
+
 						{apiKeysData.total > 0 && (
 							<Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
 								<Typography variant="caption" color="text.secondary">

@@ -32,7 +32,7 @@ function App() {
                 </Layout>
             </ProtectedRoute>
         } />
-        <Route path="organizations/:slug" element={
+        <Route path="organizations/:orgSlug" element={
             <ProtectedRoute>
                 <Layout>
                     <Organization />

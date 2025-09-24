@@ -13,7 +13,6 @@ import {
 	MenuItem
 } from '@mui/material';
 import { DataGrid, GridActionsCellItem, GridRowModes, GridRowEditStopReasons } from '@mui/x-data-grid';
-import { useParams } from 'react-router';
 import {
 	ArrowBack as ArrowBackIcon,
 	Send as SendIcon,
@@ -23,7 +22,6 @@ import {
 } from '@mui/icons-material';
 import { Link } from 'react-router';
 import {
-	useGetOrganizationBySlugQuery,
 	useSendOrganizationInviteMutation,
 	useGetOrganizationInvitesQuery,
 	useGetOrganizationMembersQuery,
@@ -33,6 +31,7 @@ import {
 } from '../redux/slices/apiSlice';
 import { useDispatch } from 'react-redux';
 import {addNotification, showError, showSuccess} from '../redux/slices/notificationsSlice';
+import { useAppState } from '../hooks/useAppState';
 import AppStateDisplay from '../components/shared/AppStateDisplay';
 import {
 	PAGINATION_CONFIG,
@@ -45,7 +44,6 @@ import { validateEmail } from '../utils/validation';
 import { formatDate } from '../utils/dateUtils';
 
 const OrganizationMembers = () => {
-	const { orgSlug } = useParams();
 	const [email, setEmail] = useState('');
 	const [emailError, setEmailError] = useState('');
 	const [invitesPaginationModel, setInvitesPaginationModel] = useState({
@@ -59,22 +57,22 @@ const OrganizationMembers = () => {
 	const [rowModesModel, setRowModesModel] = useState({});
 	const dispatch = useDispatch();
 
+	const {
+		currentOrganization: organization,
+		orgSlug,
+		isLoadingOrganization: isOrgLoading,
+		isOrganizationError: isOrgError,
+		organizationError: orgError
+	} = useAppState();
+
 	const handleEmailChange = (e) => {
 		const newEmail = e.target.value;
 		setEmail(newEmail);
 
-		// Clear error when user starts typing
 		if (emailError) {
 			setEmailError('');
 		}
 	};
-
-	const {
-		data: organization,
-		isLoading: isOrgLoading,
-		isError: isOrgError,
-		error: orgError
-	} = useGetOrganizationBySlugQuery(orgSlug);
 
 	const [sendInvite, {
 		isLoading: isSendingInvite,
@@ -110,7 +108,6 @@ const OrganizationMembers = () => {
 
 	const { revokeInvite, resendInvite } = useInviteActions();
 
-	// Get organization invites
 	const {
 		data: invitesData,
 		isLoading: isInvitesLoading,
@@ -123,7 +120,6 @@ const OrganizationMembers = () => {
 		skip: !organization?.id
 	});
 
-	// Get organization members
 	const {
 		data: membersData,
 		isLoading: isMembersLoading,
@@ -373,7 +369,6 @@ const OrganizationMembers = () => {
 		}
 	};
 
-	// Loading state
 	if (isOrgLoading) {
 		return (
 			<Container maxWidth="lg" sx={{ py: 3 }}>
@@ -384,7 +379,6 @@ const OrganizationMembers = () => {
 		);
 	}
 
-	// Error state
 	if (isOrgError) {
 		return (
 			<Container maxWidth="lg" sx={{ py: 3 }}>

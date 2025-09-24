@@ -21,7 +21,6 @@ const OrganizationsList = () => {
 	const { data: organizations, isLoading, isError, error } = useGetOrganizationsByCurrentUserQuery();
 	const [createOrganization, { isLoading: isCreating, error: createError, isError: isCreateError }] = useCreateOrganizationMutation();
 
-	// Form handling
 	const {
 		formData,
 		formErrors,
@@ -47,15 +46,11 @@ const OrganizationsList = () => {
 		try {
 			const response = await createOrganization({
 				name: formData.name.trim()
-			}).unwrap();
+		}).unwrap();
 
-			// Reset form
-			resetForm();
+		resetForm();
 
-			// Set the newly created organization in global state
-			updateCurrentOrganization(response);
-
-			// Redirect to the newly created organization
+		updateCurrentOrganization(response);			// Redirect to the newly created organization
 			if (response.slug) {
 				navigate(`/organizations/${response.slug}`);
 			}
@@ -66,7 +61,6 @@ const OrganizationsList = () => {
 	};
 
 	const handleOrganizationClick = (org) => {
-		// Set organization in global state when user clicks on it
 		updateCurrentOrganization(org);
 	};
 
