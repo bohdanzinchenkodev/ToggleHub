@@ -14,7 +14,10 @@ const EnvironmentContent = ({
 	processingFlags,
 	onFlagToggle,
 	orgSlug,
-	projectSlug
+	projectSlug,
+	hasNextPage,
+	isFetchingNextPage,
+	loadingRef
 }) => {
 	if (!environment) {
 		return null;
@@ -68,6 +71,9 @@ const EnvironmentContent = ({
 						onFlagToggle={onFlagToggle}
 						hasSelectedEnvironment={!!environment}
 						environmentType={environment.type}
+						hasNextPage={hasNextPage}
+						isFetchingNextPage={isFetchingNextPage}
+						loadingRef={loadingRef}
 					/>
 				</Box>
 			</Paper>

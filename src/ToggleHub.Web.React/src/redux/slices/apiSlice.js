@@ -81,8 +81,8 @@ export const api = createApi({
 			}),
 		}),
 		getFlagsByEnvironment: builder.query({
-			query: ({ organizationId, projectId, environmentId }) =>
-				`organizations/${organizationId}/projects/${projectId}/environments/${environmentId}/flags`,
+			query: ({ organizationId, projectId, environmentId, page = 1, pageSize = 10 }) =>
+				`organizations/${organizationId}/projects/${projectId}/environments/${environmentId}/flags?page=${page}&pageSize=${pageSize}`,
 			providesTags: (result, error, { organizationId, projectId, environmentId }) => [
 				{ type: 'Flags', id: `${organizationId}-${projectId}-${environmentId}` }
 			],

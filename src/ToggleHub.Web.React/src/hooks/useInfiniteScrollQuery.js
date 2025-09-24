@@ -52,6 +52,13 @@ const useInfiniteScrollQuery = ({
 
 	}, [queryData, skipCondition, currentPage]);
 
+	// Reset pagination when baseQueryParams change (e.g., environment change)
+	useEffect(() => {
+		setCurrentPage(1);
+		setAllItems([]);
+		setHasNextPage(true);
+	}, [JSON.stringify(baseQueryParams)]);
+
 	// Intersection Observer for infinite scroll
 	useEffect(() => {
 		console.log('Setting up intersection observer:', {

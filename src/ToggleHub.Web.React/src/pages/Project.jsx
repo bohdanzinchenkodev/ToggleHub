@@ -12,6 +12,7 @@ import {
 } from "../redux/slices/apiSlice.js";
 import { useAppState } from "../hooks/useAppState.js";
 import { useFlagOperations } from "../hooks/useFlagOperations.js";
+import useInfiniteScrollQuery from "../hooks/useInfiniteScrollQuery.js";
 import AppStateDisplay from "../components/shared/AppStateDisplay.jsx";
 import EnvironmentTabs from "../components/project/EnvironmentTabs.jsx";
 import EnvironmentContent from "../components/project/EnvironmentContent.jsx";
@@ -38,24 +39,27 @@ const Project = () => {
 
 	const selectedEnvironment = project?.environments?.[selectedTab];
 	const {
-		data: flags,
+		allItems: flags,
 		isLoading: isFlagsLoading,
 		isError: isFlagsError,
-		error: flagsError
-	} = useGetFlagsByEnvironmentQuery(
-		{
+		error: flagsError,
+		hasNextPage,
+		isFetchingNextPage,
+		loadingRef
+	} = useInfiniteScrollQuery({
+		useQuery: useGetFlagsByEnvironmentQuery,
+		baseQueryParams: {
 			organizationId: organization?.id,
 			projectId: project?.id,
-			environmentId: selectedEnvironment?.id
+			environmentId: selectedEnvironment?.id,
+			pageSize: 10
 		},
-		{
-			skip: !organization?.id || !project?.id || !selectedEnvironment?.id
-		}
-	);
+		skipCondition: !organization?.id || !project?.id || !selectedEnvironment?.id
+	});
 
 	const { localFlags, processingFlags, handleFlagToggle, syncFlags } = useFlagOperations(
-		organization, 
-		project, 
+		organization,
+		project,
 		selectedEnvironment
 	);
 
@@ -100,11 +104,11 @@ const Project = () => {
 				</Typography>
 
 				{project?.environments && project.environments.length > 0 && (
-					<Box sx={{ 
-						display: 'flex', 
+					<Box sx={{
+						display: 'flex',
 						flexDirection: { xs: 'column', md: 'row' },
-						mt: 4, 
-						minHeight: 400 
+						mt: 4,
+						minHeight: 400
 					}}>
 						<EnvironmentTabs
 							environments={project.environments}
@@ -112,7 +116,7 @@ const Project = () => {
 							onTabChange={handleTabChange}
 						/>
 						<EnvironmentContent
-							environment={project.environments[selectedTab]}
+							environment={selectedEnvironment}
 							flags={localFlags}
 							isFlagsLoading={isFlagsLoading}
 							isFlagsError={isFlagsError}
@@ -121,6 +125,9 @@ const Project = () => {
 							onFlagToggle={handleFlagToggle}
 							orgSlug={orgSlug}
 							projectSlug={projectSlug}
+							hasNextPage={hasNextPage}
+							isFetchingNextPage={isFetchingNextPage}
+							loadingRef={loadingRef}
 						/>
 					</Box>
 				)}
@@ -142,5 +149,6 @@ const Project = () => {
 			</Box>
 		</Container>
 	);
-}
+};
+
 export default Project;
