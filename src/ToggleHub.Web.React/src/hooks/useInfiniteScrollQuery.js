@@ -9,7 +9,6 @@ const useInfiniteScrollQuery = ({
 	const [allItems, setAllItems] = useState([]);
 	const [hasNextPage, setHasNextPage] = useState(true);
 	const loadingRef = useRef(null);
-	const lastProcessedPageRef = useRef(0); // Track which page we last processed
 
 	// Build query parameters with current page
 	const queryParams = {
@@ -31,17 +30,14 @@ const useInfiniteScrollQuery = ({
 	useEffect(() => {
 		if (queryData && !skipCondition) {
 			// Support different response structures
-			const items = queryData.items || queryData.data || queryData || [];
+			const items = queryData.data || [];
 			const hasNextPageFromResponse = queryData.hasNextPage;
-			const pageFromResponse = queryData.page || currentPage; // Use page from response if available
+			const pageFromResponse = queryData.pageIndex; // Use page from response if available
 
-			console.log('Processing data for page:', pageFromResponse, 'items:', items.length, 'lastProcessed:', lastProcessedPageRef.current);
+			console.log('Processing data for page:', pageFromResponse, 'items:', items.length);
 
-			// Only process if this is a new page we haven't seen before
-			if (pageFromResponse > lastProcessedPageRef.current) {
-				lastProcessedPageRef.current = pageFromResponse;
-
-				if (pageFromResponse === 1) {
+			if (pageFromResponse === currentPage - 1) {
+				if (currentPage === 1) {
 					// First page - replace all items
 					setAllItems(items);
 				} else {
@@ -52,7 +48,7 @@ const useInfiniteScrollQuery = ({
 				setHasNextPage(hasNextPageFromResponse);
 			}
 		}
-	}, [queryData, skipCondition]);
+	}, [queryData, skipCondition, currentPage]);
 
 	// Reset state when skip condition changes or base params change significantly
 	useEffect(() => {
@@ -60,7 +56,6 @@ const useInfiniteScrollQuery = ({
 			setAllItems([]);
 			setCurrentPage(1);
 			setHasNextPage(true);
-			lastProcessedPageRef.current = 0; // Reset processed page tracker
 		}
 	}, [skipCondition]);
 
@@ -74,7 +69,8 @@ const useInfiniteScrollQuery = ({
 			allItemsLength: allItems.length
 		});
 
-		if (!hasNextPage || isFetching || skipCondition || !loadingRef.current) return;
+		if (!hasNextPage || isFetching || skipCondition || !loadingRef.current)
+			return;
 
 		const observer = new IntersectionObserver(
 			(entries) => {
@@ -105,7 +101,6 @@ const useInfiniteScrollQuery = ({
 		setCurrentPage(1);
 		setAllItems([]);
 		setHasNextPage(true);
-		lastProcessedPageRef.current = 0; // Reset processed page tracker
 		return originalRefetch();
 	};
 
