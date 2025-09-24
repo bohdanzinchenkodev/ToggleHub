@@ -10,4 +10,5 @@ public interface IOrgMemberService
     Task<PagedListDto<OrgMemberDto>> GetMembersInOrganizationAsync(int organizationId, int pageIndex = 0, int pageSize = int.MaxValue);
     Task<OrgMemberDto?> GetOrgMemberAsync(int organizationId, int userId);
     Task<bool> IsUserInOrganizationAsync(int organizationId, int userId);
+    Task ChangeOrgMemberRoleAsync(ChangeOrgMemberRoleDto dto);
 }

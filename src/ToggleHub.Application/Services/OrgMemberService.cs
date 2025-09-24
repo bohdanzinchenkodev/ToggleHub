@@ -17,6 +17,7 @@ public class OrgMemberService : IOrgMemberService
         _orgMemberRepository = orgMemberRepository;
     }
 
+    
     public async Task AddUserToOrganizationAsync(int organizationId, int userId)
     {
         var organization = await _orgMemberRepository.GetByIdAsync(organizationId);
@@ -96,5 +97,24 @@ public class OrgMemberService : IOrgMemberService
     public async Task<bool> IsUserInOrganizationAsync(int organizationId, int userId)
     {
         return await _orgMemberRepository.IsUserInOrganizationAsync(organizationId, userId);
+    }
+
+    public async Task ChangeOrgMemberRoleAsync(ChangeOrgMemberRoleDto dto)
+    {
+        var orgMember = await _orgMemberRepository.GetOrgMemberAsync(dto.OrganizationId, dto.UserId);
+        if (orgMember == null)
+            throw new ApplicationException($"User with ID {dto.UserId} is not in organization with ID {dto.OrganizationId}");
+
+        if (!dto.NewRole.HasValue)
+            throw new ApplicationException("New role is invalid");
+        
+        if(orgMember.Role == OrgMemberRole.Owner)
+            throw new ApplicationException("Cannot change role of organization owner");
+        
+        if(orgMember.Role == dto.NewRole.Value)
+            return;
+        
+        orgMember.Role = dto.NewRole.Value;
+        await _orgMemberRepository.UpdateAsync(orgMember);
     }
 }

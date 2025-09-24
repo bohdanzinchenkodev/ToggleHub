@@ -49,4 +49,14 @@ public class OrgMemberController : ControllerBase
         await _organizationService.AddUserToOrganizationAsync(dto.OrganizationId, dto.UserId);
         return NoContent();
     }
+
+    [HttpPatch("{userId:int}/role")]
+    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageMembers)]
+    public async Task<IActionResult> ChangeOrgMemberRole(int organizationId, int userId, [FromBody] ChangeOrgMemberRoleDto dto)
+    {
+        dto.OrganizationId = organizationId;
+        dto.UserId = userId;
+        await _organizationService.ChangeOrgMemberRoleAsync(dto);
+        return Ok();
+    }
 }
