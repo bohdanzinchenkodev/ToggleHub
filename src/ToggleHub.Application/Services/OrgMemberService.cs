@@ -49,6 +49,15 @@ public class OrgMemberService : IOrgMemberService
         await _orgMemberRepository.DeleteOrgMember(orgMember);
     }
 
+    public async Task RemoveOrgMemberAsync(int orgMemberId)
+    {
+        var orgMember = await _orgMemberRepository.GetByIdAsync(orgMemberId);
+        if (orgMember == null)
+            throw new ApplicationException($"Organization member with ID {orgMemberId} not found");
+
+        await _orgMemberRepository.DeleteAsync(orgMemberId);
+    }
+
     public async Task<PagedListDto<OrgMemberDto>> GetMembersInOrganizationAsync(int organizationId, int pageIndex = 0, int pageSize = int.MaxValue)
     {
         var orgMembers = await _orgMemberRepository.GetMembersInOrganizationAsync(organizationId, pageIndex, pageSize);

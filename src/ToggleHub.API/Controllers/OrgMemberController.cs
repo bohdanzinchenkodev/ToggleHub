@@ -59,4 +59,13 @@ public class OrgMemberController : ControllerBase
         await _organizationService.ChangeOrgMemberRoleAsync(dto);
         return Ok();
     }
+    
+
+    [HttpDelete("{userId:int}")]
+    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageMembers)]
+    public async Task<IActionResult> RemoveOrgMemberById(int orgMemberId)
+    {
+        await _organizationService.RemoveOrgMemberAsync(orgMemberId);
+        return NoContent();
+    }
 }
