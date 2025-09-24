@@ -34,25 +34,27 @@ import {
 import { useDispatch } from 'react-redux';
 import {addNotification, showError, showSuccess} from '../redux/slices/notificationsSlice';
 import AppStateDisplay from '../components/shared/AppStateDisplay';
-import { 
-	PAGINATION_CONFIG, 
-	INVITE_STATUS, 
-	ORG_ROLES, 
-	MESSAGES 
+import {
+	PAGINATION_CONFIG,
+	INVITE_STATUS,
+	ORG_ROLES,
+	MESSAGES
 } from '../constants/organizationConstants';
-import { validateEmail, getChipColor, formatDate } from '../utils/organizationUtils';
+import { getChipColor } from '../utils/organizationUtils';
+import { validateEmail } from '../utils/validation';
+import { formatDate } from '../utils/dateUtils';
 
 const OrganizationMembers = () => {
 	const { orgSlug } = useParams();
 	const [email, setEmail] = useState('');
 	const [emailError, setEmailError] = useState('');
-	const [invitesPaginationModel, setInvitesPaginationModel] = useState({ 
-		page: PAGINATION_CONFIG.DEFAULT_PAGE, 
-		pageSize: PAGINATION_CONFIG.DEFAULT_PAGE_SIZE 
+	const [invitesPaginationModel, setInvitesPaginationModel] = useState({
+		page: PAGINATION_CONFIG.DEFAULT_PAGE,
+		pageSize: PAGINATION_CONFIG.DEFAULT_PAGE_SIZE
 	});
-	const [membersPaginationModel, setMembersPaginationModel] = useState({ 
-		page: PAGINATION_CONFIG.DEFAULT_PAGE, 
-		pageSize: PAGINATION_CONFIG.DEFAULT_PAGE_SIZE 
+	const [membersPaginationModel, setMembersPaginationModel] = useState({
+		page: PAGINATION_CONFIG.DEFAULT_PAGE,
+		pageSize: PAGINATION_CONFIG.DEFAULT_PAGE_SIZE
 	});
 	const [rowModesModel, setRowModesModel] = useState({});
 	const dispatch = useDispatch();
@@ -147,10 +149,10 @@ const OrganizationMembers = () => {
 			headerName: 'Status',
 			width: 120,
 			renderCell: (params) => (
-				<Chip 
-					label={params.value} 
-					color={getChipColor(params.value)} 
-					size="small" 
+				<Chip
+					label={params.value}
+					color={getChipColor(params.value)}
+					size="small"
 				/>
 			)
 		},
@@ -235,10 +237,10 @@ const OrganizationMembers = () => {
 			type: 'singleSelect',
 			valueOptions: [ORG_ROLES.ADMIN, ORG_ROLES.FLAG_MANAGER],
 			renderCell: (params) => (
-				<Chip 
-					label={params.value} 
-					color={getChipColor(params.value)} 
-					size="small" 
+				<Chip
+					label={params.value}
+					color={getChipColor(params.value)}
+					size="small"
 				/>
 			)
 		},
@@ -290,7 +292,7 @@ const OrganizationMembers = () => {
 
 	const processRowUpdate = async (newRow) => {
 		const oldRow = membersData?.data?.find(row => row.id === newRow.id);
-		
+
 		// Only process if the role actually changed
 		if (oldRow && oldRow.orgRole !== newRow.orgRole) {
 			try {
@@ -307,7 +309,8 @@ const OrganizationMembers = () => {
 			}
 		}
 		return newRow;
-	};	const handleRowEditStop = (params, event) => {
+	};
+	const handleRowEditStop = (params, event) => {
 		if (params.reason === GridRowEditStopReasons.rowFocusOut) {
 			event.defaultMuiPrevented = true;
 		}
@@ -334,7 +337,7 @@ const OrganizationMembers = () => {
 		// 2. The row is currently in edit mode (controlled by Edit button)
 		const isOwner = params.row.orgRole === ORG_ROLES.OWNER;
 		const isInEditMode = rowModesModel[params.id]?.mode === GridRowModes.Edit;
-		
+
 		return !isOwner && isInEditMode;
 	};
 

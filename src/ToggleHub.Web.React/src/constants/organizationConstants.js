@@ -33,10 +33,6 @@ export const CHIP_COLORS = {
 
 // User Messages
 export const MESSAGES = {
-	VALIDATION: {
-		EMAIL_REQUIRED: 'Email is required',
-		EMAIL_INVALID: 'Please enter a valid email address'
-	},
 	SUCCESS: {
 		INVITATION_SENT: (email) => `Invitation sent to ${email}`,
 		INVITATION_REVOKED: 'Invitation revoked successfully',
