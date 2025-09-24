@@ -28,36 +28,29 @@ const useInfiniteScrollQuery = ({
 
 	// Handle new data coming in
 	useEffect(() => {
-		if (queryData && !skipCondition) {
-			// Support different response structures
-			const items = queryData.data || [];
-			const hasNextPageFromResponse = queryData.hasNextPage;
-			const pageFromResponse = queryData.pageIndex; // Use page from response if available
+		if (!queryData || skipCondition)
+			return;
 
-			console.log('Processing data for page:', pageFromResponse, 'items:', items.length);
+		const items = queryData.data || [];
+		const hasNextPageFromResponse = queryData.hasNextPage;
+		const pageFromResponse = queryData.pageIndex; // Use page from response if available
 
-			if (pageFromResponse === currentPage - 1) {
-				if (currentPage === 1) {
-					// First page - replace all items
-					setAllItems(items);
-				} else {
-					// Subsequent pages - append to existing items
-					setAllItems(prev => [...prev, ...items]);
-				}
+		console.log('Processing data for page:', pageFromResponse, 'items:', items.length);
 
-				setHasNextPage(hasNextPageFromResponse);
-			}
+		if (pageFromResponse !== currentPage - 1)
+			return;
+
+		if (currentPage === 1) {
+			// First page - replace all items
+			setAllItems(items);
+		} else {
+			// Subsequent pages - append to existing items
+			setAllItems(prev => [...prev, ...items]);
 		}
+
+		setHasNextPage(hasNextPageFromResponse);
+
 	}, [queryData, skipCondition, currentPage]);
-
-	// Reset state when skip condition changes or base params change significantly
-	useEffect(() => {
-		if (skipCondition) {
-			setAllItems([]);
-			setCurrentPage(1);
-			setHasNextPage(true);
-		}
-	}, [skipCondition]);
 
 	// Intersection Observer for infinite scroll
 	useEffect(() => {
