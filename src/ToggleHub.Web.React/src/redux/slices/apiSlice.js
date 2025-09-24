@@ -159,6 +159,15 @@ export const api = createApi({
 					pageSize,
 				},
 			}),
+			providesTags: ['OrganizationMembers'],
+		}),
+		updateOrganizationMemberRole: builder.mutation({
+			query: ({ organizationId, userId, newRole }) => ({
+				url: `organizations/${organizationId}/members/${userId}/role`,
+				method: 'PATCH',
+				body: { newRole },
+			}),
+			invalidatesTags: ['OrganizationMembers'],
 		}),
 		acceptOrganizationInvite: builder.mutation({
 			query: ({ organizationId, body }) => ({
@@ -200,6 +209,7 @@ export const {
 	useRevokeOrganizationInviteMutation,
 	useGetOrganizationInvitesQuery,
 	useGetOrganizationMembersQuery,
+	useUpdateOrganizationMemberRoleMutation,
 	useAcceptOrganizationInviteMutation,
 	useDeclineOrganizationInviteMutation
 } = api;

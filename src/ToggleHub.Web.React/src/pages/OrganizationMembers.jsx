@@ -8,11 +8,19 @@ import {
 	Container,
 	CircularProgress,
 	TextField,
-	Chip
+	Chip,
+	Select,
+	MenuItem
 } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, GridRowModes, GridRowEditStopReasons } from '@mui/x-data-grid';
 import { useParams } from 'react-router';
-import { ArrowBack as ArrowBackIcon, Send as SendIcon } from '@mui/icons-material';
+import {
+	ArrowBack as ArrowBackIcon,
+	Send as SendIcon,
+	Edit as EditIcon,
+	Save as SaveIcon,
+	Cancel as CancelIcon
+} from '@mui/icons-material';
 import { Link } from 'react-router';
 import {
 	useGetOrganizationBySlugQuery,
@@ -20,31 +28,34 @@ import {
 	useGetOrganizationInvitesQuery,
 	useGetOrganizationMembersQuery,
 	useResendOrganizationInviteMutation,
-	useRevokeOrganizationInviteMutation
+	useRevokeOrganizationInviteMutation,
+	useUpdateOrganizationMemberRoleMutation
 } from '../redux/slices/apiSlice';
 import { useDispatch } from 'react-redux';
 import {addNotification, showError, showSuccess} from '../redux/slices/notificationsSlice';
 import AppStateDisplay from '../components/shared/AppStateDisplay';
+import { 
+	PAGINATION_CONFIG, 
+	INVITE_STATUS, 
+	ORG_ROLES, 
+	MESSAGES 
+} from '../constants/organizationConstants';
+import { validateEmail, getChipColor, formatDate } from '../utils/organizationUtils';
 
 const OrganizationMembers = () => {
 	const { orgSlug } = useParams();
 	const [email, setEmail] = useState('');
 	const [emailError, setEmailError] = useState('');
-	const [invitesPaginationModel, setInvitesPaginationModel] = useState({ page: 0, pageSize: 10 });
-	const [membersPaginationModel, setMembersPaginationModel] = useState({ page: 0, pageSize: 10 });
+	const [invitesPaginationModel, setInvitesPaginationModel] = useState({ 
+		page: PAGINATION_CONFIG.DEFAULT_PAGE, 
+		pageSize: PAGINATION_CONFIG.DEFAULT_PAGE_SIZE 
+	});
+	const [membersPaginationModel, setMembersPaginationModel] = useState({ 
+		page: PAGINATION_CONFIG.DEFAULT_PAGE, 
+		pageSize: PAGINATION_CONFIG.DEFAULT_PAGE_SIZE 
+	});
+	const [rowModesModel, setRowModesModel] = useState({});
 	const dispatch = useDispatch();
-
-	// Email validation function
-	const validateEmail = (email) => {
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		if (!email.trim()) {
-			return 'Email is required';
-		}
-		if (!emailRegex.test(email.trim())) {
-			return 'Please enter a valid email address';
-		}
-		return '';
-	};
 
 	const handleEmailChange = (e) => {
 		const newEmail = e.target.value;
@@ -68,8 +79,34 @@ const OrganizationMembers = () => {
 		isError: isSendInviteError,
 	}] = useSendOrganizationInviteMutation();
 
-	const [revokeInvite] = useRevokeOrganizationInviteMutation();
-	const [resendInvite] = useResendOrganizationInviteMutation();
+	const [revokeInviteMutation] = useRevokeOrganizationInviteMutation();
+	const [resendInviteMutation] = useResendOrganizationInviteMutation();
+	const [updateMemberRoleMutation] = useUpdateOrganizationMemberRoleMutation();
+
+	// Custom hooks for invite actions
+	const useInviteActions = () => {
+		const revokeInvite = async (inviteId) => {
+			try {
+				await revokeInviteMutation({ organizationId: organization.id, inviteId }).unwrap();
+				dispatch(showSuccess(MESSAGES.SUCCESS.INVITATION_REVOKED));
+			} catch (err) {
+				dispatch(showError(err.data?.detail || MESSAGES.ERROR.REVOKE_FAILED));
+			}
+		};
+
+		const resendInvite = async (inviteId) => {
+			try {
+				await resendInviteMutation({ organizationId: organization.id, inviteId }).unwrap();
+				dispatch(showSuccess(MESSAGES.SUCCESS.INVITATION_RESENT));
+			} catch (err) {
+				dispatch(showError(err.data?.detail || MESSAGES.ERROR.RESEND_FAILED));
+			}
+		};
+
+		return { revokeInvite, resendInvite };
+	};
+
+	const { revokeInvite, resendInvite } = useInviteActions();
 
 	// Get organization invites
 	const {
@@ -97,8 +134,8 @@ const OrganizationMembers = () => {
 		skip: !organization?.id
 	});
 
-	// Define columns for invites grid
-	const invitesColumns = [
+	// Column definitions
+	const createInvitesColumns = () => [
 		{
 			field: 'email',
 			headerName: 'Email',
@@ -109,28 +146,25 @@ const OrganizationMembers = () => {
 			field: 'status',
 			headerName: 'Status',
 			width: 120,
-			renderCell: (params) => {
-				const status = params.value;
-				let color = 'default';
-				if (status === 'Pending') color = 'warning';
-				else if (status === 'Accepted') color = 'success';
-				else if (status === 'Declined') color = 'error';
-				else if (status === 'Expired') color = 'error';
-
-				return <Chip label={status} color={color} size="small" />;
-			}
+			renderCell: (params) => (
+				<Chip 
+					label={params.value} 
+					color={getChipColor(params.value)} 
+					size="small" 
+				/>
+			)
 		},
 		{
 			field: 'createdAt',
 			headerName: 'Sent',
 			width: 150,
-			valueFormatter: (value) => new Date(value).toLocaleDateString()
+			valueFormatter: (value) => formatDate(value)
 		},
 		{
 			field: 'expiresAt',
 			headerName: 'Expires',
 			width: 150,
-			valueFormatter: (value) => new Date(value).toLocaleDateString()
+			valueFormatter: (value) => formatDate(value)
 		},
 		{
 			field: 'actions',
@@ -139,32 +173,15 @@ const OrganizationMembers = () => {
 			sortable: false,
 			renderCell: (params) => {
 				const { id: inviteId, status } = params.row;
-
-				const handleRevoke = async () => {
-					try {
-						await revokeInvite({ organizationId: organization.id, inviteId }).unwrap();
-						dispatch(showSuccess('Invitation revoked successfully'));
-					} catch (err) {
-						dispatch(showError(err.data?.detail || 'Failed to revoke invitation'));
-					}
-				};
-
-				const handleResend = async () => {
-					try {
-						await resendInvite({ organizationId: organization.id, inviteId }).unwrap();
-						dispatch(showSuccess('Invitation resent successfully'));
-					} catch (err) {
-						dispatch(showError(err.data?.detail || 'Failed to resend invitation'));
-					}
-				};
+				const isPending = status === INVITE_STATUS.PENDING;
 
 				return (
 					<Box sx={{ display: 'flex', gap: 1, alignItems: 'center', height: '100%', justifyContent: 'center' }}>
 						<Button
 							variant="outlined"
 							size="small"
-							onClick={handleResend}
-							disabled={status !== 'Pending'}
+							onClick={() => resendInvite(inviteId)}
+							disabled={!isPending}
 						>
 							Resend
 						</Button>
@@ -172,8 +189,8 @@ const OrganizationMembers = () => {
 							variant="outlined"
 							size="small"
 							color="error"
-							onClick={handleRevoke}
-							disabled={status !== 'Pending'}
+							onClick={() => revokeInvite(inviteId)}
+							disabled={!isPending}
 						>
 							Revoke
 						</Button>
@@ -183,13 +200,15 @@ const OrganizationMembers = () => {
 		}
 	];
 
-	// Define columns for members grid
-	const membersColumns = [
+	const invitesColumns = createInvitesColumns();
+
+	const createMembersColumns = () => [
 		{
 			field: 'userFirstName',
 			headerName: 'First Name',
 			flex: 1,
 			minWidth: 150,
+			editable: false,
 			valueGetter: (value, row) => row.user?.firstName || ''
 		},
 		{
@@ -197,6 +216,7 @@ const OrganizationMembers = () => {
 			headerName: 'Last Name',
 			flex: 1,
 			minWidth: 150,
+			editable: false,
 			valueGetter: (value, row) => row.user?.lastName || ''
 		},
 		{
@@ -204,23 +224,119 @@ const OrganizationMembers = () => {
 			headerName: 'Email',
 			flex: 1,
 			minWidth: 200,
+			editable: false,
 			valueGetter: (value, row) => row.user?.email || ''
 		},
 		{
 			field: 'orgRole',
 			headerName: 'Role',
-			width: 120,
-			renderCell: (params) => {
-				const role = params.value;
-				let color = 'default';
-				if (role === 'Owner') color = 'primary';
-				else if (role === 'Admin') color = 'secondary';
-				else if (role === 'Member') color = 'default';
+			width: 150,
+			editable: true,
+			type: 'singleSelect',
+			valueOptions: [ORG_ROLES.ADMIN, ORG_ROLES.FLAG_MANAGER],
+			renderCell: (params) => (
+				<Chip 
+					label={params.value} 
+					color={getChipColor(params.value)} 
+					size="small" 
+				/>
+			)
+		},
+		{
+			field: 'actions',
+			type: 'actions',
+			headerName: 'Actions',
+			width: 100,
+			cellClassName: 'actions',
+			getActions: ({ id }) => {
+				const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+				const row = membersData?.data?.find(r => r.id === id);
+				const isOwner = row?.orgRole === ORG_ROLES.OWNER;
 
-				return <Chip label={role} color={color} size="small" />;
-			}
+				if (isOwner) {
+					return [];
+				}
+
+				if (isInEditMode) {
+					return [
+						<GridActionsCellItem
+							icon={<SaveIcon />}
+							label="Save"
+							sx={{ color: 'primary.main' }}
+							onClick={handleSaveClick(id)}
+						/>,
+						<GridActionsCellItem
+							icon={<CancelIcon />}
+							label="Cancel"
+							onClick={handleCancelClick(id)}
+							color="inherit"
+						/>,
+					];
+				}
+
+				return [
+					<GridActionsCellItem
+						icon={<EditIcon />}
+						label="Edit"
+						onClick={handleEditClick(id)}
+						color="inherit"
+					/>,
+				];
+			},
 		}
 	];
+
+	const membersColumns = createMembersColumns();
+
+	const processRowUpdate = async (newRow) => {
+		const oldRow = membersData?.data?.find(row => row.id === newRow.id);
+		
+		// Only process if the role actually changed
+		if (oldRow && oldRow.orgRole !== newRow.orgRole) {
+			try {
+				await updateMemberRoleMutation({
+					organizationId: organization.id,
+					userId: newRow.user.id,
+					newRole: newRow.orgRole,
+				}).unwrap();
+				dispatch(showSuccess(MESSAGES.SUCCESS.ROLE_UPDATED(newRow.user.email, newRow.orgRole)));
+				return newRow;
+			} catch (err) {
+				dispatch(showError(err.data?.detail || MESSAGES.ERROR.ROLE_UPDATE_FAILED));
+				throw err; // This will revert the change in the grid
+			}
+		}
+		return newRow;
+	};	const handleRowEditStop = (params, event) => {
+		if (params.reason === GridRowEditStopReasons.rowFocusOut) {
+			event.defaultMuiPrevented = true;
+		}
+	};
+
+	const handleEditClick = (id) => () => {
+		setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
+	};
+
+	const handleSaveClick = (id) => () => {
+		setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
+	};
+
+	const handleCancelClick = (id) => () => {
+		setRowModesModel({
+			...rowModesModel,
+			[id]: { mode: GridRowModes.View, ignoreModifications: true },
+		});
+	};
+
+	const isCellEditable = (params) => {
+		// Only allow editing if:
+		// 1. The user is not an Owner
+		// 2. The row is currently in edit mode (controlled by Edit button)
+		const isOwner = params.row.orgRole === ORG_ROLES.OWNER;
+		const isInEditMode = rowModesModel[params.id]?.mode === GridRowModes.Edit;
+		
+		return !isOwner && isInEditMode;
+	};
 
 	const handleSendInvite = async () => {
 		// Validate email before sending
@@ -241,16 +357,14 @@ const OrganizationMembers = () => {
 				}
 			}).unwrap();
 
-			dispatch(showSuccess( `Invitation sent to ${email}`));
-
+			dispatch(showSuccess(MESSAGES.SUCCESS.INVITATION_SENT(email)));
 			setEmail('');
 			setEmailError('');
 		} catch (error) {
-			// Don't show actual error details for server errors (500)
 			const isServerError = error?.status === 500;
 			const errorMessage = isServerError
-				? 'An internal server error occurred. Please try again later.'
-				: error?.data?.detail || 'Failed to send invitation';
+				? MESSAGES.ERROR.SERVER_ERROR
+				: error?.data?.detail || MESSAGES.ERROR.INVITATION_FAILED;
 
 			dispatch(showError(errorMessage));
 		}
@@ -272,7 +386,7 @@ const OrganizationMembers = () => {
 		return (
 			<Container maxWidth="lg" sx={{ py: 3 }}>
 				<Alert severity="error">
-					Failed to load organization: {orgError?.data?.detail || 'Organization not found'}
+					Failed to load organization: {orgError?.data?.detail || MESSAGES.ERROR.ORGANIZATION_NOT_FOUND}
 				</Alert>
 			</Container>
 		);
@@ -319,7 +433,7 @@ const OrganizationMembers = () => {
 				</Typography>
 				{membersError ? (
 					<Alert severity="error">
-						Failed to load members: {membersError?.data?.detail || 'Unknown error'}
+						{MESSAGES.ERROR.MEMBERS_LOAD_FAILED}: {membersError?.data?.detail || 'Unknown error'}
 					</Alert>
 				) : (
 					<Box sx={{ width: '100%' }}>
@@ -331,10 +445,16 @@ const OrganizationMembers = () => {
 							onPaginationModelChange={setMembersPaginationModel}
 							rowCount={membersData?.total || 0}
 							paginationMode="server"
-							pageSizeOptions={[5, 10, 25]}
+							pageSizeOptions={PAGINATION_CONFIG.PAGE_SIZE_OPTIONS}
 							disableRowSelectionOnClick
 							disableColumnSorting
 							disableColumnFilter
+							editMode="row"
+							rowModesModel={rowModesModel}
+							onRowModesModelChange={setRowModesModel}
+							onRowEditStop={handleRowEditStop}
+							processRowUpdate={processRowUpdate}
+							isCellEditable={isCellEditable}
 						/>
 					</Box>
 				)}
@@ -347,7 +467,7 @@ const OrganizationMembers = () => {
 				</Typography>
 				{invitesError ? (
 					<Alert severity="error">
-						Failed to load invites: {invitesError?.data?.detail || 'Unknown error'}
+						{MESSAGES.ERROR.INVITES_LOAD_FAILED}: {invitesError?.data?.detail || 'Unknown error'}
 					</Alert>
 				) : (
 					<Box sx={{ width: '100%' }}>
@@ -359,7 +479,7 @@ const OrganizationMembers = () => {
 							onPaginationModelChange={setInvitesPaginationModel}
 							rowCount={invitesData?.total || 0}
 							paginationMode="server"
-							pageSizeOptions={[5, 10, 25]}
+							pageSizeOptions={PAGINATION_CONFIG.PAGE_SIZE_OPTIONS}
 							disableRowSelectionOnClick
 							disableColumnSorting
 							disableColumnFilter
