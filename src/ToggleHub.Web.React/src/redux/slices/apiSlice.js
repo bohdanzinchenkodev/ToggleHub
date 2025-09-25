@@ -181,6 +181,13 @@ export const api = createApi({
 			}),
 			invalidatesTags: ['OrganizationMembers'],
 		}),
+		deleteOrganizationMember: builder.mutation({
+			query: ({ organizationId, orgMemberId }) => ({
+				url: `organizations/${organizationId}/members/${orgMemberId}`,
+				method: 'DELETE',
+			}),
+			invalidatesTags: ['OrganizationMembers'],
+		}),
 		acceptOrganizationInvite: builder.mutation({
 			query: ({ organizationId, body }) => ({
 				url: `organizations/${organizationId}/invites/accept`,
@@ -222,6 +229,7 @@ export const {
 	useGetOrganizationInvitesQuery,
 	useGetOrganizationMembersQuery,
 	useUpdateOrganizationMemberRoleMutation,
+	useDeleteOrganizationMemberMutation,
 	useAcceptOrganizationInviteMutation,
 	useDeclineOrganizationInviteMutation
 } = api;

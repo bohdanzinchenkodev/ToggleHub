@@ -18,7 +18,8 @@ import {
 	Send as SendIcon,
 	Edit as EditIcon,
 	Save as SaveIcon,
-	Cancel as CancelIcon
+	Cancel as CancelIcon,
+	Delete as DeleteIcon
 } from '@mui/icons-material';
 import { Link } from 'react-router';
 import {
@@ -27,7 +28,8 @@ import {
 	useGetOrganizationMembersQuery,
 	useResendOrganizationInviteMutation,
 	useRevokeOrganizationInviteMutation,
-	useUpdateOrganizationMemberRoleMutation
+	useUpdateOrganizationMemberRoleMutation,
+	useDeleteOrganizationMemberMutation
 } from '../redux/slices/apiSlice';
 import { useDispatch } from 'react-redux';
 import {addNotification, showError, showSuccess} from '../redux/slices/notificationsSlice';
@@ -82,6 +84,7 @@ const OrganizationMembers = () => {
 	const [revokeInviteMutation] = useRevokeOrganizationInviteMutation();
 	const [resendInviteMutation] = useResendOrganizationInviteMutation();
 	const [updateMemberRoleMutation] = useUpdateOrganizationMemberRoleMutation();
+	const [deleteMemberMutation] = useDeleteOrganizationMemberMutation();
 
 	// Custom hooks for invite actions
 	const useInviteActions = () => {
@@ -244,7 +247,7 @@ const OrganizationMembers = () => {
 			field: 'actions',
 			type: 'actions',
 			headerName: 'Actions',
-			width: 100,
+			width: 150,
 			cellClassName: 'actions',
 			getActions: ({ id }) => {
 				const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
@@ -278,6 +281,12 @@ const OrganizationMembers = () => {
 						label="Edit"
 						onClick={handleEditClick(id)}
 						color="inherit"
+					/>,
+					<GridActionsCellItem
+						icon={<DeleteIcon />}
+						label="Delete"
+						onClick={handleDeleteClick(id)}
+						sx={{ color: 'error.main' }}
 					/>,
 				];
 			},
@@ -325,6 +334,29 @@ const OrganizationMembers = () => {
 			...rowModesModel,
 			[id]: { mode: GridRowModes.View, ignoreModifications: true },
 		});
+	};
+
+	const handleDeleteClick = (id) => () => {
+		const member = membersData?.data?.find(row => row.id === id);
+		if (!member)
+			return;
+
+		// Show confirmation before deleting
+		if (window.confirm(`Are you sure you want to remove ${member.user?.email} from the organization?`)) {
+			deleteMember(id);
+		}
+	};
+
+	const deleteMember = async (id) => {
+		try {
+			await deleteMemberMutation({
+				organizationId: organization.id,
+				orgMemberId: id
+			}).unwrap();
+			dispatch(showSuccess('Member successfully removed from organization'));
+		} catch (err) {
+			dispatch(showError(err.data?.detail || 'Failed to remove member'));
+		}
 	};
 
 	const isCellEditable = (params) => {
