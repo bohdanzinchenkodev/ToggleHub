@@ -12,6 +12,7 @@ import { Link } from "react-router";
 // Default item renderer (original simple link style)
 const DefaultItemRenderer = ({ item, getItemLink, onItemClick }) => (
 	<Link
+		key={item.id}
 		to={getItemLink(item)}
 		style={{ textDecoration: 'none' }}
 		onClick={() => onItemClick && onItemClick(item)}
@@ -31,13 +32,14 @@ const DefaultItemRenderer = ({ item, getItemLink, onItemClick }) => (
 	</Link>
 );
 
-const InfiniteItemsList = ({
-	title,
-	items = [],
-	isLoading = false,
-	isError = false,
-	error,
-	emptyMessage,
+const InfiniteItemsList = ({ 
+	title, 
+	items = [], 
+	totalCount = 0,
+	isLoading = false, 
+	isError = false, 
+	error, 
+	emptyMessage, 
 	getItemLink,
 	onItemClick,
 	hasNextPage = false,
@@ -52,7 +54,7 @@ const InfiniteItemsList = ({
 		<Card>
 			<CardContent>
 				<Typography variant="h6" sx={{ mb: 2, textAlign: 'center' }}>
-					{title} ({items.length})
+					{title} {totalCount > 0 ? `(${totalCount})` : `(${items.length})`}
 				</Typography>
 
 				{isLoading ? (
@@ -73,24 +75,23 @@ const InfiniteItemsList = ({
 					</Card>
 				) : (
 					<Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, p: 2, ...containerProps }}>
-						{items.map((item) => (
-							<div key={item.id}>
-								{renderItem({
-									item,
-									getItemLink,
-									onItemClick
-								})}
-							</div>
-						))}
+						{items.map((item) => 
+							renderItem({ 
+								item, 
+								getItemLink, 
+								onItemClick,
+								key: item.id 
+							})
+						)}
 
 						{/* Infinite scroll trigger and loading indicator */}
 						{hasNextPage && (
-							<Box
+							<Box 
 								ref={loadingRef}
                                 id="infinite-scroll-trigger"
-								sx={{
-									display: 'flex',
-									justifyContent: 'center',
+								sx={{ 
+									display: 'flex', 
+									justifyContent: 'center', 
 									p: 2,
 									minHeight: '40px'
 								}}

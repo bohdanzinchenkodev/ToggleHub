@@ -40,6 +40,7 @@ const Project = () => {
 	const selectedEnvironment = project?.environments?.[selectedTab];
 	const {
 		allItems: flags,
+		totalCount,
 		isLoading: isFlagsLoading,
 		isError: isFlagsError,
 		error: flagsError,
@@ -118,6 +119,7 @@ const Project = () => {
 						<EnvironmentContent
 							environment={selectedEnvironment}
 							flags={localFlags}
+							totalCount={totalCount}
 							isFlagsLoading={isFlagsLoading}
 							isFlagsError={isFlagsError}
 							flagsError={flagsError}

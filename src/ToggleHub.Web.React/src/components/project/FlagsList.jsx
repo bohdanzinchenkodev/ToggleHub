@@ -4,6 +4,7 @@ import FlagItem from './FlagItem.jsx';
 
 const FlagsList = ({
 	flags = [], // Now an array instead of object
+	totalCount = 0,
 	isLoading,
 	isError,
 	error,
@@ -20,16 +21,14 @@ const FlagsList = ({
 
 	return (
 		<Box>
-			<Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-				Flags
-				{flags && flags.length > 0 && (
-					<Typography variant="caption" color="text.secondary">
-						({flags.length} loaded)
-					</Typography>
-				)}
-			</Typography>
-
-			{shouldShowLoading && (
+		<Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+			Flags
+			{totalCount > 0 && (
+				<Typography variant="caption" color="text.secondary">
+					({totalCount})
+				</Typography>
+			)}
+		</Typography>			{shouldShowLoading && (
 				<Box sx={{
 					display: 'flex',
 					justifyContent: 'center',

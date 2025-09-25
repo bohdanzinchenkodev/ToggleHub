@@ -8,6 +8,7 @@ import FlagsList from './FlagsList.jsx';
 const EnvironmentContent = ({
 	environment,
 	flags,
+	totalCount,
 	isFlagsLoading,
 	isFlagsError,
 	flagsError,
@@ -64,6 +65,7 @@ const EnvironmentContent = ({
 
 					<FlagsList
 						flags={flags}
+						totalCount={totalCount}
 						isLoading={isFlagsLoading}
 						isError={isFlagsError}
 						error={flagsError}

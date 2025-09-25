@@ -22,6 +22,7 @@ const OrganizationsList = () => {
 	// Use the reusable infinite scroll hook
 	const {
 		allItems: allOrganizations,
+		totalCount: organizationsTotal,
 		isLoading: isOrganizationsLoading,
 		isError: isOrganizationsError,
 		error: organizationsError,
@@ -96,6 +97,7 @@ const OrganizationsList = () => {
 						<InfiniteItemsList
 							title="Your Organizations"
 							items={allOrganizations}
+							totalCount={organizationsTotal}
 							isLoading={isOrganizationsLoading}
 							isError={isOrganizationsError}
 							error={organizationsError}

@@ -8,6 +8,7 @@ const useInfiniteScrollQuery = ({
 	const [currentPage, setCurrentPage] = useState(1);
 	const [allItems, setAllItems] = useState([]);
 	const [hasNextPage, setHasNextPage] = useState(true);
+	const [totalCount, setTotalCount] = useState(0);
 	const loadingRef = useRef(null);
 
 	// Build query parameters with current page
@@ -33,9 +34,10 @@ const useInfiniteScrollQuery = ({
 
 		const items = queryData.data || [];
 		const hasNextPageFromResponse = queryData.hasNextPage;
+		const totalFromResponse = queryData.total || 0;
 		const pageFromResponse = queryData.pageIndex; // Use page from response if available
 
-		console.log('Processing data for page:', pageFromResponse, 'items:', items.length);
+		console.log('Processing data for page:', pageFromResponse, 'items:', items.length, 'total:', totalFromResponse);
 
 		if (pageFromResponse !== currentPage - 1)
 			return;
@@ -49,6 +51,7 @@ const useInfiniteScrollQuery = ({
 		}
 
 		setHasNextPage(hasNextPageFromResponse);
+		setTotalCount(totalFromResponse);
 
 	}, [queryData, skipCondition, currentPage]);
 
@@ -57,6 +60,7 @@ const useInfiniteScrollQuery = ({
 		setCurrentPage(1);
 		setAllItems([]);
 		setHasNextPage(true);
+		setTotalCount(0);
 	}, [JSON.stringify(baseQueryParams)]);
 
 	// Intersection Observer for infinite scroll
@@ -101,11 +105,13 @@ const useInfiniteScrollQuery = ({
 		setCurrentPage(1);
 		setAllItems([]);
 		setHasNextPage(true);
+		setTotalCount(0);
 		return originalRefetch();
 	};
 
 	return {
 		allItems,
+		totalCount,
 		isLoading: isLoading && currentPage === 1, // Only show loading for first page
 		isError,
 		error,
