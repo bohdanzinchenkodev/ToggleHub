@@ -83,7 +83,6 @@ const OrganizationsList = () => {
 	const handleOrganizationClick = (org) => {
 		updateCurrentOrganization(org);
 	};
-	console.log(hasMore)
 	return (
 		<Container component="main" maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
 			<Box>

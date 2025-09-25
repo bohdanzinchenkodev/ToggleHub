@@ -32,14 +32,14 @@ const DefaultItemRenderer = ({ item, getItemLink, onItemClick }) => (
 	</Link>
 );
 
-const InfiniteItemsList = ({ 
-	title, 
-	items = [], 
+const InfiniteItemsList = ({
+	title,
+	items = [],
 	totalCount = 0,
-	isLoading = false, 
-	isError = false, 
-	error, 
-	emptyMessage, 
+	isLoading = false,
+	isError = false,
+	error,
+	emptyMessage,
 	getItemLink,
 	onItemClick,
 	hasNextPage = false,
@@ -57,41 +57,34 @@ const InfiniteItemsList = ({
 					{title} {totalCount > 0 ? `(${totalCount})` : `(${items.length})`}
 				</Typography>
 
-				{isLoading ? (
+				{isLoading && (
 					<Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
 						<CircularProgress size={24} />
 					</Box>
-				) : isError ? (
+				)}
+				{isError && (
 					<Alert severity="error" sx={{ mb: 2 }}>
 						{error?.data?.detail || 'Failed to load items'}
 					</Alert>
-				) : items.length === 0 ? (
-					<Card>
-						<CardContent>
-							<Typography color="text.secondary" textAlign="center" sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-								{emptyMessage}
-							</Typography>
-						</CardContent>
-					</Card>
-				) : (
+				)}
+
 					<Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, p: 2, ...containerProps }}>
-						{items.map((item) => 
-							renderItem({ 
-								item, 
-								getItemLink, 
+						{items.map((item) =>
+							renderItem({
+								item,
+								getItemLink,
 								onItemClick,
-								key: item.id 
+								key: item.id
 							})
 						)}
 
 						{/* Infinite scroll trigger and loading indicator */}
 						{hasNextPage && (
-							<Box 
+							<Box
 								ref={loadingRef}
-                                id="infinite-scroll-trigger"
-								sx={{ 
-									display: 'flex', 
-									justifyContent: 'center', 
+								sx={{
+									display: 'flex',
+									justifyContent: 'center',
 									p: 2,
 									minHeight: '40px'
 								}}
@@ -106,8 +99,16 @@ const InfiniteItemsList = ({
 								)}
 							</Box>
 						)}
+						{!isLoading && items.length === 0 && (
+							<Card>
+								<CardContent>
+									<Typography color="text.secondary" textAlign="center" sx={{ whiteSpace: "normal", wordBreak: "break-word" }}>
+										{emptyMessage}
+									</Typography>
+								</CardContent>
+							</Card>
+						)}
 					</Box>
-				)}
 			</CardContent>
 		</Card>
 	);

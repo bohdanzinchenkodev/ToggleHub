@@ -7,9 +7,10 @@ const useInfiniteScrollQuery = ({
 }) => {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [allItems, setAllItems] = useState([]);
-	const [hasNextPage, setHasNextPage] = useState(true);
+	const [hasNextPage, setHasNextPage] = useState(false);
 	const [totalCount, setTotalCount] = useState(0);
 	const loadingRef = useRef(null);
+	const isFetchingRef = useRef(false);
 
 	// Build query parameters with current page
 	const queryParams = {
@@ -27,8 +28,22 @@ const useInfiniteScrollQuery = ({
 		refetch: originalRefetch
 	} = useQuery(queryParams, { skip: skipCondition });
 
+	// Keep isFetching in sync with ref to avoid stale closures
+	isFetchingRef.current = isFetching;
+
+	// Reset pagination when baseQueryParams change (moved before data handling)
+	const baseQueryParamsString = JSON.stringify(baseQueryParams);
+	useEffect(() => {
+		setCurrentPage(1);
+		setAllItems([]);
+		setHasNextPage(false);
+		setTotalCount(0);
+		console.log('Resetting pagination due to baseQueryParams change')
+	}, [baseQueryParamsString]);
+
 	// Handle new data coming in
 	useEffect(() => {
+
 		if (!queryData || skipCondition)
 			return;
 
@@ -37,60 +52,39 @@ const useInfiniteScrollQuery = ({
 		const totalFromResponse = queryData.total || 0;
 		const pageFromResponse = queryData.pageIndex; // Use page from response if available
 
-		console.log('Processing data for page:', pageFromResponse, 'items:', items.length, 'total:', totalFromResponse);
-
 		if (pageFromResponse !== currentPage - 1)
 			return;
 
-		if (currentPage === 1) {
-			// First page - replace all items
-			setAllItems(items);
-		} else {
-			// Subsequent pages - append to existing items
-			setAllItems(prev => [...prev, ...items]);
-		}
 
+		setAllItems(prev => [...prev, ...items]);
+		console.log('Setting items:', items);
 		setHasNextPage(hasNextPageFromResponse);
 		setTotalCount(totalFromResponse);
 
-	}, [queryData, skipCondition, currentPage]);
-
-	// Reset pagination when baseQueryParams change (e.g., environment change)
-	useEffect(() => {
-		setCurrentPage(1);
-		setAllItems([]);
-		setHasNextPage(true);
-		setTotalCount(0);
-	}, [JSON.stringify(baseQueryParams)]);
+	}, [queryData, skipCondition, currentPage]); // Add baseQueryParamsString dependency
 
 	// Intersection Observer for infinite scroll
 	useEffect(() => {
-		console.log('Setting up intersection observer:', {
-			hasNextPage,
-			isFetching,
-			skipCondition,
-			loadingRefCurrent: loadingRef.current,
-			allItemsLength: allItems.length
-		});
-
-		if (!hasNextPage || isFetching || skipCondition || !loadingRef.current)
+		if (!hasNextPage || isFetchingRef.current || skipCondition || !loadingRef.current) {
 			return;
+		}
 
 		const observer = new IntersectionObserver(
 			(entries) => {
-				console.log('Intersection observer triggered:', entries[0].isIntersecting, 'isFetching:', isFetching);
-				if (entries[0].isIntersecting && !isFetching) {
-					console.log('Loading next page, current page:', currentPage);
+				const entry = entries[0];
+				if (entry.isIntersecting && hasNextPage && !isFetchingRef.current) {
 					setCurrentPage(prev => prev + 1);
 				}
 			},
-			{ rootMargin: '100px' }
+			{
+				rootMargin: '100px',
+				threshold: 0.1
+			}
 		);
 
 		const currentRef = loadingRef.current;
 		if (currentRef) {
 			observer.observe(currentRef);
-			console.log('Observer attached to:', currentRef);
 		}
 
 		return () => {
@@ -98,13 +92,13 @@ const useInfiniteScrollQuery = ({
 				observer.unobserve(currentRef);
 			}
 		};
-	}, [hasNextPage, isFetching, skipCondition, allItems.length]);
+	}, [hasNextPage, skipCondition]);
 
 	// Custom refetch that resets pagination
 	const refetch = () => {
 		setCurrentPage(1);
 		setAllItems([]);
-		setHasNextPage(true);
+		setHasNextPage(false);
 		setTotalCount(0);
 		return originalRefetch();
 	};
