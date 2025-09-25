@@ -4,6 +4,8 @@ import { Add as AddIcon, Key as KeyIcon } from '@mui/icons-material';
 import { Link } from 'react-router';
 import { getEnvironmentStyle } from '../../constants/environmentConfig.js';
 import FlagsList from './FlagsList.jsx';
+import { usePermissions } from '../../hooks/usePermissions';
+import { PERMISSIONS } from '../../constants/permissions';
 
 const EnvironmentContent = ({
 	environment,
@@ -20,6 +22,8 @@ const EnvironmentContent = ({
 	isFetchingNextPage,
 	loadingRef
 }) => {
+	const { hasPermission } = usePermissions();
+
 	if (!environment) {
 		return null;
 	}
@@ -36,14 +40,16 @@ const EnvironmentContent = ({
 						</Typography>
 						
 						<Box sx={{ display: 'flex', gap: 2 }}>
-							<Button
-								component={Link}
-								to={`/organizations/${orgSlug}/projects/${projectSlug}/environments/${environment.type}/apikeys`}
-								variant="outlined"
-								startIcon={<KeyIcon />}
-							>
-								API Keys
-							</Button>
+							{hasPermission(PERMISSIONS.MANAGE_PROJECTS) && (
+								<Button
+									component={Link}
+									to={`/organizations/${orgSlug}/projects/${projectSlug}/environments/${environment.type}/apikeys`}
+									variant="outlined"
+									startIcon={<KeyIcon />}
+								>
+									API Keys
+								</Button>
+							)}
 							<Button
 								component={Link}
 								to={`/organizations/${orgSlug}/projects/${projectSlug}/environments/${environment.type}/flags/create`}
