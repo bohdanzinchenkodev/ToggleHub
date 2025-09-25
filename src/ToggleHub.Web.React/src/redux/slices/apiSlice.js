@@ -28,6 +28,19 @@ export const api = createApi({
 			}),
 			invalidatesTags: ['User'],
 		}),
+		logout: builder.mutation({
+			query: () => ({
+				url: 'auth/logout',
+				method: 'POST',
+			}),
+			async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+				try {
+					await queryFulfilled;
+					// 🚀 Reset the entire API slice cache
+					dispatch(api.util.resetApiState());
+				} catch {}
+			},
+		}),
 		getOrganizationsByCurrentUser: builder.query({
 			query: ({ page = 1, pageSize = 25 } = {}) => ({
 				url: 'user/me/organizations',
@@ -207,6 +220,7 @@ export const api = createApi({
 export const {
 	useGetUserQuery,
 	useLoginMutation,
+	useLogoutMutation,
 	useRegisterMutation,
 	useGetOrganizationsByCurrentUserQuery,
 	useCreateOrganizationMutation,

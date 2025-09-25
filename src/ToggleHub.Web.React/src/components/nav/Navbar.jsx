@@ -2,6 +2,7 @@ import React from "react";
 import { AppBar, Toolbar, Box, Typography } from "@mui/material";
 import { Link } from "react-router";
 import logo from "../../assets/th-logo.png";
+import UserDropdown from "./UserDropdown.jsx";
 
 const Navbar = () => {
 	return (
@@ -36,11 +37,14 @@ const Navbar = () => {
 						fontWeight: 'bold',
 						cursor: 'pointer',
 						color: 'inherit',
-						textDecoration: 'none'
+						textDecoration: 'none',
+						flexGrow: 1
 					}}
 				>
 					ToggleHub
 				</Typography>
+				
+				<UserDropdown />
 			</Toolbar>
 		</AppBar>
 	);
