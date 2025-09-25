@@ -17,6 +17,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
 import { useGetUserQuery, useLogoutMutation } from '../../redux/slices/apiSlice.js';
+import { getUserInitials, getUserDisplayName } from '../../utils/userUtils.js';
 
 const UserDropdown = () => {
 	const [anchorEl, setAnchorEl] = useState(null);
@@ -33,8 +34,7 @@ const UserDropdown = () => {
 	};
 
 	const handleProfile = () => {
-		// TODO: Navigate to profile page when it exists
-		console.log('Navigate to profile');
+		navigate('/profile');
 		handleClose();
 	};
 
@@ -50,16 +50,6 @@ const UserDropdown = () => {
 
 	if (!user)
 		return null;
-
-	const getInitials = (name) => {
-		if (!name) return 'U';
-		return name
-			.split(' ')
-			.map(word => word.charAt(0))
-			.join('')
-			.toUpperCase()
-			.slice(0, 2);
-	};
 
 	return (
 		<Box>
@@ -81,10 +71,10 @@ const UserDropdown = () => {
 						fontSize: '0.875rem'
 					}}
 				>
-					{getInitials(user.userName || user.email)}
+					{getUserInitials(user)}
 				</Avatar>
 				<Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' } }}>
-					{user.userName || user.email}
+					{getUserDisplayName(user)}
 				</Typography>
 			</IconButton>
 
@@ -109,7 +99,7 @@ const UserDropdown = () => {
 			>
 				<Box sx={{ px: 2, py: 1 }}>
 					<Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-						{user.userName || 'User'}
+						{getUserDisplayName(user)}
 					</Typography>
 					<Typography variant="body2" color="text.secondary">
 						{user.email}

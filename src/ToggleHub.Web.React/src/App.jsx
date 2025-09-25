@@ -18,6 +18,7 @@ import ApiKeys from "./pages/ApiKeys.jsx";
 import OrganizationMembers from "./pages/OrganizationMembers.jsx";
 import AcceptInvite from "./pages/AcceptInvite.jsx";
 import DeclineInvite from "./pages/DeclineInvite.jsx";
+import Profile from "./pages/Profile.jsx";
 import NotificationContainer from "./components/notifications/NotificationContainer.jsx";
 
 function App() {
@@ -81,6 +82,13 @@ function App() {
             <ProtectedRoute>
                 <Layout>
                     <ApiKeys />
+                </Layout>
+            </ProtectedRoute>
+        } />
+        <Route path="profile" element={
+            <ProtectedRoute>
+                <Layout>
+                    <Profile />
                 </Layout>
             </ProtectedRoute>
         } />
