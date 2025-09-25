@@ -44,6 +44,7 @@ import {
 import { getChipColor } from '../utils/organizationUtils';
 import { validateEmail } from '../utils/validation';
 import { formatDate } from '../utils/dateUtils';
+import ConfirmDialog from '../components/shared/ConfirmDialog';
 
 const OrganizationMembers = () => {
 	const [email, setEmail] = useState('');
@@ -57,6 +58,8 @@ const OrganizationMembers = () => {
 		pageSize: PAGINATION_CONFIG.DEFAULT_PAGE_SIZE
 	});
 	const [rowModesModel, setRowModesModel] = useState({});
+	const [pendingDeleteMemberId, setPendingDeleteMemberId] = useState(null);
+	const [confirmOpen, setConfirmOpen] = useState(false);
 	const dispatch = useDispatch();
 
 	const {
@@ -338,16 +341,33 @@ const OrganizationMembers = () => {
 
 	const handleDeleteClick = (id) => () => {
 		const member = membersData?.data?.find(row => row.id === id);
-		if (!member)
-			return;
+		if (!member) return;
+		setPendingDeleteMemberId(id);
+		setConfirmOpen(true);
+	};
 
-		// Show confirmation before deleting
-		if (window.confirm(`Are you sure you want to remove ${member.user?.email} from the organization?`)) {
-			deleteMember(id);
+	const handleDeleteCancel = () => {
+		setPendingDeleteMemberId(null);
+		setConfirmOpen(false);
+	};
+
+	const handleDeleteConfirm = async () => {
+		if (!pendingDeleteMemberId) return;
+		setConfirmOpen(false);
+		try {
+			await deleteMemberMutation({
+				organizationId: organization.id,
+				orgMemberId: pendingDeleteMemberId
+			}).unwrap();
+			dispatch(showSuccess('Member successfully removed from organization'));
+		} catch (err) {
+			dispatch(showError(err.data?.detail || 'Failed to remove member'));
 		}
+		setPendingDeleteMemberId(null);
 	};
 
 	const deleteMember = async (id) => {
+		// kept for backward compatibility if used elsewhere
 		try {
 			await deleteMemberMutation({
 				organizationId: organization.id,
@@ -422,7 +442,7 @@ const OrganizationMembers = () => {
 	}
 
 	return (
-		<Container maxWidth="lg" sx={{ py: 3 }}>
+		<Container component="main" maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
 			<Paper sx={{ p: 4 }}>
 				<Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 					<Box sx={{ display: 'flex', alignItems: 'center', gap: 2, minHeight: '40px' }}>
@@ -551,6 +571,19 @@ const OrganizationMembers = () => {
 					</Button>
 				</Box>
 			</Paper>
+
+			{/* Confirm dialog for member deletion */}
+			<ConfirmDialog
+				open={confirmOpen}
+				title="Remove member?"
+				content="This action will remove the user from the organization. Do you want to continue?"
+				onCancel={handleDeleteCancel}
+				onConfirm={handleDeleteConfirm}
+				confirmText="Remove"
+				cancelText="Cancel"
+				confirmColor="error"
+			/>
+
 		</Container>
 	);
 };
