@@ -22,7 +22,7 @@ public class ProjectController : ControllerBase
     }
     
     [HttpGet]
-    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageProjects)]
+    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ViewProjects)]
     public async Task<IActionResult> GetAll(int organizationId, [FromQuery] PagingQuery pagingQuery)
     {
         var result = await _projectService.GetAllAsync(organizationId, pagingQuery.Page - 1, pagingQuery.PageSize);
@@ -30,7 +30,7 @@ public class ProjectController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageProjects)]
+    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ViewProjects)]
     public async Task<IActionResult> GetById(int organizationId, int id)
     {
         var result = await _projectService.GetByIdAsync(id);
@@ -40,7 +40,7 @@ public class ProjectController : ControllerBase
         return Ok(result);
     }
     [HttpGet("{slug}")]
-    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ManageProjects)]
+    [OrgAuthorize(OrganizationConstants.OrganizationPermissions.ViewProjects)]
     public async Task<IActionResult> GetBySlug(int organizationId, string slug)
     {
         var result = await _projectService.GetBySlugAsync(slug, organizationId);
