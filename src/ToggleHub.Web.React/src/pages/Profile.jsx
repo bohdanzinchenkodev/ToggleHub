@@ -52,7 +52,7 @@ const Profile = () => {
 		e.preventDefault();
 
 		// Validation
-		/*const validationErrors = validateForm(formData, {
+		const validationErrors = validateForm(formData, {
 			email: { required: true, email: true, label: "Email" },
 			firstName: { required: true, label: "First name" },
 			lastName: { required: true, label: "Last name" }
@@ -61,7 +61,7 @@ const Profile = () => {
 		if (Object.keys(validationErrors).length > 0) {
 			setErrors(validationErrors);
 			return;
-		}*/
+		}
 
 		try {
 			await updateUser({
