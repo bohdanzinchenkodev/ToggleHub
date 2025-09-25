@@ -7,4 +7,5 @@ public interface IUserService
     public Task<UserDto?> GetUserByIdAsync(int id);
     public Task<IEnumerable<UserDto>> GetUsersByIdsAsync(IEnumerable<int> ids);
     public Task<UserDto?> GetUserByEmailAsync(string email);
+    public Task<UserDto> UpdateCurrentUserAsync(UpdateCurrentUserDto updateDto);
 }

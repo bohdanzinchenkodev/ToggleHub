@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ToggleHub.Application.DTOs;
+using ToggleHub.Application.DTOs.User;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Infrastructure.Constants;
 
@@ -38,5 +39,12 @@ public class UserController : ControllerBase
             pagingQuery.Page - 1, 
             pagingQuery.PageSize);
         return Ok(organizations);
+    }
+
+    [HttpPut("me")]
+    public async Task<IActionResult> UpdateCurrentUser([FromBody] UpdateCurrentUserDto updateDto)
+    {
+        var updatedUser = await _userService.UpdateCurrentUserAsync(updateDto);
+        return Ok(updatedUser);
     }
 }
