@@ -47,4 +47,11 @@ public class UserController : ControllerBase
         var updatedUser = await _userService.UpdateCurrentUserAsync(updateDto);
         return Ok(updatedUser);
     }
+
+    [HttpGet("me/permissions/{organizationId:int}")]
+    public async Task<IActionResult> GetCurrentUserPermissions(int organizationId)
+    {
+        var permissions = await _userService.GetCurrentUserPermissionsAsync(organizationId);
+        return Ok(permissions);
+    }
 }

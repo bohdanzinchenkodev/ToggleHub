@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using FluentValidation;
 using ToggleHub.Application.DTOs.User;
 using ToggleHub.Application.Interfaces;
+using ToggleHub.Domain.Helpers;
+using ToggleHub.Domain.Repositories;
 using ToggleHub.Infrastructure.Identity.Data;
 using ToggleHub.Infrastructure.Identity.Mapping;
 
@@ -12,15 +14,18 @@ public class UserService : IUserService
     private readonly ToggleHubIdentityDbContext _toggleHubIdentityDbContext;
     private readonly IWorkContext _workContext;
     private readonly IValidator<UpdateCurrentUserDto> _updateUserValidator;
+    private readonly IOrgMemberRepository _orgMemberRepository;
 
     public UserService(
         ToggleHubIdentityDbContext toggleHubIdentityDbContext, 
         IWorkContext workContext,
-        IValidator<UpdateCurrentUserDto> updateUserValidator)
+        IValidator<UpdateCurrentUserDto> updateUserValidator,
+        IOrgMemberRepository orgMemberRepository)
     {
         _toggleHubIdentityDbContext = toggleHubIdentityDbContext;
         _workContext = workContext;
         _updateUserValidator = updateUserValidator;
+        _orgMemberRepository = orgMemberRepository;
     }
 
     public async Task<UserDto?> GetUserByIdAsync(int id)
@@ -93,5 +98,16 @@ public class UserService : IUserService
         await _toggleHubIdentityDbContext.SaveChangesAsync();
 
         return user.ToUserDto();
+    }
+
+    public async Task<string[]> GetCurrentUserPermissionsAsync(int organizationId)
+    {
+        var currentUserId = _workContext.GetCurrentUserId() ?? throw new UnauthorizedAccessException();
+        
+        var orgMember = await _orgMemberRepository.GetOrgMemberAsync(organizationId, currentUserId);
+        if (orgMember == null)
+            throw new ApplicationException($"User is not a member of organization with ID {organizationId}");
+
+        return PermissionRoleHelper.GetPermissionsForRole(orgMember.Role);
     }
 }
