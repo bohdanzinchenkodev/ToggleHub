@@ -50,20 +50,23 @@ const EnvironmentContent = ({
 									API Keys
 								</Button>
 							)}
-							<Button
-								component={Link}
-								to={`/organizations/${orgSlug}/projects/${projectSlug}/environments/${environment.type}/flags/create`}
-								variant="contained"
-								startIcon={<AddIcon />}
-								sx={{
-									backgroundColor: 'primary.main',
-									'&:hover': {
-										backgroundColor: 'primary.dark',
-									},
-								}}
-							>
-								Create New Flag
-							</Button>
+
+							{hasPermission(PERMISSIONS.MANAGE_FLAGS) && (
+								<Button
+									component={Link}
+									to={`/organizations/${orgSlug}/projects/${projectSlug}/environments/${environment.type}/flags/create`}
+									variant="contained"
+									startIcon={<AddIcon />}
+									sx={{
+										backgroundColor: 'primary.main',
+										'&:hover': {
+											backgroundColor: 'primary.dark',
+										},
+									}}
+								>
+									Create New Flag
+								</Button>
+							)}
 						</Box>
 					</Box>
 

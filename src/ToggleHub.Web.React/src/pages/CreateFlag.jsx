@@ -19,8 +19,11 @@ import { useAppState } from '../hooks/useAppState';
 import { useFlagForm } from '../hooks/useFlagForm';
 import FlagForm from '../components/flag/FlagForm';
 import { Link, useNavigate } from 'react-router';
+import { usePermissions } from '../hooks/usePermissions';
+import { PERMISSIONS } from '../constants/permissions';
 
 const CreateFlag = () => {
+	const { hasPermission } = usePermissions();
 	const { envType } = useParams();
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
@@ -135,6 +138,19 @@ const CreateFlag = () => {
 				<Alert severity="error">
 					Environment "{envType}" not found in project
 				</Alert>
+			</Container>
+		);
+	}
+
+	const canManageFlags = hasPermission(PERMISSIONS.MANAGE_FLAGS);
+
+	if (!canManageFlags) {
+		return (
+			<Container maxWidth="lg" sx={{ py: 3 }}>
+				<Paper sx={{ p: 3, textAlign: 'center' }}>
+					<Typography variant="h6">Access denied</Typography>
+					<Typography variant="body2" color="text.secondary">You don't have permission to create flags in this environment.</Typography>
+				</Paper>
 			</Container>
 		);
 	}

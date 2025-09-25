@@ -16,8 +16,11 @@ import useInfiniteScrollQuery from "../hooks/useInfiniteScrollQuery.js";
 import AppStateDisplay from "../components/shared/AppStateDisplay.jsx";
 import EnvironmentTabs from "../components/project/EnvironmentTabs.jsx";
 import EnvironmentContent from "../components/project/EnvironmentContent.jsx";
+import { usePermissions } from '../hooks/usePermissions.js';
+import { PERMISSIONS } from '../constants/permissions.js';
 
 const Project = () => {
+	const { hasPermission } = usePermissions();
 	const [selectedTab, setSelectedTab] = useState(0);
 
 	const {
@@ -67,6 +70,20 @@ const Project = () => {
 	useEffect(() => {
 		syncFlags(flags);
 	}, [flags, syncFlags]);
+
+	const canViewProject = hasPermission(PERMISSIONS.VIEW_PROJECTS) || hasPermission(PERMISSIONS.MANAGE_PROJECTS);
+
+	if (!canViewProject) {
+		return (
+			<Container component="main" maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+				<AppStateDisplay />
+				<Paper sx={{ p: 3, mt: 4, textAlign: 'center' }}>
+					<Typography variant="h6">Access denied</Typography>
+					<Typography variant="body2" color="text.secondary">You don't have permission to access this project.</Typography>
+				</Paper>
+			</Container>
+		);
+	}
 
 	if (isOrgLoading || isProjectLoading) {
 		return (

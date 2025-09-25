@@ -6,7 +6,8 @@ import {
 	CircularProgress,
 	Alert,
 	Container,
-	Button
+	Button,
+	Paper
 } from "@mui/material";
 import { ArrowBack as ArrowBackIcon, People as PeopleIcon } from '@mui/icons-material';
 import { Link } from 'react-router';
@@ -105,6 +106,9 @@ const Organization = () => {
 		updateCurrentProject(project);
 	};
 
+	// Determine if user can view projects
+	const canViewProjects = hasPermission(PERMISSIONS.VIEW_PROJECTS) || hasPermission(PERMISSIONS.MANAGE_PROJECTS);
+
 	if (isOrgLoading) {
 		return (
 			<Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
@@ -123,22 +127,14 @@ const Organization = () => {
 		);
 	}
 	return (
-		<Container component="main" maxWidth="lg" sx={{ mt: 4, mb: 4, position: 'relative' }}>
-			<Box sx={{ position: 'absolute', top: 24, right: 24, zIndex: 10 }}>
-				{hasPermission(PERMISSIONS.MANAGE_MEMBERS) && (
-					<Button
-						startIcon={<PeopleIcon />}
-						component={Link}
-						to={`/organizations/${orgSlug}/members`}
-						variant="contained"
-					>
-						Manage Members
-					</Button>
-				)}
-			</Box>
-			<Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2, minHeight: '40px' }}>
-				<Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-					<Box sx={{ '& > *': { mb: 0 }, display: 'flex', alignItems: 'center' }}>
+		<Container component="main" maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+			<Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+				<Box sx={{ display: 'flex', alignItems: 'center', gap: 2, minHeight: '40px' }}>
+					<Box sx={{
+						'& > *': { mb: 0 },
+						display: 'flex',
+						alignItems: 'center'
+					}}>
 						<AppStateDisplay />
 					</Box>
 					<Button
@@ -150,6 +146,16 @@ const Organization = () => {
 						Back to Organizations
 					</Button>
 				</Box>
+				{hasPermission(PERMISSIONS.MANAGE_MEMBERS) && (
+					<Button
+						startIcon={<PeopleIcon />}
+						component={Link}
+						to={`/organizations/${orgSlug}/members`}
+						variant="contained"
+					>
+						Manage Members
+					</Button>
+				)}
 			</Box>
 
 			<Box>
@@ -159,22 +165,31 @@ const Organization = () => {
 
 				<Grid container spacing={4}>
 					{/* Left Column - Available Projects */}
-					<Grid item size={{xs: 12, md: 6}}>
-						<InfiniteItemsList
-							title="Projects"
-							items={allProjects}
-							totalCount={projectsTotal}
-							isLoading={isProjectsLoading}
-							isError={isProjectsError}
-							error={projectsError}
-							emptyMessage="No projects found. Create your first project to get started!"
-							getItemLink={(project) => `/organizations/${orgSlug}/projects/${project.slug}`}
-							onItemClick={handleProjectClick}
-							hasNextPage={hasMore}
-							isFetchingNextPage={isFetchingNextPage}
-							loadingRef={loadingRef}
-						/>
-					</Grid>
+					{canViewProjects ? (
+						<Grid item size={{xs: 12, md: 6}}>
+							<InfiniteItemsList
+								title="Projects"
+								items={allProjects}
+								totalCount={projectsTotal}
+								isLoading={isProjectsLoading}
+								isError={isProjectsError}
+								error={projectsError}
+								emptyMessage="No projects found. Create your first project to get started!"
+								getItemLink={(project) => `/organizations/${orgSlug}/projects/${project.slug}`}
+								onItemClick={handleProjectClick}
+								hasNextPage={hasMore}
+								isFetchingNextPage={isFetchingNextPage}
+								loadingRef={loadingRef}
+							/>
+						</Grid>
+					) : (
+						<Grid item size={{xs:12}}>
+							<Paper sx={{ p: 3, textAlign: 'center' }}>
+								<Typography variant="h6">Access denied</Typography>
+								<Typography variant="body2" color="text.secondary">You don't have permissions to view projects in this organization.</Typography>
+							</Paper>
+						</Grid>
+					)}
 
 					{/* Right Column - Create New Project Form */}
 					{hasPermission(PERMISSIONS.MANAGE_PROJECTS) && (

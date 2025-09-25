@@ -2,12 +2,15 @@ import React from 'react';
 import { Box, Typography, Chip, Switch, ListItem, IconButton, Tooltip } from '@mui/material';
 import { Edit as EditIcon } from '@mui/icons-material';
 import { useParams, Link } from 'react-router';
+import { usePermissions } from '../../hooks/usePermissions';
+import { PERMISSIONS } from '../../constants/permissions';
 
 const FlagItem = ({ flag, isProcessing, onToggle, environmentType }) => {
-	const { orgSlug, projectSlug } = useParams();
-
-	return (
-		<ListItem 
+     const { orgSlug, projectSlug } = useParams();
+     const { hasPermission } = usePermissions();
+ 
+     return (
+         <ListItem 
 			sx={{
 				py: 2,
 				px: 0,
@@ -28,19 +31,21 @@ const FlagItem = ({ flag, isProcessing, onToggle, environmentType }) => {
 						color={flag.enabled ? 'success' : 'default'}
 						size="small"
 					/>
-					<Tooltip title="Edit flag">
-						<IconButton 
-							size="small" 
-							component={Link}
-							to={`/organizations/${orgSlug}/projects/${projectSlug}/environments/${environmentType}/flags/${flag.id}/edit`}
-							color="primary"
-						>
-							<EditIcon fontSize="small" />
-						</IconButton>
-					</Tooltip>
+					{hasPermission(PERMISSIONS.MANAGE_FLAGS) && (
+						<Tooltip title="Edit flag">
+							<IconButton 
+								size="small" 
+								component={Link}
+								to={`/organizations/${orgSlug}/projects/${projectSlug}/environments/${environmentType}/flags/${flag.id}/edit`}
+								color="primary"
+							>
+								<EditIcon fontSize="small" />
+							</IconButton>
+						</Tooltip>
+					)}
 					<Switch
 						checked={flag.enabled}
-						disabled={isProcessing}
+						disabled={isProcessing || !hasPermission(PERMISSIONS.MANAGE_FLAGS)}
 						onChange={(event) => onToggle(flag, event.target.checked)}
 					/>
 				</Box>

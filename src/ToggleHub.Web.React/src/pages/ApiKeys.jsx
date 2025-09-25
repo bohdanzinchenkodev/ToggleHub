@@ -21,8 +21,11 @@ import {
 } from '../redux/slices/apiSlice';
 import { showSuccess, showError } from '../redux/slices/notificationsSlice';
 import { Link } from 'react-router';
+import { usePermissions } from '../hooks/usePermissions';
+import { PERMISSIONS } from '../constants/permissions';
 
 const ApiKeys = () => {
+	const { hasPermission } = usePermissions();
 	const dispatch = useDispatch();
 	const [paginationModel, setPaginationModel] = useState({
 		page: 0,
@@ -168,6 +171,19 @@ const ApiKeys = () => {
 				<Alert severity="error">
 					Environment "{envType}" not found in project
 				</Alert>
+			</Container>
+		);
+	}
+
+	const canManageProjects = hasPermission(PERMISSIONS.MANAGE_PROJECTS);
+
+	if (!canManageProjects) {
+		return (
+			<Container maxWidth="lg" sx={{ py: 3 }}>
+				<Paper sx={{ p: 3, textAlign: 'center' }}>
+					<Typography variant="h6">Access denied</Typography>
+					<Typography variant="body2" color="text.secondary">You don't have permission to view API keys for this project.</Typography>
+				</Paper>
 			</Container>
 		);
 	}

@@ -45,6 +45,8 @@ import { getChipColor } from '../utils/organizationUtils';
 import { validateEmail } from '../utils/validation';
 import { formatDate } from '../utils/dateUtils';
 import ConfirmDialog from '../components/shared/ConfirmDialog';
+import { usePermissions } from '../hooks/usePermissions';
+import { PERMISSIONS } from '../constants/permissions';
 
 const OrganizationMembers = () => {
 	const [email, setEmail] = useState('');
@@ -69,6 +71,10 @@ const OrganizationMembers = () => {
 		isOrganizationError: isOrgError,
 		organizationError: orgError
 	} = useAppState();
+
+		const { hasPermission } = usePermissions();
+
+		const canManageMembers = hasPermission(PERMISSIONS.MANAGE_MEMBERS);
 
 	const handleEmailChange = (e) => {
 		const newEmail = e.target.value;
@@ -437,6 +443,17 @@ const OrganizationMembers = () => {
 				<Alert severity="error">
 					Failed to load organization: {orgError?.data?.detail || MESSAGES.ERROR.ORGANIZATION_NOT_FOUND}
 				</Alert>
+			</Container>
+		);
+	}
+
+	if (!canManageMembers) {
+		return (
+			<Container maxWidth="lg" sx={{ py: 3 }}>
+				<Paper sx={{ p: 3, textAlign: 'center' }}>
+					<Typography variant="h6">Access denied</Typography>
+					<Typography variant="body2" color="text.secondary">You don't have permission to manage members in this organization.</Typography>
+				</Paper>
 			</Container>
 		);
 	}

@@ -67,6 +67,8 @@ const UpdateFlag = () => {
 		isError: isUpdateError
 	}] = useUpdateFlagMutation();
 	const { hasPermission } = usePermissions();
+
+	const canManageFlags = hasPermission(PERMISSIONS.MANAGE_FLAGS);
 	const [deleteFlag, { isLoading: isDeleting }] = useDeleteFlagMutation();
 
 	const {
@@ -223,6 +225,17 @@ const UpdateFlag = () => {
 				<Alert severity="error">
 					Flag not found
 				</Alert>
+			</Container>
+		);
+	}
+
+	if (!canManageFlags) {
+		return (
+			<Container maxWidth="lg" sx={{ py: 3 }}>
+				<Paper sx={{ p: 3, textAlign: 'center' }}>
+					<Typography variant="h6">Access denied</Typography>
+					<Typography variant="body2" color="text.secondary">You don't have permission to manage flags in this environment.</Typography>
+				</Paper>
 			</Container>
 		);
 	}
