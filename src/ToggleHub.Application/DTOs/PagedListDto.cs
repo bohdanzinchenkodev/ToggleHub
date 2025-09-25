@@ -17,6 +17,6 @@ public class PagedListDto<T>
     public int PageIndex { get; set; }
     public int PageSize { get; set; }
     public int TotalPages => (int)Math.Ceiling(Total / (double)PageSize);
-    public bool HasNextPage => (PageIndex * PageSize) < Total;
-    public bool HasPreviousPage => PageIndex > 1;
+    public bool HasNextPage => PageIndex + 1 < TotalPages;
+    public bool HasPreviousPage => PageIndex > 0;
 }

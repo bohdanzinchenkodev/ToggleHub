@@ -54,6 +54,9 @@ public class OrgMemberService : IOrgMemberService
         var orgMember = await _orgMemberRepository.GetByIdAsync(orgMemberId);
         if (orgMember == null)
             throw new ApplicationException($"Organization member with ID {orgMemberId} not found");
+        
+        if (orgMember.Role == OrgMemberRole.Owner)
+            throw new ApplicationException("Cannot remove organization owner");
 
         await _orgMemberRepository.DeleteAsync(orgMemberId);
     }
