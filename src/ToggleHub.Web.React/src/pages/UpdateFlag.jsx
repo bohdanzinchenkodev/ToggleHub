@@ -8,22 +8,26 @@ import {
 	Container,
 	CircularProgress
 } from '@mui/material';
-import { useParams } from 'react-router';
+import ConfirmDialog from '../components/shared/ConfirmDialog';
+import { useParams, Link, useNavigate } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import {
 	useGetFlagByIdQuery,
-	useUpdateFlagMutation
+	useUpdateFlagMutation,
+	useDeleteFlagMutation
 } from '../redux/slices/apiSlice';
 import { showSuccess, showError } from '../redux/slices/notificationsSlice';
 import { useAppState } from '../hooks/useAppState';
 import { useFlagForm } from '../hooks/useFlagForm';
 import FlagForm from '../components/flag/FlagForm';
-import { Link } from 'react-router';
+import { usePermissions } from '../hooks/usePermissions';
+import { PERMISSIONS } from '../constants/permissions';
 
 const UpdateFlag = () => {
 	const { envType, flagId } = useParams();
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
 
 	const {
 		currentOrganization: organization,
@@ -62,6 +66,8 @@ const UpdateFlag = () => {
 		error: updateError,
 		isError: isUpdateError
 	}] = useUpdateFlagMutation();
+	const { hasPermission } = usePermissions();
+	const [deleteFlag, { isLoading: isDeleting }] = useDeleteFlagMutation();
 
 	const {
 		formData,
@@ -139,6 +145,28 @@ const UpdateFlag = () => {
 		navigate(`/organizations/${orgSlug}/projects/${projectSlug}`);
 	};
 
+	const [confirmOpen, setConfirmOpen] = React.useState(false);
+
+	const onDeleteClick = () => setConfirmOpen(true);
+	const onDeleteCancel = () => setConfirmOpen(false);
+
+	const onDeleteConfirm = async () => {
+		setConfirmOpen(false);
+		if (!organization?.id || !project?.id || !environment?.id || !flagId) return;
+		try {
+			await deleteFlag({
+				organizationId: organization.id,
+				projectId: project.id,
+				environmentId: environment.id,
+				flagId: parseInt(flagId)
+			}).unwrap();
+			dispatch(showSuccess('Flag deleted successfully'));
+			navigate(`/organizations/${orgSlug}/projects/${projectSlug}`);
+		} catch (error) {
+			dispatch(showError('Failed to delete flag'));
+		}
+	};
+
 	if (isOrgLoading || isProjectLoading || isFlagLoading) {
 		return (
 			<Container maxWidth="lg" sx={{ py: 3 }}>
@@ -200,17 +228,31 @@ const UpdateFlag = () => {
 	}
 
 	return (
-		<Container maxWidth="lg" sx={{ py: 3 }}>
+		<Container maxWidth="lg" sx={{ py: 3, position: 'relative' }}>
 			<Paper sx={{ p: 4 }}>
-				<Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-					<Button
-						startIcon={<ArrowBackIcon />}
-						component={Link}
-						to={`/organizations/${orgSlug}/projects/${projectSlug}`}
-						variant="outlined"
-					>
-						Back to Project
-					</Button>
+				<Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 2, justifyContent: 'space-between' }}>
+					<Box>
+						<Button
+							startIcon={<ArrowBackIcon />}
+							component={Link}
+							to={`/organizations/${orgSlug}/projects/${projectSlug}`}
+							variant="outlined"
+						>
+							Back to Project
+						</Button>
+					</Box>
+					<Box>
+						{hasPermission(PERMISSIONS.MANAGE_FLAGS) && (
+							<Button
+								color="error"
+								variant="contained"
+								disabled={isDeleting}
+								onClick={onDeleteClick}
+							>
+								Delete Flag
+							</Button>
+						)}
+					</Box>
 				</Box>
 
 				<Typography variant="h5" sx={{ mb: 3 }}>
@@ -235,9 +277,22 @@ const UpdateFlag = () => {
 					onCancel={handleGoBack}
 					ruleSetManager={ruleSetManager}
 				/>
+
 			</Paper>
+
+			<ConfirmDialog
+				open={confirmOpen}
+				title="Delete flag?"
+				content="This action will permanently delete the flag. Are you sure you want to continue?"
+				onCancel={onDeleteCancel}
+				onConfirm={onDeleteConfirm}
+				confirmText="Delete"
+				cancelText="Cancel"
+				confirmColor="error"
+			/>
+
 		</Container>
 	);
-};
+}
 
 export default UpdateFlag;

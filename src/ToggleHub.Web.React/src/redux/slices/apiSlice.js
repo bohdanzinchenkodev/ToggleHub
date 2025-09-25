@@ -228,6 +228,15 @@ export const api = createApi({
 				method: 'POST',
 			}),
 		}),
+		deleteFlag: builder.mutation({
+			query: ({ organizationId, projectId, environmentId, flagId }) => ({
+				url: `organizations/${organizationId}/projects/${projectId}/environments/${environmentId}/flags/${flagId}`,
+				method: 'DELETE',
+			}),
+			invalidatesTags: (result, error, { organizationId, projectId, environmentId }) => [
+				{ type: 'Flags', id: `${organizationId}-${projectId}-${environmentId}` }
+			],
+		}),
 	}),
 });
 
@@ -261,5 +270,6 @@ export const {
 	useUpdateOrganizationMemberRoleMutation,
 	useDeleteOrganizationMemberMutation,
 	useAcceptOrganizationInviteMutation,
-	useDeclineOrganizationInviteMutation
+	useDeclineOrganizationInviteMutation,
+	useDeleteFlagMutation
 } = api;

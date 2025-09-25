@@ -123,14 +123,22 @@ const Organization = () => {
 		);
 	}
 	return (
-		<Container component="main" maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-			<Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-				<Box sx={{ display: 'flex', alignItems: 'center', gap: 2, minHeight: '40px' }}>
-					<Box sx={{
-						'& > *': { mb: 0 },
-						display: 'flex',
-						alignItems: 'center'
-					}}>
+		<Container component="main" maxWidth="lg" sx={{ mt: 4, mb: 4, position: 'relative' }}>
+			<Box sx={{ position: 'absolute', top: 24, right: 24, zIndex: 10 }}>
+				{hasPermission(PERMISSIONS.MANAGE_MEMBERS) && (
+					<Button
+						startIcon={<PeopleIcon />}
+						component={Link}
+						to={`/organizations/${orgSlug}/members`}
+						variant="contained"
+					>
+						Manage Members
+					</Button>
+				)}
+			</Box>
+			<Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2, minHeight: '40px' }}>
+				<Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+					<Box sx={{ '& > *': { mb: 0 }, display: 'flex', alignItems: 'center' }}>
 						<AppStateDisplay />
 					</Box>
 					<Button
@@ -142,16 +150,6 @@ const Organization = () => {
 						Back to Organizations
 					</Button>
 				</Box>
-				{hasPermission(PERMISSIONS.MANAGE_MEMBERS) && (
-					<Button
-						startIcon={<PeopleIcon />}
-						component={Link}
-						to={`/organizations/${orgSlug}/members`}
-						variant="contained"
-					>
-						Manage Members
-					</Button>
-				)}
 			</Box>
 
 			<Box>
