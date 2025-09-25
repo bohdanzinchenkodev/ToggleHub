@@ -22,6 +22,8 @@ import CreateForm from "../components/shared/CreateForm.jsx";
 import AppStateDisplay from "../components/shared/AppStateDisplay.jsx";
 import useInfiniteScrollQuery from "../hooks/useInfiniteScrollQuery.js";
 import { PAGINATION_CONFIG } from "../constants/organizationConstants.js";
+import { usePermissions } from '../hooks/usePermissions';
+import { PERMISSIONS } from '../constants/permissions';
 
 const Organization = () => {
 	const {
@@ -67,6 +69,8 @@ const Organization = () => {
 		resetForm,
 		setErrors
 	} = useFormHandler({ name: "" });
+
+	const { hasPermission } = usePermissions();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -138,14 +142,16 @@ const Organization = () => {
 						Back to Organizations
 					</Button>
 				</Box>
-				<Button
-					startIcon={<PeopleIcon />}
-					component={Link}
-					to={`/organizations/${orgSlug}/members`}
-					variant="contained"
-				>
-					Manage Members
-				</Button>
+				{hasPermission(PERMISSIONS.MANAGE_MEMBERS) && (
+					<Button
+						startIcon={<PeopleIcon />}
+						component={Link}
+						to={`/organizations/${orgSlug}/members`}
+						variant="contained"
+					>
+						Manage Members
+					</Button>
+				)}
 			</Box>
 
 			<Box>
@@ -173,22 +179,24 @@ const Organization = () => {
 					</Grid>
 
 					{/* Right Column - Create New Project Form */}
-					<Grid item size={{xs: 12, md: 6}}>
-						<CreateForm
-							title="Create New Project"
-							formData={formData}
-							formErrors={formErrors}
-							isCreating={isCreating}
-							isCreateError={isCreateError}
-							createError={createError}
-							onInputChange={handleInputChange}
-							onSubmit={handleSubmit}
-							inputLabel="Project Name"
-							inputName="name"
-							buttonText="Create Project"
-							placeholder="Enter project name"
-						/>
-					</Grid>
+					{hasPermission(PERMISSIONS.MANAGE_PROJECTS) && (
+						<Grid item size={{xs: 12, md: 6}}>
+							<CreateForm
+								title="Create New Project"
+								formData={formData}
+								formErrors={formErrors}
+								isCreating={isCreating}
+								isCreateError={isCreateError}
+								createError={createError}
+								onInputChange={handleInputChange}
+								onSubmit={handleSubmit}
+								inputLabel="Project Name"
+								inputName="name"
+								buttonText="Create Project"
+								placeholder="Enter project name"
+							/>
+						</Grid>
+					)}
 				</Grid>
 			</Box>
 		</Container>

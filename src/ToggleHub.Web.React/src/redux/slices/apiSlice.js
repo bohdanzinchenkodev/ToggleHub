@@ -6,7 +6,7 @@ export const api = createApi({
 		baseUrl: 'http://localhost:5160/api',
 		credentials: 'include', // send cookies automatically
 	}),
-	tagTypes: ['Flags', 'User', 'OrganizationInvites', 'OrganizationMembers'],
+	tagTypes: ['Flags', 'User', 'UserPermissions', 'OrganizationInvites', 'OrganizationMembers'],
 	endpoints: (builder) => ({
 		getUser: builder.query({
 			query: () => 'user/me',
@@ -19,6 +19,12 @@ export const api = createApi({
 				body,
 			}),
 			invalidatesTags: ['User'],
+		}),
+		getUserPermissions: builder.query({
+			query: (organizationId) => `user/me/permissions/${organizationId}`,
+			providesTags: (result, error, organizationId) => [
+				{ type: 'UserPermissions', id: organizationId }
+			],
 		}),
 		login: builder.mutation({
 			query: (body) => ({
@@ -227,6 +233,7 @@ export const api = createApi({
 
 export const {
 	useGetUserQuery,
+	useGetUserPermissionsQuery,
 	useUpdateUserMutation,
 	useLoginMutation,
 	useLogoutMutation,

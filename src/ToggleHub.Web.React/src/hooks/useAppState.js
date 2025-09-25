@@ -3,15 +3,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
 	setCurrentOrganization,
 	setCurrentProject,
+	setCurrentUserPermissions,
 	clearCurrentOrganization,
 	clearCurrentProject,
+	clearCurrentUserPermissions,
 	clearAppState,
 	selectCurrentOrganization,
 	selectCurrentProject,
+	selectCurrentUserPermissions,
 } from '../redux/slices/appStateSlice';
 import {
 	useGetOrganizationBySlugQuery,
-	useGetProjectBySlugQuery
+	useGetProjectBySlugQuery,
+	useGetUserPermissionsQuery
 } from '../redux/slices/apiSlice';
 import { useEffect } from 'react';
 
@@ -22,6 +26,7 @@ export const useAppState = () => {
 	// Get cached values from Redux store
 	const cachedOrganization = useSelector(selectCurrentOrganization);
 	const cachedProject = useSelector(selectCurrentProject);
+	const cachedUserPermissions = useSelector(selectCurrentUserPermissions);
 
 	// Fetch organization data based on URL parameter
 	const {
@@ -49,6 +54,19 @@ export const useAppState = () => {
 		}
 	);
 
+	// Fetch user permissions for current organization
+	const {
+		data: userPermissionsData,
+		isLoading: isPermissionsLoading,
+		isError: isPermissionsError,
+		error: permissionsError
+	} = useGetUserPermissionsQuery(
+		organizationData?.id || cachedOrganization?.id,
+		{
+			skip: !organizationData?.id && !cachedOrganization?.id, // Skip if no organization
+		}
+	);
+
 	// Update Redux store when organization data is fetched
 	useEffect(() => {
 		if (organizationData && organizationData.id !== cachedOrganization?.id) {
@@ -62,6 +80,13 @@ export const useAppState = () => {
 			dispatch(setCurrentProject(projectData));
 		}
 	}, [projectData, cachedProject?.id, dispatch]);
+
+	// Update Redux store when permissions data is fetched
+	useEffect(() => {
+		if (userPermissionsData) {
+			dispatch(setCurrentUserPermissions(userPermissionsData));
+		}
+	}, [userPermissionsData, dispatch]);
 
 	// Clear organization from store when orgSlug changes or is removed
 	useEffect(() => {
@@ -86,14 +111,20 @@ export const useAppState = () => {
 		dispatch(setCurrentProject(project));
 	};
 
+	const updateCurrentUserPermissions = (permissions) => {
+		dispatch(setCurrentUserPermissions(permissions));
+	};
+
 	// Determine current values (prefer cached data for performance)
 	const currentOrganization = cachedOrganization || organizationData;
 	const currentProject = cachedProject || projectData;
+	const currentUserPermissions = cachedUserPermissions || userPermissionsData;
 
 	return {
 		// Current data
 		currentOrganization,
 		currentProject,
+		currentUserPermissions,
 		
 		// URL parameters
 		orgSlug,
@@ -102,17 +133,21 @@ export const useAppState = () => {
 		// Loading states
 		isLoadingOrganization: isOrgLoading,
 		isLoadingProject: isProjectLoading,
-		isLoading: isOrgLoading || isProjectLoading,
+		isLoadingPermissions: isPermissionsLoading,
+		isLoading: isOrgLoading || isProjectLoading || isPermissionsLoading,
 		
 		// Error states
 		organizationError: orgError,
 		projectError: projectError,
+		permissionsError: permissionsError,
 		isOrganizationError: isOrgError,
 		isProjectError: isProjectError,
-		hasError: isOrgError || isProjectError,
+		isPermissionsError: isPermissionsError,
+		hasError: isOrgError || isProjectError || isPermissionsError,
 		
 		// Manual update functions (for backward compatibility)
 		updateCurrentOrganization,
 		updateCurrentProject,
+		updateCurrentUserPermissions,
 	};
 };
