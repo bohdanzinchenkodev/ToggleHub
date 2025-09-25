@@ -12,5 +12,5 @@ public interface IOrganizationService
     Task<OrganizationDto?> GetBySlugAsync(string slug);
     Task DeleteAsync(int id);
     Task<PagedListDto<OrganizationDto>> GetOrganizationsByUserIdAsync(int userId, int pageIndex = 0, int pageSize = int.MaxValue);
-    Task<IList<OrganizationDto>> GetOrganizationsForCurrentUserAsync();
+    Task<PagedListDto<OrganizationDto>> GetOrganizationsForCurrentUserAsync(int pageIndex = 0, int pageSize = int.MaxValue);
 }

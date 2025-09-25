@@ -112,9 +112,9 @@ public class OrganizationService : IOrganizationService
         return new PagedListDto<OrganizationDto>(data, list.TotalCount, list.PageIndex, list.PageSize);
     }
 
-    public async Task<IList<OrganizationDto>> GetOrganizationsForCurrentUserAsync()
+    public async Task<PagedListDto<OrganizationDto>> GetOrganizationsForCurrentUserAsync(int pageIndex = 0, int pageSize = int.MaxValue)
     {
         var userId = _workContext.GetCurrentUserId() ?? throw new UnauthorizedAccessException();
-        return (await GetOrganizationsByUserIdAsync(userId)).Data.ToList();
+        return await GetOrganizationsByUserIdAsync(userId, pageIndex, pageSize);
     }
 }

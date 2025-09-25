@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ToggleHub.Application.DTOs;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Infrastructure.Constants;
 
@@ -31,9 +32,11 @@ public class UserController : ControllerBase
     }
     
     [HttpGet("me/organizations")]
-    public async Task<IActionResult> GetOrganizationsByCurrentUser()
+    public async Task<IActionResult> GetOrganizationsByCurrentUser([FromQuery] PagingQuery pagingQuery)
     {
-        var organizations = await _organizationService.GetOrganizationsForCurrentUserAsync();
+        var organizations = await _organizationService.GetOrganizationsForCurrentUserAsync(
+            pagingQuery.Page - 1, 
+            pagingQuery.PageSize);
         return Ok(organizations);
     }
 }
