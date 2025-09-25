@@ -22,7 +22,7 @@ public static class OrganizationConstants
         [RequireOrgMemberRole(OrgMemberRole.Admin, OrgMemberRole.Owner)]
         public const string ManageProjects = "manage_projects";
         [RequireOrgMemberRole(OrgMemberRole.Admin, OrgMemberRole.Owner, OrgMemberRole.FlagManager)]
-        public const string ViewProjects = "manage_projects";
+        public const string ViewProjects = "view_projects";
         
         [RequireOrgMemberRole(OrgMemberRole.FlagManager, OrgMemberRole.Admin, OrgMemberRole.Owner)]
         public const string ManageFlags = "manage_features";
