@@ -163,8 +163,23 @@ const Organization = () => {
 	}
 	return (
 		<Container component="main" maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-			<Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-				<Box sx={{ display: 'flex', alignItems: 'center', gap: 2, minHeight: '40px' }}>
+			{/* Mobile and Desktop Header Layout */}
+			<Box sx={{ 
+				mb: 3,
+				display: 'flex', 
+				flexDirection: { xs: 'column', sm: 'row' },
+				alignItems: { xs: 'flex-start', sm: 'center' },
+				justifyContent: { xs: 'flex-start', sm: 'space-between' },
+				gap: { xs: 2, sm: 1 }
+			}}>
+				{/* Left Side - AppState and Back Button */}
+				<Box sx={{ 
+					display: 'flex', 
+					flexDirection: { xs: 'column', sm: 'row' },
+					alignItems: { xs: 'flex-start', sm: 'center' }, 
+					gap: 2,
+					width: { xs: '100%', sm: 'auto' }
+				}}>
 					<Box sx={{
 						display: 'flex',
 						alignItems: 'center'
@@ -176,18 +191,28 @@ const Organization = () => {
 						component={Link}
 						to="/"
 						variant="outlined"
+						size="small"
+						fullWidth={{ xs: true, sm: false }}
 					>
 						Back to Organizations
 					</Button>
 				</Box>
-				<Box>
+
+				{/* Right Side - Action Buttons */}
+				<Box sx={{
+					display: 'flex',
+					flexDirection: { xs: 'column', sm: 'row' },
+					gap: 1,
+					width: { xs: '100%', sm: 'auto' }
+				}}>
 					{hasPermission(PERMISSIONS.MANAGE_MEMBERS) && (
 						<Button
-							sx={{ mr: 2 }}
 							startIcon={<PeopleIcon />}
 							component={Link}
 							to={`/organizations/${orgSlug}/members`}
 							variant="contained"
+							size="small"
+							fullWidth={{ xs: true, sm: false }}
 						>
 							Manage Members
 						</Button>
@@ -197,6 +222,8 @@ const Organization = () => {
 							color="error"
 							variant="outlined"
 							onClick={onDeleteOrgClick}
+							size="small"
+							fullWidth={{ xs: true, sm: false }}
 						>
 							Delete Organization
 						</Button>
