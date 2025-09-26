@@ -168,7 +168,7 @@ const Login = () => {
 								</Box>
 
 								<Box sx={{ textAlign: "center", mt: 1 }}>
-									<Link href="#" variant="body2">
+									<Link component={RouterLink} to="/forgot-password" variant="body2">
 										Forgot your password?
 									</Link>
 								</Box>

@@ -8,6 +8,8 @@ import Home from "./pages/Home.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
+import ForgotPassword from "./pages/ForgotPassword.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
 import Layout from "./components/layouts/Layout.jsx";
 import OrganizationsList from "./pages/OrganizationsList.jsx";
 import Organization from "./pages/Organization.jsx";
@@ -102,6 +104,12 @@ function App() {
         </Layout>} />
         <Route path="register" element={<Layout>
             <Register />
+        </Layout>} />
+        <Route path="forgot-password" element={<Layout>
+            <ForgotPassword />
+        </Layout>} />
+        <Route path="reset-password" element={<Layout>
+            <ResetPassword />
         </Layout>} />
     </Routes>
     <NotificationContainer />

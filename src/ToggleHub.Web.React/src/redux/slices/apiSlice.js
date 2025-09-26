@@ -55,6 +55,20 @@ export const api = createApi({
 				} catch {}
 			},
 		}),
+		forgotPassword: builder.mutation({
+			query: (body) => ({
+				url: 'auth/forgot-password',
+				method: 'POST',
+				body,
+			}),
+		}),
+		resetPassword: builder.mutation({
+			query: (body) => ({
+				url: 'auth/reset-password',
+				method: 'POST',
+				body,
+			}),
+		}),
 		getOrganizationsByCurrentUser: builder.query({
 			query: ({ page = 1, pageSize = 25 } = {}) => ({
 				url: 'user/me/organizations',
@@ -278,5 +292,7 @@ export const {
 	useAcceptOrganizationInviteMutation,
 	useDeclineOrganizationInviteMutation,
 	useDeleteFlagMutation,
-	useDeleteOrganizationMutation
+	useDeleteOrganizationMutation,
+	useForgotPasswordMutation,
+	useResetPasswordMutation
 } = api;

@@ -45,6 +45,35 @@ export const useAuthForm = (initialFormData) => {
 		return Object.keys(newErrors).length === 0;
 	};
 
+	const validateForgotPasswordForm = () => {
+		const newErrors = {};
+
+		const emailError = validateEmail(formData.email);
+		if (emailError) newErrors.email = emailError;
+
+		setErrors(newErrors);
+		return Object.keys(newErrors).length === 0;
+	};
+
+	const validateResetPasswordForm = () => {
+		const newErrors = {};
+
+		const emailError = validateEmail(formData.email);
+		if (emailError) newErrors.email = emailError;
+
+		const tokenError = validateRequired(formData.token, "Reset token");
+		if (tokenError) newErrors.token = tokenError;
+
+		const passwordError = validatePassword(formData.newPassword);
+		if (passwordError) newErrors.newPassword = passwordError;
+
+		const confirmPasswordError = validatePasswordMatch(formData.newPassword, formData.confirmPassword);
+		if (confirmPasswordError) newErrors.confirmPassword = confirmPasswordError;
+
+		setErrors(newErrors);
+		return Object.keys(newErrors).length === 0;
+	};
+
 	return {
 		formData,
 		errors: formErrors,
@@ -54,6 +83,8 @@ export const useAuthForm = (initialFormData) => {
 		setFormData,
 		setErrors,
 		validateLoginForm,
-		validateRegisterForm
+		validateRegisterForm,
+		validateForgotPasswordForm,
+		validateResetPasswordForm
 	};
 };
