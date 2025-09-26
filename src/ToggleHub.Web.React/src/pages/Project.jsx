@@ -36,6 +36,7 @@ const Project = () => {
 		projectSlug,
 		isLoadingOrganization: isOrgLoading,
 		isLoadingProject: isProjectLoading,
+		isLoadingPermissions: isPermissionsLoading,
 		isOrganizationError: isOrgError,
 		isProjectError: isProjectError,
 		organizationError: orgError,
@@ -74,6 +75,7 @@ const Project = () => {
 	);
 
 	useEffect(() => {
+		console.log(flags)
 		syncFlags(flags);
 	}, [flags, syncFlags]);
 
@@ -97,19 +99,8 @@ const Project = () => {
 		}
 	};
 
-	if (!canViewProject) {
-		return (
-			<Container component="main" maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-				<AppStateDisplay />
-				<Paper sx={{ p: 3, mt: 4, textAlign: 'center' }}>
-					<Typography variant="h6">Access denied</Typography>
-					<Typography variant="body2" color="text.secondary">You don't have permission to access this project.</Typography>
-				</Paper>
-			</Container>
-		);
-	}
-
-	if (isOrgLoading || isProjectLoading) {
+	// Show loading while permissions are being fetched
+	if (isOrgLoading || isProjectLoading || isPermissionsLoading) {
 		return (
 			<Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
 				<CircularProgress />
@@ -133,6 +124,19 @@ const Project = () => {
 				<Alert severity="error">
 					Failed to load project: {projectError?.data?.detail || 'Project not found'}
 				</Alert>
+			</Container>
+		);
+	}
+
+	// Check permissions after all data has loaded
+	if (!canViewProject) {
+		return (
+			<Container component="main" maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+				<AppStateDisplay />
+				<Paper sx={{ p: 3, mt: 4, textAlign: 'center' }}>
+					<Typography variant="h6">Access denied</Typography>
+					<Typography variant="body2" color="text.secondary">You don't have permission to access this project.</Typography>
+				</Paper>
 			</Container>
 		);
 	}

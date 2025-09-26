@@ -28,7 +28,8 @@ const FlagsList = ({
 					({totalCount})
 				</Typography>
 			)}
-		</Typography>			{shouldShowLoading && (
+		</Typography>
+			{shouldShowLoading && (
 				<Box sx={{
 					display: 'flex',
 					justifyContent: 'center',
@@ -43,28 +44,26 @@ const FlagsList = ({
 					Failed to load flags: {error?.data?.detail || 'Unknown error'}
 				</Alert>
 			)}
+			{
+				!isLoading && !isFetchingNextPage && flags && flags.length === 0 && (
+					<Alert severity="info" sx={{ mb: 2 }}>
+						No feature flags found for this environment.
+					</Alert>
+				)
+
+			}
 
 
 			{/* Always render the list and loading element */}
 			<List sx={{ maxHeight: 400, overflow: 'auto' }}>
-				{flags && flags.length > 0 ? (
-					flags.map((flag) => (
-						<FlagItem
-							key={flag.id}
-							flag={flag}
-							isProcessing={processingFlags.has(flag.id)}
-							onToggle={onFlagToggle}
-							environmentType={environmentType}
-						/>
-					))
-				) : flags && flags.length === 0 ? (
-					<Alert severity="info">
-						No feature flags found for this environment.
-					</Alert>
-				) : (
-					<Typography variant="body2" color="text.secondary" sx={{ p: 2, textAlign: 'center' }}>
-						Select an environment to view feature flags.
-					</Typography>
+				{flags && flags.map((flag) => (
+					<FlagItem
+						key={flag.id}
+						flag={flag}
+						isProcessing={processingFlags.has(flag.id)}
+						onToggle={onFlagToggle}
+						environmentType={environmentType}
+					/>)
 				)}
 				<Box
 					ref={loadingRef}

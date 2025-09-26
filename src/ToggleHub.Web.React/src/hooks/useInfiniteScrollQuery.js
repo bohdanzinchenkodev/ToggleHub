@@ -61,7 +61,7 @@ const useInfiniteScrollQuery = ({
 		setHasNextPage(hasNextPageFromResponse);
 		setTotalCount(totalFromResponse);
 
-	}, [queryData, skipCondition, currentPage, baseQueryParamsString]); // Add baseQueryParamsString dependency
+	}, [queryData, skipCondition, currentPage]); // Add baseQueryParamsString dependency
 
 	// Intersection Observer for infinite scroll
 	useEffect(() => {
