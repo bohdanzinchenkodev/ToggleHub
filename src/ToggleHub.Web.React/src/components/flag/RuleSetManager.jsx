@@ -21,8 +21,7 @@ const RuleSetManager = ({
   
   return (
     <Box sx={{ mb: 3 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-        <Typography variant="subtitle1">Rule Sets</Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', mb: 2 }}>
         <Button
           variant="outlined"
           size="small"

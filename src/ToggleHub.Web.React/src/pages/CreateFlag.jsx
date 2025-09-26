@@ -157,41 +157,39 @@ const CreateFlag = () => {
 
 	return (
 		<Container maxWidth="lg" sx={{ py: 3 }}>
-			<Paper sx={{ p: 4 }}>
-				<Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-					<Button
-						startIcon={<ArrowBackIcon />}
-						component={Link}
-						to={`/organizations/${orgSlug}/projects/${projectSlug}`}
-						variant="outlined"
-					>
-						Back to Project
-					</Button>
-				</Box>
+			<Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
+				<Button
+					startIcon={<ArrowBackIcon />}
+					component={Link}
+					to={`/organizations/${orgSlug}/projects/${projectSlug}`}
+					variant="outlined"
+				>
+					Back to Project
+				</Button>
+			</Box>
 
-				<Typography variant="h5" sx={{ mb: 3 }}>
-					Create New Flag
+			<Typography variant="h5" sx={{ mb: 3 }}>
+				Create New Flag
+			</Typography>
+
+			<Box sx={{ mb: 3, p: 2, borderRadius: 1 }}>
+				<Typography variant="body2" color="text.secondary">
+					<strong>Environment:</strong> {envType} • <strong>Project:</strong> {projectSlug} • <strong>Organization:</strong> {orgSlug}
 				</Typography>
+			</Box>
 
-				<Box sx={{ mb: 3, p: 2, borderRadius: 1 }}>
-					<Typography variant="body2" color="text.secondary">
-						<strong>Environment:</strong> {envType} • <strong>Project:</strong> {projectSlug} • <strong>Organization:</strong> {orgSlug}
-					</Typography>
-				</Box>
-
-				<FlagForm
-					mode="create"
-					formData={formData}
-					formErrors={formErrors}
-					isSubmitting={isCreating}
-					submitError={isCreateError ? createError : null}
-					onInputChange={handleInputChange}
-					onReturnTypeChange={handleReturnTypeChange}
-					onSubmit={handleSubmit}
-					onCancel={handleGoBack}
-					ruleSetManager={ruleSetManager}
-				/>
-			</Paper>
+			<FlagForm
+				mode="create"
+				formData={formData}
+				formErrors={formErrors}
+				isSubmitting={isCreating}
+				submitError={isCreateError ? createError : null}
+				onInputChange={handleInputChange}
+				onReturnTypeChange={handleReturnTypeChange}
+				onSubmit={handleSubmit}
+				onCancel={handleGoBack}
+				ruleSetManager={ruleSetManager}
+			/>
 		</Container>
 	);
 };

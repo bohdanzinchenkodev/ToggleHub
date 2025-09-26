@@ -242,56 +242,53 @@ const UpdateFlag = () => {
 
 	return (
 		<Container maxWidth="lg" sx={{ py: 3, position: 'relative' }}>
-			<Paper sx={{ p: 4 }}>
-				<Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 2, justifyContent: 'space-between' }}>
-					<Box>
+			<Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 2, justifyContent: 'space-between' }}>
+				<Box>
+					<Button
+						startIcon={<ArrowBackIcon />}
+						component={Link}
+						to={`/organizations/${orgSlug}/projects/${projectSlug}`}
+						variant="outlined"
+					>
+						Back to Project
+					</Button>
+				</Box>
+				<Box>
+					{hasPermission(PERMISSIONS.MANAGE_FLAGS) && (
 						<Button
-							startIcon={<ArrowBackIcon />}
-							component={Link}
-							to={`/organizations/${orgSlug}/projects/${projectSlug}`}
+							color="error"
 							variant="outlined"
+							disabled={isDeleting}
+							onClick={onDeleteClick}
 						>
-							Back to Project
+							Delete Flag
 						</Button>
-					</Box>
-					<Box>
-						{hasPermission(PERMISSIONS.MANAGE_FLAGS) && (
-							<Button
-								color="error"
-								variant="outlined"
-								disabled={isDeleting}
-								onClick={onDeleteClick}
-							>
-								Delete Flag
-							</Button>
-						)}
-					</Box>
+					)}
 				</Box>
+			</Box>
 
-				<Typography variant="h5" sx={{ mb: 3 }}>
-					Update Flag: {flag.key}
+			<Typography variant="h5" sx={{ mb: 3 }}>
+				Update Flag: {flag.key}
+			</Typography>
+
+			<Box sx={{ mb: 3, p: 2, borderRadius: 1 }}>
+				<Typography variant="body2" color="text.secondary">
+					<strong>Environment:</strong> {envType} • <strong>Project:</strong> {projectSlug} • <strong>Organization:</strong> {orgSlug}
 				</Typography>
+			</Box>
 
-				<Box sx={{ mb: 3, p: 2, borderRadius: 1 }}>
-					<Typography variant="body2" color="text.secondary">
-						<strong>Environment:</strong> {envType} • <strong>Project:</strong> {projectSlug} • <strong>Organization:</strong> {orgSlug}
-					</Typography>
-				</Box>
-
-				<FlagForm
-					mode="update"
-					formData={formData}
-					formErrors={formErrors}
-					isSubmitting={isUpdating}
-					submitError={isUpdateError ? updateError : null}
-					onInputChange={handleInputChange}
-					onReturnTypeChange={handleReturnTypeChange}
-					onSubmit={handleSubmit}
-					onCancel={handleGoBack}
-					ruleSetManager={ruleSetManager}
-				/>
-
-			</Paper>
+			<FlagForm
+				mode="update"
+				formData={formData}
+				formErrors={formErrors}
+				isSubmitting={isUpdating}
+				submitError={isUpdateError ? updateError : null}
+				onInputChange={handleInputChange}
+				onReturnTypeChange={handleReturnTypeChange}
+				onSubmit={handleSubmit}
+				onCancel={handleGoBack}
+				ruleSetManager={ruleSetManager}
+			/>
 
 			<ConfirmDialog
 				open={confirmOpen}

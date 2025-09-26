@@ -6,7 +6,8 @@ import {
   FormControlLabel,
   Switch,
   Button,
-  Alert
+  Alert,
+  Paper
 } from '@mui/material';
 import { Save as SaveIcon } from '@mui/icons-material';
 import ReturnTypeSelector from './ReturnTypeSelector';
@@ -45,87 +46,103 @@ const FlagForm = ({
         </Alert>
       )}
 
-      {/* Flag Key */}
-      <TextField
-        fullWidth
-        name="key"
-        label="Flag Key"
-        value={formData.key}
-        onChange={onInputChange}
-        error={!!formErrors.key}
-        helperText={formErrors.key || 'Unique identifier for your feature flag (e.g., new-checkout-flow)'}
-        sx={{ mb: 3 }}
-        size="small"
-        required
-      />
+      {/* Main Flag Information Paper */}
+      <Paper sx={{ p: 3, mb: 3 }}>
+        <Typography variant="h6" sx={{ mb: 3 }}>
+          Flag Information
+        </Typography>
+        
+        {/* Flag Key */}
+        <TextField
+          fullWidth
+          name="key"
+          label="Flag Key"
+          value={formData.key}
+          onChange={onInputChange}
+          error={!!formErrors.key}
+          helperText={formErrors.key || 'Unique identifier for your feature flag (e.g., new-checkout-flow)'}
+          sx={{ mb: 3 }}
+          size="small"
+          required
+        />
 
-      {/* Description */}
-      <TextField
-        fullWidth
-        name="description"
-        label="Description"
-        value={formData.description}
-        onChange={onInputChange}
-        error={!!formErrors.description}
-        helperText={formErrors.description || 'Brief description of what this flag controls'}
-        multiline
-        rows={3}
-        sx={{ mb: 3 }}
-        size="small"
-        required
-      />
+        {/* Description */}
+        <TextField
+          fullWidth
+          name="description"
+          label="Description"
+          value={formData.description}
+          onChange={onInputChange}
+          error={!!formErrors.description}
+          helperText={formErrors.description || 'Brief description of what this flag controls'}
+          multiline
+          rows={3}
+          sx={{ mb: 3 }}
+          size="small"
+          required
+        />
 
-      {/* Return Value Type */}
-      <ReturnTypeSelector
-        value={formData.returnValueType}
-        onChange={onReturnTypeChange}
-        error={formErrors.returnValueType}
-      />
+        {/* Return Value Type */}
+        <ReturnTypeSelector
+          value={formData.returnValueType}
+          onChange={onReturnTypeChange}
+          error={formErrors.returnValueType}
+        />
 
-      {/* Default Values */}
-      <DefaultValuesSection
-        returnValueType={formData.returnValueType}
-        defaultValueOnRaw={formData.defaultValueOnRaw}
-        defaultValueOffRaw={formData.defaultValueOffRaw}
-        onChange={onInputChange}
-        errors={formErrors}
-      />
+        {/* Default Values */}
+        <DefaultValuesSection
+          returnValueType={formData.returnValueType}
+          defaultValueOnRaw={formData.defaultValueOnRaw}
+          defaultValueOffRaw={formData.defaultValueOffRaw}
+          onChange={onInputChange}
+          errors={formErrors}
+        />
 
-      {/* RuleSets */}
-      <RuleSetManager
-        ruleSets={ruleSetManager.ruleSets}
-        returnValueType={formData.returnValueType}
-        onAdd={ruleSetManager.addRuleSet}
-        onUpdate={ruleSetManager.updateRuleSet}
-        onRemove={ruleSetManager.removeRuleSet}
-        getError={ruleSetManager.getRuleSetError}
-        onAddCondition={ruleSetManager.addCondition}
-        onUpdateCondition={ruleSetManager.updateCondition}
-        onRemoveCondition={ruleSetManager.removeCondition}
-        getConditionError={ruleSetManager.getConditionError}
-      />
+        {/* Initial State */}
+        <FormControlLabel
+          control={
+            <Switch
+              name="enabled"
+              checked={formData.enabled}
+              onChange={onInputChange}
+              color="primary"
+              size="small"
+            />
+          }
+          label={
+            <Typography variant="body2">
+              {mode === 'create' 
+                ? 'Enable flag immediately after creation'
+                : 'Enable flag'
+              }
+            </Typography>
+          }
+          sx={{ mb: 0 }}
+        />
+      </Paper>
 
-      {/* Initial State */}
-      <FormControlLabel
-        control={
-          <Switch
-            name="enabled"
-            checked={formData.enabled}
-            onChange={onInputChange}
-            color="primary"
-            size="small"
-          />
-        }
-        label={
-          <Typography variant="body2">
-            {mode === 'create' 
-              ? 'Enable flag immediately after creation'
-              : 'Enable flag'
-            }
-          </Typography>
-        }
-        sx={{ mb: 3 }}
-      />
+      {/* Rule Sets Paper */}
+      <Paper sx={{ p: 3, mb: 3 }}>
+        <Typography variant="h6" sx={{ mb: 2 }}>
+          Rule Sets
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+          Configure conditional rules to override default values based on specific conditions.
+        </Typography>
+        
+        <RuleSetManager
+          ruleSets={ruleSetManager.ruleSets}
+          returnValueType={formData.returnValueType}
+          onAdd={ruleSetManager.addRuleSet}
+          onUpdate={ruleSetManager.updateRuleSet}
+          onRemove={ruleSetManager.removeRuleSet}
+          getError={ruleSetManager.getRuleSetError}
+          onAddCondition={ruleSetManager.addCondition}
+          onUpdateCondition={ruleSetManager.updateCondition}
+          onRemoveCondition={ruleSetManager.removeCondition}
+          getConditionError={ruleSetManager.getConditionError}
+        />
+      </Paper>
 
       {/* Action Buttons */}
       <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
