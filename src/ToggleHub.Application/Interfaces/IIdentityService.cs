@@ -9,4 +9,6 @@ public interface IIdentityService
     Task<LoginResult> LoginAsync(LoginDto loginDto);
     Task LogoutAsync();
     Task<UserDto?> GetCurrentUserAsync();
+    Task ForgotPasswordAsync(ForgotPasswordDto forgotPasswordDto);
+    Task ResetPasswordAsync(ResetPasswordDto resetPasswordDto);
 }

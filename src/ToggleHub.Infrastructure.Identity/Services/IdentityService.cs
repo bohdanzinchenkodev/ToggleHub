@@ -6,6 +6,7 @@ using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Constants;
 using ToggleHub.Domain.Exceptions;
 using ToggleHub.Infrastructure.Identity.Entities;
+using ToggleHub.Infrastructure.Identity.Mapping;
 
 namespace ToggleHub.Infrastructure.Identity.Services;
 
@@ -14,12 +15,18 @@ public class IdentityService : IIdentityService
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
     private readonly IWorkContext _workContext;
+    private readonly IPasswordResetEmailWorkflowService _passwordResetEmailWorkflowService;
 
-    public IdentityService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IWorkContext workContext)
+    public IdentityService(
+        UserManager<AppUser> userManager, 
+        SignInManager<AppUser> signInManager, 
+        IWorkContext workContext,
+        IPasswordResetEmailWorkflowService passwordResetEmailWorkflowService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _workContext = workContext;
+        _passwordResetEmailWorkflowService = passwordResetEmailWorkflowService;
     }
 
     public async Task<RegistrationResult> RegisterAsync(RegistrationDto registrationDto)
@@ -68,17 +75,36 @@ public class IdentityService : IIdentityService
         if (userId == null)
             return null;
         
-        var user = await _userManager.FindByIdAsync(userId.ToString() ?? "");
-        if (user == null)
-            return null;
-        
-        var userDto = new UserDto
-        {
-            Id = user.Id,
-            Email = user.Email!,
-            FirstName = user.FirstName,
-            LastName = user.LastName
-        };
+        var user = await _userManager.FindByIdAsync(userId.Value.ToString());
+
+        var userDto = user?.ToUserDto();
         return userDto;
+    }
+
+    public async Task ForgotPasswordAsync(ForgotPasswordDto forgotPasswordDto)
+    {
+        var user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email);
+        if (user == null)
+            return; // Silently fail to prevent email enumeration attacks
+
+        var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+        var userDto = user.ToUserDto();
+
+        await _passwordResetEmailWorkflowService.SendPasswordResetEmailAsync(userDto, resetToken);
+    }
+
+    public async Task ResetPasswordAsync(ResetPasswordDto resetPasswordDto)
+    {
+        var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email);
+        if (user == null)
+            throw new AuthenticationException("Invalid password reset request.");
+
+        var result = await _userManager.ResetPasswordAsync(user, resetPasswordDto.Token, resetPasswordDto.NewPassword);
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            throw new AuthenticationException($"Password reset failed: {errors}");
+        }
     }
 }

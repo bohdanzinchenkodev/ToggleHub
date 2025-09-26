@@ -34,6 +34,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IApiKeyGenerator, ApiKeyGenerator>();
         
         services.AddScoped<IInvitationEmailWorkflowService, InvitationEmailWorkflowService>();
+        services.AddScoped<IPasswordResetEmailWorkflowService, PasswordResetEmailWorkflowService>();
         
         // Register SlugGenerator
         services.AddScoped<ISlugGenerator, SlugGenerator>();
