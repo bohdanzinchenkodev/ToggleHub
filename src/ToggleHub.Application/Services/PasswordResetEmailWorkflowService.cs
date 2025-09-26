@@ -22,7 +22,7 @@ public class PasswordResetEmailWorkflowService : IPasswordResetEmailWorkflowServ
         // TODO: Add class to build URL
         var model = new PasswordResetEmailDto
         {
-            ResetLink = $"http://localhost:5173/auth/reset-password?token={resetToken}&email={Uri.EscapeDataString(user.Email)}",
+            ResetLink = $"http://localhost:5173/reset-password?token={resetToken}&email={Uri.EscapeDataString(user.Email)}",
             UserName = $"{user.FirstName} {user.LastName}".Trim(),
             ExpiresAt = DateTime.UtcNow.AddHours(1) // Token expires in 1 hour
         };
