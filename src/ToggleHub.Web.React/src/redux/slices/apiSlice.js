@@ -6,7 +6,7 @@ export const api = createApi({
 		baseUrl: 'http://localhost:5160/api',
 		credentials: 'include', // send cookies automatically
 	}),
-	tagTypes: ['Flags', 'User', 'UserPermissions', 'OrganizationInvites', 'OrganizationMembers'],
+	tagTypes: ['Flags', 'User', 'UserPermissions', 'OrganizationInvites', 'OrganizationMembers', 'Organizations', 'Projects'],
 	endpoints: (builder) => ({
 		getUser: builder.query({
 			query: () => 'user/me',
@@ -77,6 +77,7 @@ export const api = createApi({
 					pageSize
 				}
 			}),
+			providesTags: ['Organizations'],
 		}),
 		createOrganization: builder.mutation({
 			query: (body) => ({
@@ -84,6 +85,7 @@ export const api = createApi({
 				method: 'POST',
 				body,
 			}),
+			invalidatesTags: ['Organizations'],
 		}),
 		getProjectsByOrganization: builder.query({
 			query: ({ organizationId, page = 1, pageSize = 25 }) => ({
@@ -93,6 +95,9 @@ export const api = createApi({
 					pageSize
 				}
 			}),
+			providesTags: (result, error, { organizationId }) => [
+				{ type: 'Projects', id: organizationId }
+			],
 		}),
 		getOrganizationBySlug: builder.query({
 			query: (slug) => `organizations/${slug}`,
@@ -103,6 +108,9 @@ export const api = createApi({
 				method: 'POST',
 				body,
 			}),
+			invalidatesTags: (result, error, { organizationId }) => [
+				{ type: 'Projects', id: organizationId }
+			],
 		}),
 		getProjectBySlug: builder.query({
 			query: ({ projectSlug, organizationId }) =>
@@ -114,18 +122,25 @@ export const api = createApi({
 				method: 'PUT',
 				body,
 			}),
+			invalidatesTags: (result, error, { organizationId }) => [
+				{ type: 'Projects', id: organizationId }
+			],
 		}),
 		deleteProject: builder.mutation({
 			query: ({ organizationId, projectId }) => ({
 				url: `organizations/${organizationId}/projects/${projectId}`,
 				method: 'DELETE',
 			}),
+			invalidatesTags: (result, error, { organizationId }) => [
+				{ type: 'Projects', id: organizationId }
+			],
 		}),
 		deleteOrganization: builder.mutation({
 			query: ({ organizationId }) => ({
 				url: `organizations/${organizationId}`,
 				method: 'DELETE',
 			}),
+			invalidatesTags: ['Organizations'],
 		}),
 		getFlagsByEnvironment: builder.query({
 			query: ({ organizationId, projectId, environmentId, page = 1, pageSize = 10 }) =>
