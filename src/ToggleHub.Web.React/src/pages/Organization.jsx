@@ -166,7 +166,6 @@ const Organization = () => {
 			<Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 				<Box sx={{ display: 'flex', alignItems: 'center', gap: 2, minHeight: '40px' }}>
 					<Box sx={{
-						'& > *': { mb: 0 },
 						display: 'flex',
 						alignItems: 'center'
 					}}>

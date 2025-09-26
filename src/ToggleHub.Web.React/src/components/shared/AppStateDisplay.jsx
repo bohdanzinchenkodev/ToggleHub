@@ -21,7 +21,7 @@ const AppStateDisplay = ({ showBreadcrumbs = true, showChips = false }) => {
 
 	if (showBreadcrumbs) {
 		return (
-			<Box sx={{ mb: 2 }}>
+			<Box>
 				<Breadcrumbs>
 					{currentOrganization && (
 						<Link
