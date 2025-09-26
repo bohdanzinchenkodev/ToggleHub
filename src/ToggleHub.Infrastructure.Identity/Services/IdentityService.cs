@@ -100,7 +100,8 @@ public class IdentityService : IIdentityService
         if (user == null)
             throw new AuthenticationException("Invalid password reset request.");
 
-        var result = await _userManager.ResetPasswordAsync(user, resetPasswordDto.Token, resetPasswordDto.NewPassword);
+        var tokenDecoded = Uri.UnescapeDataString(resetPasswordDto.Token);
+        var result = await _userManager.ResetPasswordAsync(user, tokenDecoded, resetPasswordDto.NewPassword);
         if (!result.Succeeded)
         {
             var errors = string.Join(", ", result.Errors.Select(e => e.Description));

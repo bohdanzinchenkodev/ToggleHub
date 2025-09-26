@@ -20,6 +20,8 @@ public class PasswordResetEmailWorkflowService : IPasswordResetEmailWorkflowServ
     {
         // TODO: Use settings to get base URL
         // TODO: Add class to build URL
+        
+        resetToken = Uri.EscapeDataString(resetToken);
         var model = new PasswordResetEmailDto
         {
             ResetLink = $"http://localhost:5173/reset-password?token={resetToken}&email={Uri.EscapeDataString(user.Email)}",

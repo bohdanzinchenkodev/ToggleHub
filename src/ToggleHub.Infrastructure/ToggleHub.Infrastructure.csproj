@@ -25,6 +25,10 @@
       <Content Include="Email\EmailTemplates\InviteEmail.cshtml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
+      <None Remove="Email\EmailTemplates\PasswordResetEmail.cshtml" />
+      <Content Include="Email\EmailTemplates\PasswordResetEmail.cshtml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>
