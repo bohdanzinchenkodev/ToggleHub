@@ -41,14 +41,18 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IEmailTemplateRenderer, RazorEmailTemplateRenderer>();
         services.AddScoped<IEmailSender, SendGridEmailSender>();
+        services.AddScoped<IUrlBuilder, UrlBuilder>();
         
         services.AddScoped<IApiKeyContext, ApiKeyContext>();
         
-        // Register SendGrid settings
-        
+        // Register settings
         services.Configure<SendGridSettings>(configuration.GetSection("SendGrid"));
         services.AddSingleton(registeredServices =>
             registeredServices.GetRequiredService<IOptions<SendGridSettings>>().Value);
+            
+        services.Configure<ApplicationUrlSettings>(configuration.GetSection("ApplicationUrls"));
+        services.AddSingleton(registeredServices =>
+            registeredServices.GetRequiredService<IOptions<ApplicationUrlSettings>>().Value);
 
         return services;
     }

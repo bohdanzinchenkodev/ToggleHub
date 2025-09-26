@@ -9,22 +9,23 @@ public class PasswordResetEmailWorkflowService : IPasswordResetEmailWorkflowServ
 {
     private readonly IEmailTemplateRenderer _emailTemplateRenderer;
     private readonly IEmailSender _emailSender;
+    private readonly IUrlBuilder _urlBuilder;
 
-    public PasswordResetEmailWorkflowService(IEmailTemplateRenderer emailTemplateRenderer, IEmailSender emailSender)
+    public PasswordResetEmailWorkflowService(
+        IEmailTemplateRenderer emailTemplateRenderer, 
+        IEmailSender emailSender,
+        IUrlBuilder urlBuilder)
     {
         _emailTemplateRenderer = emailTemplateRenderer;
         _emailSender = emailSender;
+        _urlBuilder = urlBuilder;
     }
 
     public async Task SendPasswordResetEmailAsync(UserDto user, string resetToken)
     {
-        // TODO: Use settings to get base URL
-        // TODO: Add class to build URL
-        
-        resetToken = Uri.EscapeDataString(resetToken);
         var model = new PasswordResetEmailDto
         {
-            ResetLink = $"http://localhost:5173/reset-password?token={resetToken}&email={Uri.EscapeDataString(user.Email)}",
+            ResetLink = _urlBuilder.BuildPasswordResetUrl(resetToken, user.Email),
             UserName = $"{user.FirstName} {user.LastName}".Trim(),
             ExpiresAt = DateTime.UtcNow.AddHours(1) // Token expires in 1 hour
         };

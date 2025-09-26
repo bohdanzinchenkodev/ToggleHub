@@ -19,6 +19,12 @@ public class OrganizationInviteRepository : BaseRepository<OrganizationInvite>, 
             .Include(i => i.Organization)
             .FirstOrDefaultAsync(i => i.Token == token);
     }
+    public override async Task<OrganizationInvite?> GetByIdAsync(int id)
+    {
+        return await _dbSet
+            .Include(i => i.Organization)
+            .FirstOrDefaultAsync(i => i.Id == id);
+    }
 
     public async Task<OrganizationInvite?> GetByEmailAndOrganizationIdAsync(string email, int organizationId)
     {

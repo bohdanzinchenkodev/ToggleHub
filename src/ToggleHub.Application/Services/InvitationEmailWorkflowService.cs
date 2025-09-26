@@ -10,22 +10,24 @@ public class InvitationEmailWorkflowService : IInvitationEmailWorkflowService
 {
     private readonly IEmailTemplateRenderer _emailTemplateRenderer;
     private readonly IEmailSender _emailSender;
+    private readonly IUrlBuilder _urlBuilder;
 
-    public InvitationEmailWorkflowService(IEmailTemplateRenderer emailTemplateRenderer, IEmailSender emailSender)
+    public InvitationEmailWorkflowService(
+        IEmailTemplateRenderer emailTemplateRenderer, 
+        IEmailSender emailSender,
+        IUrlBuilder urlBuilder)
     {
         _emailTemplateRenderer = emailTemplateRenderer;
         _emailSender = emailSender;
+        _urlBuilder = urlBuilder;
     }
 
     public async Task SendInvitationEmailAsync(OrganizationInvite invite)
     {
-        //todo:
-        //use settings to get base url
-        //add class to build url
         var model = new InviteEmailDto
         {
-            InviteLink = $"http://localhost:5173/organizations/{invite.OrganizationId}/invites/accept/{invite.Token}",
-            DeclineLink = $"http://localhost:5173/organizations/{invite.OrganizationId}/invites/decline/{invite.Token}",
+            InviteLink = _urlBuilder.BuildOrganizationInviteAcceptUrl(invite.OrganizationId, invite.Token),
+            DeclineLink = _urlBuilder.BuildOrganizationInviteDeclineUrl(invite.OrganizationId, invite.Token),
             ExpiresAt = invite.ExpiresAt,
             OrganizationName = invite.Organization.Name
         };
