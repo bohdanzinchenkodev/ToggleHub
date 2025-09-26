@@ -1,13 +1,13 @@
 import React from "react";
 import { AppBar, Toolbar, Box, Typography } from "@mui/material";
 import { Link } from "react-router";
-import logo from "../../assets/th-logo.png";
+import logo from "../../assets/th-logo-thumb.png";
 import UserDropdown from "./UserDropdown.jsx";
 
 const Navbar = () => {
 	return (
 		<AppBar position="static" sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
-			<Toolbar>
+			<Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
 				<Box
 					component={Link}
 					to="/"
@@ -16,8 +16,7 @@ const Navbar = () => {
 						width: 'auto',
 						cursor: 'pointer',
 						display: 'block'
-					}}
-				>
+					}}>
 					<Box
 						component="img"
 						src={logo}
@@ -29,21 +28,7 @@ const Navbar = () => {
 						}}
 					/>
 				</Box>
-				<Typography
-					variant="h4"
-					component={Link}
-					to="/"
-					sx={{
-						fontWeight: 'bold',
-						cursor: 'pointer',
-						color: 'inherit',
-						textDecoration: 'none',
-						flexGrow: 1
-					}}
-				>
-					ToggleHub
-				</Typography>
-				
+
 				<UserDropdown />
 			</Toolbar>
 		</AppBar>
