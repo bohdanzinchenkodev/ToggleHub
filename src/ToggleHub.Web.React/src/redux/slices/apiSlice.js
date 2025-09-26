@@ -107,6 +107,12 @@ export const api = createApi({
 				method: 'DELETE',
 			}),
 		}),
+		deleteOrganization: builder.mutation({
+			query: ({ organizationId }) => ({
+				url: `organizations/${organizationId}`,
+				method: 'DELETE',
+			}),
+		}),
 		getFlagsByEnvironment: builder.query({
 			query: ({ organizationId, projectId, environmentId, page = 1, pageSize = 10 }) =>
 				`organizations/${organizationId}/projects/${projectId}/environments/${environmentId}/flags?page=${page}&pageSize=${pageSize}`,
@@ -271,5 +277,6 @@ export const {
 	useDeleteOrganizationMemberMutation,
 	useAcceptOrganizationInviteMutation,
 	useDeclineOrganizationInviteMutation,
-	useDeleteFlagMutation
+	useDeleteFlagMutation,
+	useDeleteOrganizationMutation
 } = api;

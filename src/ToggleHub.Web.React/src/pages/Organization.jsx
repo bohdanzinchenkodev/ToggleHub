@@ -13,8 +13,12 @@ import { ArrowBack as ArrowBackIcon, People as PeopleIcon } from '@mui/icons-mat
 import { Link } from 'react-router';
 import {
 	useGetProjectsByOrganizationQuery,
-	useCreateProjectMutation
+	useCreateProjectMutation,
+	useDeleteOrganizationMutation
 } from "../redux/slices/apiSlice.js";
+import ConfirmDialog from '../components/shared/ConfirmDialog';
+import { useDispatch } from 'react-redux';
+import { showSuccess, showError } from '../redux/slices/notificationsSlice';
 import { useFormHandler } from "../hooks/useFormHandler.js";
 import { useAppState } from "../hooks/useAppState.js";
 import { validateForm } from "../utils/validation.js";
@@ -25,6 +29,7 @@ import useInfiniteScrollQuery from "../hooks/useInfiniteScrollQuery.js";
 import { PAGINATION_CONFIG } from "../constants/organizationConstants.js";
 import { usePermissions } from '../hooks/usePermissions';
 import { PERMISSIONS } from '../constants/permissions';
+import { useNavigate } from 'react-router';
 
 const Organization = () => {
 	const {
@@ -35,6 +40,9 @@ const Organization = () => {
 		organizationError: orgError,
 		updateCurrentProject
 	} = useAppState();
+
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
 
 	// Use the reusable infinite scroll hook
 	const {
@@ -62,6 +70,8 @@ const Organization = () => {
 		isError: isCreateError
 	}] = useCreateProjectMutation();
 
+	const [deleteOrganization, { isLoading: isDeletingOrg }] = useDeleteOrganizationMutation();
+
 	const {
 		formData,
 		formErrors,
@@ -72,6 +82,31 @@ const Organization = () => {
 	} = useFormHandler({ name: "" });
 
 	const { hasPermission } = usePermissions();
+
+	const [confirmOpen, setConfirmOpen] = React.useState(false);
+
+	const onDeleteOrgClick = () => {
+		setConfirmOpen(true);
+	};
+
+	const onDeleteCancel = () => {
+		setConfirmOpen(false);
+	};
+
+	const onDeleteConfirm = async () => {
+		setConfirmOpen(false);
+		if (!organization?.id) return;
+		try {
+			await deleteOrganization({ organizationId: organization.id }).unwrap();
+			dispatch(showSuccess('Organization deleted'));
+			navigate('/');
+		} catch (error) {
+			dispatch(showError(error?.data?.detail || 'Failed to delete organization'));
+			console.error('Delete failed', error);
+		}
+	};
+
+	// ...existing code...
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -146,16 +181,28 @@ const Organization = () => {
 						Back to Organizations
 					</Button>
 				</Box>
-				{hasPermission(PERMISSIONS.MANAGE_MEMBERS) && (
-					<Button
-						startIcon={<PeopleIcon />}
-						component={Link}
-						to={`/organizations/${orgSlug}/members`}
-						variant="contained"
-					>
-						Manage Members
-					</Button>
-				)}
+				<Box>
+					{hasPermission(PERMISSIONS.MANAGE_MEMBERS) && (
+						<Button
+							sx={{ mr: 2 }}
+							startIcon={<PeopleIcon />}
+							component={Link}
+							to={`/organizations/${orgSlug}/members`}
+							variant="contained"
+						>
+							Manage Members
+						</Button>
+					)}
+					{hasPermission(PERMISSIONS.DELETE_ORGANIZATION) && (
+						<Button
+							color="error"
+							variant="outlined"
+							onClick={onDeleteOrgClick}
+						>
+							Delete Organization
+						</Button>
+					)}
+				</Box>
 			</Box>
 
 			<Box>
@@ -212,6 +259,18 @@ const Organization = () => {
 					)}
 				</Grid>
 			</Box>
+
+			<ConfirmDialog
+				open={confirmOpen}
+				title="Delete organization?"
+				content={`This will permanently delete the organization "${organization?.name || ''}" and all its projects. Are you sure?`}
+				onCancel={onDeleteCancel}
+				onConfirm={onDeleteConfirm}
+				confirmText="Delete"
+				cancelText="Cancel"
+				confirmColor="error"
+			/>
+
 		</Container>
 	);
 };

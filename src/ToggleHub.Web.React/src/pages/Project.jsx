@@ -7,6 +7,12 @@ import {
 	Container,
 	Paper
 } from "@mui/material";
+import { Button } from '@mui/material';
+import ConfirmDialog from '../components/shared/ConfirmDialog.jsx';
+import { useDeleteProjectMutation } from '../redux/slices/apiSlice.js';
+import { useNavigate } from 'react-router';
+import { useDispatch } from 'react-redux';
+import { showSuccess, showError } from '../redux/slices/notificationsSlice';
 import {
 	useGetFlagsByEnvironmentQuery
 } from "../redux/slices/apiSlice.js";
@@ -73,6 +79,24 @@ const Project = () => {
 
 	const canViewProject = hasPermission(PERMISSIONS.VIEW_PROJECTS) || hasPermission(PERMISSIONS.MANAGE_PROJECTS);
 
+	const [deleteProject] = useDeleteProjectMutation();
+	const [confirmOpen, setConfirmOpen] = React.useState(false);
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
+
+	const onDeleteClick = () => setConfirmOpen(true);
+	const onDeleteCancel = () => setConfirmOpen(false);
+	const onDeleteConfirm = async () => {
+		setConfirmOpen(false);
+		try {
+			await deleteProject({ organizationId: organization.id, projectId: project.id }).unwrap();
+			dispatch(showSuccess('Project deleted'));
+			navigate(`/organizations/${orgSlug}`);
+		} catch (err) {
+			dispatch(showError(err?.data?.detail || 'Failed to delete project'));
+		}
+	};
+
 	if (!canViewProject) {
 		return (
 			<Container component="main" maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
@@ -117,9 +141,14 @@ const Project = () => {
 		<Container component="main" maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
 			<AppStateDisplay />
 			<Box>
-				<Typography variant="h4" component="h1" sx={{ mb: 2, fontWeight: 'bold' }}>
-					{project ? project.name : `Project: ${projectSlug}`}
-				</Typography>
+				<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+					<Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
+						{project ? project.name : `Project: ${projectSlug}`}
+					</Typography>
+					{hasPermission(PERMISSIONS.MANAGE_PROJECTS) && (
+						<Button color="error" variant="outlined" onClick={onDeleteClick}>Delete Project</Button>
+					)}
+				</Box>
 
 				{project?.environments && project.environments.length > 0 && (
 					<Box sx={{
@@ -166,6 +195,16 @@ const Project = () => {
 					</Paper>
 				)}
 			</Box>
+			<ConfirmDialog
+				open={confirmOpen}
+				title="Delete project?"
+				content="This will permanently delete the project and all associated data. Are you sure?"
+				onCancel={onDeleteCancel}
+				onConfirm={onDeleteConfirm}
+				confirmText="Delete"
+				cancelText="Cancel"
+				confirmColor="error"
+			/>
 		</Container>
 	);
 };

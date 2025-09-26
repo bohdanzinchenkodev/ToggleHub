@@ -258,7 +258,7 @@ const UpdateFlag = () => {
 						{hasPermission(PERMISSIONS.MANAGE_FLAGS) && (
 							<Button
 								color="error"
-								variant="contained"
+								variant="outlined"
 								disabled={isDeleting}
 								onClick={onDeleteClick}
 							>
