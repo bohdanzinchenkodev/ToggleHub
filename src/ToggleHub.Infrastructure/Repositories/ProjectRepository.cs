@@ -10,10 +10,20 @@ namespace ToggleHub.Infrastructure.Repositories;
 
 public class ProjectRepository : BaseSluggedRepository<Project>, IProjectRepository
 {
+    private readonly ICacheManager _cacheManager;
+    private readonly IRepositoryCacheKeyFactory _repositoryCacheKeyFactory;
+
     public ProjectRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory, IRepositoryCacheKeyFactory repositoryCacheKeyFactory) : base(context, cacheManager, cacheKeyFactory, repositoryCacheKeyFactory)
     {
+        _cacheManager = cacheManager;
+        _repositoryCacheKeyFactory = repositoryCacheKeyFactory;
     }
 
+    protected override IQueryable<Project> WithIncludes(DbSet<Project> dbSet)
+    {
+        return dbSet
+                    .Include(p => p.Environments);
+    }
     public async Task<bool> NameExistsAsync(string name, int organizationId = 0)
     {
         return await _dbSet
@@ -22,21 +32,39 @@ public class ProjectRepository : BaseSluggedRepository<Project>, IProjectReposit
 
     public async Task<IPagedList<Project>> GetAllAsync(int? organizationId = null, int pageIndex = 0, int pageSize = Int32.MaxValue)
     {
-        var query = _dbSet.AsQueryable();
-
-        if (organizationId.HasValue)
+        var cacheKey = _repositoryCacheKeyFactory.For<Project>(new Dictionary<string, object?>
         {
-            query = query.Where(p => p.OrganizationId == organizationId.Value);
-        }
+            { nameof(organizationId), organizationId },
+            { nameof(pageIndex), pageIndex },
+            { nameof(pageSize), pageSize }
+        });
 
-        return await query.ToPagedListAsync(pageIndex, pageSize);
+        return await _cacheManager.GetAsync(cacheKey, async () =>
+        {
+            var query = _dbSet.AsQueryable();
+
+            if (organizationId.HasValue)
+            {
+                query = query.Where(p => p.OrganizationId == organizationId.Value);
+            }
+
+            return await query.ToPagedListAsync(pageIndex, pageSize);
+        });
     }
 
-    public Task<Project?> GetBySlugAsync(string slug, int organizationId)
+    public async Task<Project?> GetBySlugAsync(string slug, int organizationId)
     {
-        return _dbSet
-            .AsNoTracking()
-            .Include(x => x.Environments)
-            .FirstOrDefaultAsync(o => o.Slug == slug && o.OrganizationId == organizationId);
+        var cacheKey = _repositoryCacheKeyFactory.For<Project>(new Dictionary<string, object?>
+        {
+            { nameof(slug), slug },
+            { nameof(organizationId), organizationId }
+        });
+
+        return await _cacheManager.GetAsync(cacheKey, async () =>
+        {
+            return await WithIncludes(_dbSet)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(o => o.Slug == slug && o.OrganizationId == organizationId);
+        });
     }
 }

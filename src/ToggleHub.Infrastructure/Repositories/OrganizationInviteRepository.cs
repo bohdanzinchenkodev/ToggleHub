@@ -10,8 +10,13 @@ namespace ToggleHub.Infrastructure.Repositories;
 
 public class OrganizationInviteRepository : BaseRepository<OrganizationInvite>, IOrganizationInviteRepository
 {
+    private readonly ICacheManager _cacheManager;
+    private readonly IRepositoryCacheKeyFactory _repositoryCacheKeyFactory;
+
     public OrganizationInviteRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
     {
+        _cacheManager = cacheManager;
+        _repositoryCacheKeyFactory = cacheKeyFactory;
     }
 
     protected override IQueryable<OrganizationInvite> WithIncludes(DbSet<OrganizationInvite> dbSet)
@@ -20,26 +25,36 @@ public class OrganizationInviteRepository : BaseRepository<OrganizationInvite>, 
     }
     public async Task<OrganizationInvite?> GetByTokenAsync(string token)
     {
-        return await _dbSet
-            .Include(i => i.Organization)
-            .FirstOrDefaultAsync(i => i.Token == token);
-    }
+        var cacheKey = _repositoryCacheKeyFactory.For<OrganizationInvite>(new Dictionary<string, object?>
+        {
+            { nameof(token), token }
+        });
 
-    public async Task<OrganizationInvite?> GetByEmailAndOrganizationIdAsync(string email, int organizationId)
-    {
-        return await _dbSet
-            .Include(i => i.Organization)
-            .FirstOrDefaultAsync(i => i.Email.ToLower() == email.ToLower() && i.OrganizationId == organizationId);
+        return await _cacheManager.GetAsync(cacheKey, async () =>
+        {
+            return await WithIncludes(_dbSet)
+                .FirstOrDefaultAsync(i => i.Token == token);
+        });
     }
+    
 
     public async Task<IPagedList<OrganizationInvite>> GetByOrganizationIdAsync(int organizationId, int pageIndex = 0, int pageSize = int.MaxValue)
     {
-        var query = _dbSet
-            .Include(i => i.Organization)
-            .Where(i => i.OrganizationId == organizationId)
-            .OrderByDescending(i => i.CreatedAt);
+        var cacheKey = _repositoryCacheKeyFactory.For<OrganizationInvite>(new Dictionary<string, object?>
+        {
+            { nameof(organizationId), organizationId },
+            { nameof(pageIndex), pageIndex },
+            { nameof(pageSize), pageSize }
+        });
 
-        return await query.ToPagedListAsync(pageIndex, pageSize);
+        return await _cacheManager.GetAsync(cacheKey, async () =>
+        {
+            var query = WithIncludes(_dbSet)
+                .Where(i => i.OrganizationId == organizationId)
+                .OrderByDescending(i => i.CreatedAt);
+
+            return await query.ToPagedListAsync(pageIndex, pageSize);
+        });
     }
 
     public async Task<List<OrganizationInvite>> GetExpiredInvitesAsync()
@@ -53,8 +68,8 @@ public class OrganizationInviteRepository : BaseRepository<OrganizationInvite>, 
     {
         return await _dbSet
             .AnyAsync(i => i.Email.ToLower() == email.ToLower() 
-                          && i.OrganizationId == organizationId 
-                          && i.Status == InviteStatus.Pending
-                          && i.ExpiresAt > DateTime.UtcNow);
+                           && i.OrganizationId == organizationId 
+                           && i.Status == InviteStatus.Pending
+                           && i.ExpiresAt > DateTime.UtcNow);
     }
 }

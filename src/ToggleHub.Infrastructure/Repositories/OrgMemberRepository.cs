@@ -10,8 +10,13 @@ namespace ToggleHub.Infrastructure.Repositories;
 
 public class OrgMemberRepository : BaseRepository<OrgMember>, IOrgMemberRepository
 {
+    private readonly ICacheManager _cacheManager;
+    private readonly IRepositoryCacheKeyFactory _repositoryCacheKeyFactory;
+
     public OrgMemberRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
     {
+        _cacheManager = cacheManager;
+        _repositoryCacheKeyFactory = cacheKeyFactory;
     }
 
     public async Task AddOrgMemberAsync(OrgMember orgMember)
@@ -28,22 +33,40 @@ public class OrgMemberRepository : BaseRepository<OrgMember>, IOrgMemberReposito
 
     public async Task<IPagedList<OrgMember>> GetMembersInOrganizationAsync(int organizationId, int pageIndex = 0, int pageSize = Int32.MaxValue)
     {
-        return await _context.OrgMembers
-            .Where(om => om.OrganizationId == organizationId)
-            .ToPagedListAsync(pageIndex, pageSize);
+        var cacheKey = _repositoryCacheKeyFactory.For<OrgMember>(new Dictionary<string, object?>
+        {
+            { nameof(organizationId), organizationId },
+            { nameof(pageIndex), pageIndex },
+            { nameof(pageSize), pageSize }
+        });
+
+        return await _cacheManager.GetAsync(cacheKey, async () =>
+        {
+            return await _context.OrgMembers
+                .Where(om => om.OrganizationId == organizationId)
+                .ToPagedListAsync(pageIndex, pageSize);
+        });
     }
     
 
 
     public async Task<bool> IsUserInOrganizationAsync(int organizationId, int userId)
     {
-        return await _context.OrgMembers
-            .AnyAsync(om => om.OrganizationId == organizationId && om.UserId == userId);
+        return await GetOrgMemberAsync(organizationId, userId) != null;
     }
 
     public async Task<OrgMember?> GetOrgMemberAsync(int organizationId, int userId)
     {
-        return await _context.OrgMembers
-            .FirstOrDefaultAsync(om => om.OrganizationId == organizationId && om.UserId == userId);
+        var cacheKey = _repositoryCacheKeyFactory.For<OrgMember>(new Dictionary<string, object?>
+        {
+            { nameof(organizationId), organizationId },
+            { nameof(userId), userId }
+        });
+
+        return await _cacheManager.GetAsync(cacheKey, async () =>
+        {
+            return await _context.OrgMembers
+                .FirstOrDefaultAsync(om => om.OrganizationId == organizationId && om.UserId == userId);
+        });
     }
 }

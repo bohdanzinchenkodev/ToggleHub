@@ -10,43 +10,58 @@ namespace ToggleHub.Infrastructure.Repositories;
 
 public class ApiKeyRepository : BaseRepository<ApiKey>, IApiKeyRepository
 {
-    public ApiKeyRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
+    private readonly ICacheManager _cacheManager;
+    private readonly IRepositoryCacheKeyFactory _repositoryCacheKeyFactory;
+    public ApiKeyRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory, IRepositoryCacheKeyFactory repositoryCacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
     {
+        _cacheManager = cacheManager;
+        _repositoryCacheKeyFactory = repositoryCacheKeyFactory;
     }
 
     public async Task<ApiKey?> GetByKeyAsync(string key)
     {
-        return await _dbSet.FirstOrDefaultAsync(a => a.Key == key);
+        var cacheKey = _repositoryCacheKeyFactory.For<ApiKey>(new Dictionary<string, object?>
+        {
+            { nameof(key), key }
+        });
+        return await _cacheManager.GetAsync(
+            cacheKey,
+            async () =>
+            {
+                var query = WithIncludes(_dbSet).AsNoTracking();
+                return await query.FirstOrDefaultAsync(a => a.Key == key);
+            });
     }
 
     public async Task<bool> KeyExistsAsync(string key)
     {
-        return await _dbSet.AnyAsync(a => a.Key == key);
+        return await GetByKeyAsync(key) != null;
     }
 
-    public Task<IPagedList<ApiKey>> GetApiKeysAsync(int organizationId, int projectId, int environmentId, int pageNumber, int pageSize)
+    public async Task<IPagedList<ApiKey>> GetApiKeysAsync(int organizationId, int projectId, int environmentId, int pageNumber, int pageSize)
     {
-        var query = _dbSet.AsQueryable();
+        var cacheKey = _repositoryCacheKeyFactory.For<ApiKey>(new Dictionary<string, object?>
+        {
+            { nameof(organizationId), organizationId },
+            { nameof(projectId), projectId },
+            { nameof(environmentId), environmentId },
+            { nameof(pageNumber), pageNumber },
+            { nameof(pageSize), pageSize }
+        });
+        return await _cacheManager.GetAsync(cacheKey, async () =>
+        {
+            var query = _dbSet.AsQueryable();
 
-        if (organizationId > 0)
-            query = query.Where(a => a.OrganizationId == organizationId);
+            if (organizationId > 0)
+                query = query.Where(a => a.OrganizationId == organizationId);
 
-        if (projectId > 0)
-            query = query.Where(a => a.ProjectId == projectId);
+            if (projectId > 0)
+                query = query.Where(a => a.ProjectId == projectId);
 
-        if (environmentId > 0)
-            query = query.Where(a => a.EnvironmentId == environmentId);
+            if (environmentId > 0)
+                query = query.Where(a => a.EnvironmentId == environmentId);
 
-        return query.ToPagedListAsync(pageNumber, pageSize);
-    }
-
-    public async Task<IEnumerable<ApiKey>> GetByProjectIdAsync(int projectId)
-    {
-        return await _dbSet.Where(a => a.ProjectId == projectId).ToListAsync();
-    }
-
-    public async Task<bool> ApiKeyExistsForEnvironmentAsync(int projectId, int environmentId)
-    {
-        return await _dbSet.AnyAsync(x => x.ProjectId == projectId && x.EnvironmentId == environmentId);
+            return await query.ToPagedListAsync(pageNumber, pageSize);
+        });
     }
 }
