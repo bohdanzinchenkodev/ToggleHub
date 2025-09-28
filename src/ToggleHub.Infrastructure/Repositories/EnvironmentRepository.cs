@@ -35,6 +35,8 @@ public class EnvironmentRepository : BaseRepository<Environment>, IEnvironmentRe
             if (projectId.HasValue)
                 query = _dbSet.Where(e => e.ProjectId == projectId.Value);
 
+            query = query.OrderByDescending(x => x.Id);
+            
             return await query.ToPagedListAsync(pageIndex, pageSize);
         });
     }

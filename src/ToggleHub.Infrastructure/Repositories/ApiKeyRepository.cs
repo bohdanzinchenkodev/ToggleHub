@@ -60,6 +60,8 @@ public class ApiKeyRepository : BaseRepository<ApiKey>, IApiKeyRepository
 
             if (environmentId > 0)
                 query = query.Where(a => a.EnvironmentId == environmentId);
+            
+            query = query.OrderByDescending(x => x.Id);
 
             return await query.ToPagedListAsync(pageNumber, pageSize);
         });

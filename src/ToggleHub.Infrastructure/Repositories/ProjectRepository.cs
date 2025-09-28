@@ -48,6 +48,7 @@ public class ProjectRepository : BaseSluggedRepository<Project>, IProjectReposit
                 query = query.Where(p => p.OrganizationId == organizationId.Value);
             }
 
+            query = query.OrderByDescending(x => x.Id);
             return await query.ToPagedListAsync(pageIndex, pageSize);
         });
     }

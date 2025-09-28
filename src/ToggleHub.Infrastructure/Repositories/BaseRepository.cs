@@ -54,7 +54,9 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
             key,
             () =>
             {
-                var query = WithIncludes(_dbSet).AsNoTracking();
+                var query = WithIncludes(_dbSet)
+                    .AsNoTracking()
+                    .OrderByDescending(x => x.Id);
                 return query.ToPagedListAsync(pageIndex, pageSize);
             });
     }

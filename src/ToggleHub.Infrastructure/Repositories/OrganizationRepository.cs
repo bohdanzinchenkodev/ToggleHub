@@ -48,6 +48,7 @@ public class OrganizationRepository : BaseSluggedRepository<Organization>, IOrga
                 .Include(x => x.Organization)
                 .Where(x => x.UserId == userId)
                 .Select(x => x.Organization)
+                .OrderByDescending(x => x.Id)
                 .Distinct();
             
             return await query.ToPagedListAsync(pageIndex, pageSize);

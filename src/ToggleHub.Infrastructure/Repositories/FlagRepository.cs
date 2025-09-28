@@ -68,6 +68,8 @@ public class FlagRepository : BaseRepository<Flag>, IFlagRepository
             if (environmentId.HasValue)
                 query = query.Where(x => x.EnvironmentId == environmentId.Value);
 
+            query = query.OrderByDescending(x => x.Id);
+
             return await query.ToPagedListAsync(pageIndex, pageSize);
         });
     }

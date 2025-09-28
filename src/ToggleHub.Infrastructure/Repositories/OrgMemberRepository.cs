@@ -33,6 +33,7 @@ public class OrgMemberRepository : BaseRepository<OrgMember>, IOrgMemberReposito
         {
             return await _context.OrgMembers
                 .Where(om => om.OrganizationId == organizationId)
+                .OrderByDescending(x => x.Id)
                 .ToPagedListAsync(pageIndex, pageSize);
         });
     }
