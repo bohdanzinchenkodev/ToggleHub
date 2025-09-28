@@ -10,7 +10,7 @@ namespace ToggleHub.Infrastructure.Repositories;
 
 public class ProjectRepository : BaseSluggedRepository<Project>, IProjectRepository
 {
-    public ProjectRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
+    public ProjectRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory, IRepositoryCacheKeyFactory repositoryCacheKeyFactory) : base(context, cacheManager, cacheKeyFactory, repositoryCacheKeyFactory)
     {
     }
 

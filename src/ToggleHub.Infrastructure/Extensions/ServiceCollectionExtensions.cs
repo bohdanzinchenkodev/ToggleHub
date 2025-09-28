@@ -36,6 +36,13 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRuleConditionItemRepository, RuleConditionItemRepository>();
         services.AddScoped<IOrganizationInviteRepository, OrganizationInviteRepository>();
         
+        // Cache
+        services.AddMemoryCache();
+        services.AddScoped<ICacheManager, InMemoryCacheManager>();
+        services.AddScoped<ICacheKeyRegistry, InMemoryCacheKeyRegistry>();
+        services.AddScoped<ICacheKeyFormatter, CacheKeyFormatter>();
+        services.AddScoped<IRepositoryCacheKeyFactory, RepositoryCacheKeyFactory>();
+        
         services.AddScoped<IFlagEvaluationCacheKeyFactory, FlagEvaluationCacheKeyFactory>();
         services.AddScoped<IFlagEvaluationCacheManager, FlagEvaluationCacheManager>();
 
@@ -53,6 +60,10 @@ public static class ServiceCollectionExtensions
         services.Configure<ApplicationUrlSettings>(configuration.GetSection("ApplicationUrls"));
         services.AddSingleton(registeredServices =>
             registeredServices.GetRequiredService<IOptions<ApplicationUrlSettings>>().Value);
+        
+        services.Configure<CacheSettings>(configuration.GetSection("Cache"));
+        services.AddSingleton(registeredServices =>
+            registeredServices.GetRequiredService<IOptions<CacheSettings>>().Value);
 
         return services;
     }

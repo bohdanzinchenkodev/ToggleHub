@@ -9,22 +9,25 @@ namespace ToggleHub.Infrastructure.Repositories;
 public class BaseSluggedRepository<T> : BaseRepository<T>, IBaseSluggedRepository<T> 
     where T : BaseEntity, ISluggedEntity
 {
-    public BaseSluggedRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
+    private readonly ICacheManager _cacheManager;
+    private readonly IRepositoryCacheKeyFactory _repositoryCacheKeyFactory;
+    public BaseSluggedRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory, IRepositoryCacheKeyFactory repositoryCacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
     {
+        _cacheManager = cacheManager;
+        _repositoryCacheKeyFactory = repositoryCacheKeyFactory;
     }
 
     public virtual async Task<T?> GetBySlugAsync(string slug)
     {
-        return await _dbSet
-            .AsNoTracking()
-            .FirstOrDefaultAsync(entity => entity.Slug == slug);
+        var key = _repositoryCacheKeyFactory.ForSlug<T>(slug);
+        return await _cacheManager.GetAsync(
+            key,
+            async () =>
+            {
+                var query = WithIncludes(_dbSet).AsNoTracking();
+                return await query
+                    .FirstOrDefaultAsync(entity => entity.Slug == slug);
+            });
     }
-
-    public virtual async Task<IEnumerable<string>> GetSlugsByPatternAsync(string baseSlug)
-    {
-        return await _dbSet
-            .Where(entity => entity.Slug == baseSlug || entity.Slug.StartsWith(baseSlug + "-"))
-            .Select(entity => entity.Slug)
-            .ToListAsync();
-    }
+    
 }

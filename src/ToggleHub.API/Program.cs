@@ -20,7 +20,6 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddAppIdentity(builder.Configuration);
 builder.Services.AddApiKeyAuth();
 builder.Services.AddApplication(builder.Configuration);
-builder.Services.AddMemoryCache();
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>

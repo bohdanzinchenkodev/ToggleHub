@@ -18,28 +18,48 @@ public class RepositoryCacheKeyFactory : IRepositoryCacheKeyFactory
         _settings = settings;
     }
 
+    public CacheKey For<T>(Dictionary<string, object?> parameters) where T : BaseEntity
+    {
+        // always start with entity type as the base part
+        var parts = new List<string> { "entity:{0}" };
+        var values = new List<object> { typeof(T).Name.ToLower() };
+
+        // append dictionary keys in stable order
+        foreach (var kvp in parameters.OrderBy(p => p.Key))
+        {
+            parts.Add($"{kvp.Key}={{{values.Count}}}");
+            values.Add(kvp.Value ?? "null");
+        }
+
+        var template = string.Join(":", parts);
+        var formatted = _keyFormatter.Format(template, values.ToArray());
+
+        return new CacheKey(formatted, GetCacheTime<T>());
+    }
+
     public CacheKey ForEntityById<T>(int id) where T : BaseEntity
     {
-        var key = _keyFormatter.Format("entity:{0}:id:{1}", typeof(T).Name.ToLower(), id);
-        return new CacheKey(key, GetCacheTime<T>());
+        return For<T>(new Dictionary<string, object?>
+        {
+            { nameof(BaseEntity.Id), id }
+        });
     }
 
     public CacheKey ForEntityAll<T>(int page, int pageSize) where T : BaseEntity
     {
-        var key = _keyFormatter.Format("entity:{0}:page:{1}:{2}", typeof(T).Name.ToLower(), page, pageSize);
-        return new CacheKey(key, GetCacheTime<T>());
+        return For<T>(new Dictionary<string, object?>
+        {
+            { nameof(page), page },
+            { nameof(pageSize), pageSize }
+        });
     }
 
     public CacheKey ForSlug<T>(string slug) where T : BaseEntity, ISluggedEntity
     {
-        var key = _keyFormatter.Format("entity:{0}:slug:{1}", typeof(T).Name.ToLower(), slug);
-        return new CacheKey(key, GetCacheTime<T>());
-    }
-
-    public CacheKey ForSlugPattern<T>(string baseSlug) where T : BaseEntity, ISluggedEntity
-    {
-        var key = _keyFormatter.Format("entity:{0}:slugpattern:{1}", typeof(T).Name.ToLower(), baseSlug);
-        return new CacheKey(key, GetCacheTime<T>());
+        return For<T>(new Dictionary<string, object?>
+        {
+            { nameof(ISluggedEntity.Slug), slug }
+        });
     }
 
     public string PrefixForEntity<T>() where T : BaseEntity

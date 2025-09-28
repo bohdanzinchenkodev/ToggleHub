@@ -5,13 +5,13 @@ using ToggleHub.Application.Interfaces;
 
 namespace ToggleHub.Infrastructure.Cache;
 
-public class CacheManager
+public class InMemoryCacheManager : ICacheManager
 {
     private readonly IMemoryCache _memoryCache;
     private readonly ICacheKeyRegistry _keyRegistry;
     private CancellationTokenSource _clearToken = new();
 
-    public CacheManager(IMemoryCache memoryCache, ICacheKeyRegistry keyRegistry)
+    public InMemoryCacheManager(IMemoryCache memoryCache, ICacheKeyRegistry keyRegistry)
     {
         _memoryCache = memoryCache;
         _keyRegistry = keyRegistry;
