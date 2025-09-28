@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Repositories;
@@ -9,9 +10,8 @@ namespace ToggleHub.Infrastructure.Repositories;
 
 public class ProjectRepository : BaseSluggedRepository<Project>, IProjectRepository
 {
-    public ProjectRepository(ToggleHubDbContext context) : base(context)
+    public ProjectRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
     {
- 
     }
 
     public async Task<bool> NameExistsAsync(string name, int organizationId = 0)

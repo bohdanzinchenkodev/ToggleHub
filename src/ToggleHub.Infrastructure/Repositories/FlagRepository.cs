@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Repositories;
@@ -9,18 +10,15 @@ namespace ToggleHub.Infrastructure.Repositories;
 
 public class FlagRepository : BaseRepository<Flag>, IFlagRepository
 {
-    public FlagRepository(ToggleHubDbContext context) : base(context)
+    public FlagRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
     {
     }
 
-    public override async Task<Flag?> GetByIdAsync(int id)
+    protected override IQueryable<Flag> WithIncludes(DbSet<Flag> dbSet)
     {
-        return await _dbSet
-            .Include(x => x.RuleSets)
+        return dbSet.Include(x => x.RuleSets)
             .ThenInclude(x => x.Conditions)
-            .ThenInclude(x => x.Items)
-            .FirstOrDefaultAsync(x => x.Id == id);
-            
+            .ThenInclude(x => x.Items);
     }
 
     public Task<bool> ExistsAsync(string key, int environmentId, int projectId)

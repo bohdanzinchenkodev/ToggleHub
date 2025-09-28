@@ -1,3 +1,4 @@
+using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Repositories;
 using ToggleHub.Infrastructure.Data;
@@ -6,7 +7,7 @@ namespace ToggleHub.Infrastructure.Repositories;
 
 public class AuditLogRepository : BaseRepository<AuditLog>, IAuditLogRepository
 {
-    public AuditLogRepository(ToggleHubDbContext context) : base(context)
+    public AuditLogRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
     {
     }
 }

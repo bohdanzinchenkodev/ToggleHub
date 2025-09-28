@@ -24,9 +24,9 @@ public class RepositoryCacheKeyFactory : IRepositoryCacheKeyFactory
         return new CacheKey(key, GetCacheTime<T>());
     }
 
-    public CacheKey ForEntityAll<T>() where T : BaseEntity
+    public CacheKey ForEntityAll<T>(int page, int pageSize) where T : BaseEntity
     {
-        var key = _keyFormatter.Format("entity:{0}:all", typeof(T).Name.ToLower());
+        var key = _keyFormatter.Format("entity:{0}:page:{1}:{2}", typeof(T).Name.ToLower(), page, pageSize);
         return new CacheKey(key, GetCacheTime<T>());
     }
 
@@ -40,6 +40,11 @@ public class RepositoryCacheKeyFactory : IRepositoryCacheKeyFactory
     {
         var key = _keyFormatter.Format("entity:{0}:slugpattern:{1}", typeof(T).Name.ToLower(), baseSlug);
         return new CacheKey(key, GetCacheTime<T>());
+    }
+
+    public string PrefixForEntity<T>() where T : BaseEntity
+    {
+        return $"entity:{typeof(T).Name.ToLower()}:";
     }
 
     private int GetCacheTime<T>()

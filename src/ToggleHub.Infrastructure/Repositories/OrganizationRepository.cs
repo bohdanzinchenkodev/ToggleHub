@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Repositories;
@@ -9,7 +10,7 @@ namespace ToggleHub.Infrastructure.Repositories;
 
 public class OrganizationRepository : BaseSluggedRepository<Organization>, IOrganizationRepository
 {
-    public OrganizationRepository(ToggleHubDbContext context) : base(context)
+    public OrganizationRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
     {
     }
 

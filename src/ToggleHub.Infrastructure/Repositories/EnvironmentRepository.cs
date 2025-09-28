@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Repositories;
@@ -10,7 +11,7 @@ namespace ToggleHub.Infrastructure.Repositories;
 
 public class EnvironmentRepository : BaseRepository<Environment>, IEnvironmentRepository
 {
-    public EnvironmentRepository(ToggleHubDbContext context) : base(context)
+    public EnvironmentRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
     {
     }
 

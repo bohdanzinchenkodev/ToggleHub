@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Repositories;
@@ -9,9 +10,10 @@ namespace ToggleHub.Infrastructure.Repositories;
 
 public class ApiKeyRepository : BaseRepository<ApiKey>, IApiKeyRepository
 {
-    public ApiKeyRepository(ToggleHubDbContext context) : base(context)
+    public ApiKeyRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
     {
     }
+
     public async Task<ApiKey?> GetByKeyAsync(string key)
     {
         return await _dbSet.FirstOrDefaultAsync(a => a.Key == key);

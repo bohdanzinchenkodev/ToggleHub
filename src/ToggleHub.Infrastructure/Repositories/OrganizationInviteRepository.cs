@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Repositories;
@@ -9,21 +10,19 @@ namespace ToggleHub.Infrastructure.Repositories;
 
 public class OrganizationInviteRepository : BaseRepository<OrganizationInvite>, IOrganizationInviteRepository
 {
-    public OrganizationInviteRepository(ToggleHubDbContext context) : base(context)
+    public OrganizationInviteRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
     {
     }
 
+    protected override IQueryable<OrganizationInvite> WithIncludes(DbSet<OrganizationInvite> dbSet)
+    {
+        return dbSet.Include(i => i.Organization);
+    }
     public async Task<OrganizationInvite?> GetByTokenAsync(string token)
     {
         return await _dbSet
             .Include(i => i.Organization)
             .FirstOrDefaultAsync(i => i.Token == token);
-    }
-    public override async Task<OrganizationInvite?> GetByIdAsync(int id)
-    {
-        return await _dbSet
-            .Include(i => i.Organization)
-            .FirstOrDefaultAsync(i => i.Id == id);
     }
 
     public async Task<OrganizationInvite?> GetByEmailAndOrganizationIdAsync(string email, int organizationId)
