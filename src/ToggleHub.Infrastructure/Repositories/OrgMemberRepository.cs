@@ -18,18 +18,7 @@ public class OrgMemberRepository : BaseRepository<OrgMember>, IOrgMemberReposito
         _cacheManager = cacheManager;
         _repositoryCacheKeyFactory = cacheKeyFactory;
     }
-
-    public async Task AddOrgMemberAsync(OrgMember orgMember)
-    {
-        _context.OrgMembers.Add(orgMember);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task DeleteOrgMember(OrgMember orgMember)
-    {
-        _context.OrgMembers.Remove(orgMember);
-        await _context.SaveChangesAsync();
-    }
+    
 
     public async Task<IPagedList<OrgMember>> GetMembersInOrganizationAsync(int organizationId, int pageIndex = 0, int pageSize = Int32.MaxValue)
     {

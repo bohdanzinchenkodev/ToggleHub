@@ -37,7 +37,7 @@ public class OrgMemberService : IOrgMemberService
             UserId = userId,
             Role = OrgMemberRole.FlagManager
         };
-        await _orgMemberRepository.AddOrgMemberAsync(orgMember);
+        await _orgMemberRepository.CreateAsync(orgMember);
     }
 
     public async Task RemoveUserFromOrganizationAsync(int organizationId, int userId)
@@ -46,7 +46,7 @@ public class OrgMemberService : IOrgMemberService
         if (orgMember == null)
             throw new ApplicationException($"User with ID {userId} is not in organization with ID {organizationId}");
 
-        await _orgMemberRepository.DeleteOrgMember(orgMember);
+        await _orgMemberRepository.DeleteAsync(orgMember.Id);
     }
 
     public async Task RemoveOrgMemberAsync(int orgMemberId)

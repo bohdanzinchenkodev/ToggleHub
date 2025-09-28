@@ -50,7 +50,7 @@ public class OrganizationService : IOrganizationService
             UserId = userId,
             Role = OrgMemberRole.Owner
         };
-        await _orgMemberRepository.AddOrgMemberAsync(orgMember);
+        await _orgMemberRepository.CreateAsync(orgMember);
         
         var dto = entity.ToDto();
         return dto;
