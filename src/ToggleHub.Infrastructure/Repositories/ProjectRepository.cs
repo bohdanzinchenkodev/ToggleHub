@@ -11,12 +11,12 @@ namespace ToggleHub.Infrastructure.Repositories;
 public class ProjectRepository : BaseSluggedRepository<Project>, IProjectRepository
 {
     private readonly ICacheManager _cacheManager;
-    private readonly IRepositoryCacheKeyFactory _repositoryCacheKeyFactory;
+    private readonly ICacheKeyFactory _cacheKeyFactory;
 
-    public ProjectRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory, IRepositoryCacheKeyFactory repositoryCacheKeyFactory) : base(context, cacheManager, cacheKeyFactory, repositoryCacheKeyFactory)
+    public ProjectRepository(ToggleHubDbContext context, ICacheManager cacheManager, ICacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
     {
         _cacheManager = cacheManager;
-        _repositoryCacheKeyFactory = repositoryCacheKeyFactory;
+        _cacheKeyFactory = cacheKeyFactory;
     }
 
     protected override IQueryable<Project> WithIncludes(DbSet<Project> dbSet)
@@ -32,7 +32,7 @@ public class ProjectRepository : BaseSluggedRepository<Project>, IProjectReposit
 
     public async Task<IPagedList<Project>> GetAllAsync(int? organizationId = null, int pageIndex = 0, int pageSize = Int32.MaxValue)
     {
-        var cacheKey = _repositoryCacheKeyFactory.For<Project>(new Dictionary<string, object?>
+        var cacheKey = _cacheKeyFactory.For<Project>(new Dictionary<string, object?>
         {
             { nameof(organizationId), organizationId },
             { nameof(pageIndex), pageIndex },
@@ -55,7 +55,7 @@ public class ProjectRepository : BaseSluggedRepository<Project>, IProjectReposit
 
     public async Task<Project?> GetBySlugAsync(string slug, int organizationId)
     {
-        var cacheKey = _repositoryCacheKeyFactory.For<Project>(new Dictionary<string, object?>
+        var cacheKey = _cacheKeyFactory.For<Project>(new Dictionary<string, object?>
         {
             { nameof(slug), slug },
             { nameof(organizationId), organizationId }

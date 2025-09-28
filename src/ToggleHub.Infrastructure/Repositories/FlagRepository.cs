@@ -11,12 +11,12 @@ namespace ToggleHub.Infrastructure.Repositories;
 public class FlagRepository : BaseRepository<Flag>, IFlagRepository
 {
     private readonly ICacheManager _cacheManager;
-    private readonly IRepositoryCacheKeyFactory _repositoryCacheKeyFactory;
+    private readonly ICacheKeyFactory _cacheKeyFactory;
 
-    public FlagRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
+    public FlagRepository(ToggleHubDbContext context, ICacheManager cacheManager, ICacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
     {
         _cacheManager = cacheManager;
-        _repositoryCacheKeyFactory = cacheKeyFactory;
+        _cacheKeyFactory = cacheKeyFactory;
     }
 
     protected override IQueryable<Flag> WithIncludes(DbSet<Flag> dbSet)
@@ -33,7 +33,7 @@ public class FlagRepository : BaseRepository<Flag>, IFlagRepository
 
     public async Task<Flag?> GetFlagByKeyAsync(string key, int environmentId, int projectId)
     {
-        var cacheKey = _repositoryCacheKeyFactory.For<Flag>(new Dictionary<string, object?>
+        var cacheKey = _cacheKeyFactory.For<Flag>(new Dictionary<string, object?>
         {
             { nameof(key), key },
             { nameof(environmentId), environmentId },
@@ -49,7 +49,7 @@ public class FlagRepository : BaseRepository<Flag>, IFlagRepository
 
     public async Task<IPagedList<Flag>> GetAllAsync(int? projectId = null, int? environmentId = null, int pageIndex = 0, int pageSize = Int32.MaxValue)
     {
-        var cacheKey = _repositoryCacheKeyFactory.For<Flag>(new Dictionary<string, object?>
+        var cacheKey = _cacheKeyFactory.For<Flag>(new Dictionary<string, object?>
         {
             { nameof(projectId), projectId },
             { nameof(environmentId), environmentId },

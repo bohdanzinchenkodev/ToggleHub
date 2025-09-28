@@ -11,16 +11,16 @@ namespace ToggleHub.Infrastructure.Repositories;
 public class ApiKeyRepository : BaseRepository<ApiKey>, IApiKeyRepository
 {
     private readonly ICacheManager _cacheManager;
-    private readonly IRepositoryCacheKeyFactory _repositoryCacheKeyFactory;
-    public ApiKeyRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory, IRepositoryCacheKeyFactory repositoryCacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
+    private readonly ICacheKeyFactory _cacheKeyFactory;
+    public ApiKeyRepository(ToggleHubDbContext context, ICacheManager cacheManager, ICacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
     {
         _cacheManager = cacheManager;
-        _repositoryCacheKeyFactory = repositoryCacheKeyFactory;
+        _cacheKeyFactory = cacheKeyFactory;
     }
 
     public async Task<ApiKey?> GetByKeyAsync(string key)
     {
-        var cacheKey = _repositoryCacheKeyFactory.For<ApiKey>(new Dictionary<string, object?>
+        var cacheKey = _cacheKeyFactory.For<ApiKey>(new Dictionary<string, object?>
         {
             { nameof(key), key }
         });
@@ -40,7 +40,7 @@ public class ApiKeyRepository : BaseRepository<ApiKey>, IApiKeyRepository
 
     public async Task<IPagedList<ApiKey>> GetApiKeysAsync(int organizationId, int projectId, int environmentId, int pageNumber, int pageSize)
     {
-        var cacheKey = _repositoryCacheKeyFactory.For<ApiKey>(new Dictionary<string, object?>
+        var cacheKey = _cacheKeyFactory.For<ApiKey>(new Dictionary<string, object?>
         {
             { nameof(organizationId), organizationId },
             { nameof(projectId), projectId },

@@ -11,12 +11,12 @@ namespace ToggleHub.Infrastructure.Repositories;
 public class OrganizationInviteRepository : BaseRepository<OrganizationInvite>, IOrganizationInviteRepository
 {
     private readonly ICacheManager _cacheManager;
-    private readonly IRepositoryCacheKeyFactory _repositoryCacheKeyFactory;
+    private readonly ICacheKeyFactory _cacheKeyFactory;
 
-    public OrganizationInviteRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
+    public OrganizationInviteRepository(ToggleHubDbContext context, ICacheManager cacheManager, ICacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
     {
         _cacheManager = cacheManager;
-        _repositoryCacheKeyFactory = cacheKeyFactory;
+        _cacheKeyFactory = cacheKeyFactory;
     }
 
     protected override IQueryable<OrganizationInvite> WithIncludes(DbSet<OrganizationInvite> dbSet)
@@ -25,7 +25,7 @@ public class OrganizationInviteRepository : BaseRepository<OrganizationInvite>, 
     }
     public async Task<OrganizationInvite?> GetByTokenAsync(string token)
     {
-        var cacheKey = _repositoryCacheKeyFactory.For<OrganizationInvite>(new Dictionary<string, object?>
+        var cacheKey = _cacheKeyFactory.For<OrganizationInvite>(new Dictionary<string, object?>
         {
             { nameof(token), token }
         });
@@ -40,7 +40,7 @@ public class OrganizationInviteRepository : BaseRepository<OrganizationInvite>, 
 
     public async Task<IPagedList<OrganizationInvite>> GetByOrganizationIdAsync(int organizationId, int pageIndex = 0, int pageSize = int.MaxValue)
     {
-        var cacheKey = _repositoryCacheKeyFactory.For<OrganizationInvite>(new Dictionary<string, object?>
+        var cacheKey = _cacheKeyFactory.For<OrganizationInvite>(new Dictionary<string, object?>
         {
             { nameof(organizationId), organizationId },
             { nameof(pageIndex), pageIndex },

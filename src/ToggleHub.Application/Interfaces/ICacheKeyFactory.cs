@@ -2,7 +2,7 @@ using ToggleHub.Domain.Entities;
 
 namespace ToggleHub.Application.Interfaces;
 
-public interface IRepositoryCacheKeyFactory
+public interface ICacheKeyFactory
 {
     CacheKey For<T>(Dictionary<string, object?> parameters) where T : BaseEntity;
     CacheKey ForEntityById<T>(int id) where T : BaseEntity;

@@ -11,12 +11,12 @@ namespace ToggleHub.Infrastructure.Repositories;
 public class OrganizationRepository : BaseSluggedRepository<Organization>, IOrganizationRepository
 {
     private readonly ICacheManager _cacheManager;
-    private readonly IRepositoryCacheKeyFactory _repositoryCacheKeyFactory;
+    private readonly ICacheKeyFactory _cacheKeyFactory;
 
-    public OrganizationRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory, IRepositoryCacheKeyFactory repositoryCacheKeyFactory) : base(context, cacheManager, cacheKeyFactory, repositoryCacheKeyFactory)
+    public OrganizationRepository(ToggleHubDbContext context, ICacheManager cacheManager, ICacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
     {
         _cacheManager = cacheManager;
-        _repositoryCacheKeyFactory = repositoryCacheKeyFactory;
+        _cacheKeyFactory = cacheKeyFactory;
     }
 
     public async Task<bool> NameExistsAsync(string name)
@@ -35,7 +35,7 @@ public class OrganizationRepository : BaseSluggedRepository<Organization>, IOrga
 
     public async Task<IPagedList<Organization>> GetOrganizationsByUserIdAsync(int userId, int pageIndex = 0, int pageSize = Int32.MaxValue)
     {
-        var cacheKey = _repositoryCacheKeyFactory.For<Organization>(new Dictionary<string, object?>
+        var cacheKey = _cacheKeyFactory.For<Organization>(new Dictionary<string, object?>
         {
             { nameof(userId), userId },
             { nameof(pageIndex), pageIndex },

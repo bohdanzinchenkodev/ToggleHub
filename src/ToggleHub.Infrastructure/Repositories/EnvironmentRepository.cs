@@ -12,17 +12,17 @@ namespace ToggleHub.Infrastructure.Repositories;
 public class EnvironmentRepository : BaseRepository<Environment>, IEnvironmentRepository
 {
     private readonly ICacheManager _cacheManager;
-    private readonly IRepositoryCacheKeyFactory _repositoryCacheKeyFactory;
+    private readonly ICacheKeyFactory _cacheKeyFactory;
 
-    public EnvironmentRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
+    public EnvironmentRepository(ToggleHubDbContext context, ICacheManager cacheManager, ICacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
     {
         _cacheManager = cacheManager;
-        _repositoryCacheKeyFactory = cacheKeyFactory;
+        _cacheKeyFactory = cacheKeyFactory;
     }
 
     public async Task<IPagedList<Environment>> GetAllAsync(int? projectId = null, int pageIndex = 0, int pageSize = int.MaxValue)
     {
-        var cacheKey = _repositoryCacheKeyFactory.For<Environment>(new Dictionary<string, object?>
+        var cacheKey = _cacheKeyFactory.For<Environment>(new Dictionary<string, object?>
         {
             { nameof(projectId), projectId },
             { nameof(pageIndex), pageIndex },
@@ -43,7 +43,7 @@ public class EnvironmentRepository : BaseRepository<Environment>, IEnvironmentRe
 
     public async Task<bool> EnvironmentExistsAsync(EnvironmentType type, int projectId)
     {
-        var cacheKey = _repositoryCacheKeyFactory.For<Environment>(new Dictionary<string, object?>
+        var cacheKey = _cacheKeyFactory.For<Environment>(new Dictionary<string, object?>
         {
             { nameof(type), type },
             { nameof(projectId), projectId }

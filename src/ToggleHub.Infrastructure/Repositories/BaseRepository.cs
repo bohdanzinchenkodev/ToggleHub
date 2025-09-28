@@ -13,12 +13,12 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
     protected readonly ToggleHubDbContext _context;
     protected readonly DbSet<T> _dbSet;
     private readonly ICacheManager _cacheManager;
-    private readonly IRepositoryCacheKeyFactory _cacheKeyFactory;
+    private readonly ICacheKeyFactory _cacheKeyFactory;
 
     public BaseRepository(
         ToggleHubDbContext context,
         ICacheManager cacheManager,
-        IRepositoryCacheKeyFactory cacheKeyFactory)
+        ICacheKeyFactory cacheKeyFactory)
     {
         _context = context;
         _cacheManager = cacheManager;

@@ -15,11 +15,12 @@ public class FlagEvaluationService : IFlagEvaluationService
     private readonly IFlagRepository _flagRepository;
     private readonly IValidator<FlagEvaluationRequest> _requestValidator;
     private readonly IApiKeyContext _apiKeyContext;
-    private readonly IFlagEvaluationCacheManager _cacheManager;
+    private readonly ICacheManager _cacheManager;
+    private readonly IFlagEvaluationCacheKeyFactory _flagEvaluationCacheKeyFactory;
 
     public FlagEvaluationService(IBucketingService bucketingService, IConditionEvaluator conditionEvaluator,
         IFlagRepository flagRepository, IValidator<FlagEvaluationRequest> requestValidator,
-        IApiKeyContext apiKeyContext, IFlagEvaluationCacheManager cacheManager)
+        IApiKeyContext apiKeyContext, ICacheManager cacheManager, IFlagEvaluationCacheKeyFactory flagEvaluationCacheKeyFactory)
     {
         _bucketingService = bucketingService;
         _conditionEvaluator = conditionEvaluator;
@@ -28,6 +29,7 @@ public class FlagEvaluationService : IFlagEvaluationService
         _apiKeyContext = apiKeyContext;
 
         _cacheManager = cacheManager;
+        _flagEvaluationCacheKeyFactory = flagEvaluationCacheKeyFactory;
     }
 
     public async Task<FlagEvaluationResult> EvaluateAsync(FlagEvaluationRequest request)
@@ -42,16 +44,16 @@ public class FlagEvaluationService : IFlagEvaluationService
         
         var context = new FlagEvaluationContext(request.UserId, request.ConditionAttributes);
         
-        var cachedResult = await _cacheManager.GetEvaluationResultAsync(organizationId, projectId, environmentId, request.FlagKey, context);
-        if (cachedResult != null)
-            return cachedResult;
-        
-        var flag = await _flagRepository.GetFlagByKeyAsync(request.FlagKey, environmentId, projectId);
-        if (flag == null)
-            throw new NotFoundException("Flag not found.");
-        
-        var result = EvaluateInternal(flag, context);
-        await _cacheManager.SaveEvaluationResultAsync(organizationId, projectId, environmentId, request.FlagKey, context, result);
+        var cacheKey = _flagEvaluationCacheKeyFactory.CreateCacheKey(organizationId, projectId, environmentId, request.FlagKey, context);
+
+        var result = await _cacheManager.GetAsync(cacheKey, async () =>
+        {
+            var flag = await _flagRepository.GetFlagByKeyAsync(request.FlagKey, environmentId, projectId);
+            if (flag == null)
+                throw new NotFoundException("Flag not found.");
+
+            return EvaluateInternal(flag, context);
+        });
         
         return result;
         

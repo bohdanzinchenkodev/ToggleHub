@@ -1,14 +1,23 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using ToggleHub.Application;
 using ToggleHub.Application.DTOs.Flag.Evaluation;
 using ToggleHub.Application.Interfaces;
+using ToggleHub.Domain.Entities;
 
 namespace ToggleHub.Infrastructure.Cache;
 
 public class FlagEvaluationCacheKeyFactory : IFlagEvaluationCacheKeyFactory
 {
-    public string CreateCacheKey(
+    private readonly ICacheKeyFactory _cacheKeyFactory;
+
+    public FlagEvaluationCacheKeyFactory(ICacheKeyFactory cacheKeyFactory)
+    {
+        _cacheKeyFactory = cacheKeyFactory;
+    }
+
+    public CacheKey CreateCacheKey(
         int organizationId,
         int projectId,
         int environmentId,
@@ -30,7 +39,16 @@ public class FlagEvaluationCacheKeyFactory : IFlagEvaluationCacheKeyFactory
         var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(json));
         var hash = Convert.ToHexString(hashBytes);
 
-        // Compose final cache key
-        return $"flag-eval:{organizationId}:{projectId}:{environmentId}:{flagKey}:{userId}:{hash}";
+        var keyParts = new Dictionary<string, object?>
+        {
+            {"operation", "flag_evaluation"},
+            { nameof(organizationId), organizationId },
+            { nameof(projectId), projectId },
+            { nameof(environmentId), environmentId },
+            { nameof(flagKey), flagKey },
+            { nameof(userId), userId },
+            { "attrsHash", hash }
+        };
+        return _cacheKeyFactory.For<Flag>(keyParts);
     }
 }

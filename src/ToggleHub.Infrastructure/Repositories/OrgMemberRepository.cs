@@ -11,18 +11,18 @@ namespace ToggleHub.Infrastructure.Repositories;
 public class OrgMemberRepository : BaseRepository<OrgMember>, IOrgMemberRepository
 {
     private readonly ICacheManager _cacheManager;
-    private readonly IRepositoryCacheKeyFactory _repositoryCacheKeyFactory;
+    private readonly ICacheKeyFactory _cacheKeyFactory;
 
-    public OrgMemberRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
+    public OrgMemberRepository(ToggleHubDbContext context, ICacheManager cacheManager, ICacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
     {
         _cacheManager = cacheManager;
-        _repositoryCacheKeyFactory = cacheKeyFactory;
+        _cacheKeyFactory = cacheKeyFactory;
     }
     
 
     public async Task<IPagedList<OrgMember>> GetMembersInOrganizationAsync(int organizationId, int pageIndex = 0, int pageSize = Int32.MaxValue)
     {
-        var cacheKey = _repositoryCacheKeyFactory.For<OrgMember>(new Dictionary<string, object?>
+        var cacheKey = _cacheKeyFactory.For<OrgMember>(new Dictionary<string, object?>
         {
             { nameof(organizationId), organizationId },
             { nameof(pageIndex), pageIndex },
@@ -47,7 +47,7 @@ public class OrgMemberRepository : BaseRepository<OrgMember>, IOrgMemberReposito
 
     public async Task<OrgMember?> GetOrgMemberAsync(int organizationId, int userId)
     {
-        var cacheKey = _repositoryCacheKeyFactory.For<OrgMember>(new Dictionary<string, object?>
+        var cacheKey = _cacheKeyFactory.For<OrgMember>(new Dictionary<string, object?>
         {
             { nameof(organizationId), organizationId },
             { nameof(userId), userId }

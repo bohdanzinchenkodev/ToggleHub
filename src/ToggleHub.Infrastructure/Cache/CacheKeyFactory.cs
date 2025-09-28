@@ -5,12 +5,12 @@ using ToggleHub.Infrastructure.Settings;
 
 namespace ToggleHub.Infrastructure.Cache;
 
-public class RepositoryCacheKeyFactory : IRepositoryCacheKeyFactory
+public class CacheKeyFactory : ICacheKeyFactory
 {
     private readonly ICacheKeyFormatter _keyFormatter;
     private readonly CacheSettings _settings;
 
-    public RepositoryCacheKeyFactory(
+    public CacheKeyFactory(
         ICacheKeyFormatter keyFormatter,
         CacheSettings settings)
     {

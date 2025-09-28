@@ -7,7 +7,7 @@ namespace ToggleHub.Infrastructure.Repositories;
 
 public class RuleConditionRepository : BaseRepository<RuleCondition>, IRuleConditionRepository
 {
-    public RuleConditionRepository(ToggleHubDbContext context, ICacheManager cacheManager, IRepositoryCacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
+    public RuleConditionRepository(ToggleHubDbContext context, ICacheManager cacheManager, ICacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
     {
     }
 }

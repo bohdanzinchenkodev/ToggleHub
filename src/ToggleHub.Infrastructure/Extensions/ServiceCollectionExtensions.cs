@@ -39,12 +39,11 @@ public static class ServiceCollectionExtensions
         // Cache
         services.AddMemoryCache();
         services.AddScoped<ICacheManager, InMemoryCacheManager>();
-        services.AddScoped<ICacheKeyRegistry, InMemoryCacheKeyRegistry>();
+        services.AddSingleton<ICacheKeyRegistry, InMemoryCacheKeyRegistry>();
         services.AddScoped<ICacheKeyFormatter, CacheKeyFormatter>();
-        services.AddScoped<IRepositoryCacheKeyFactory, RepositoryCacheKeyFactory>();
+        services.AddScoped<ICacheKeyFactory, CacheKeyFactory>();
         
         services.AddScoped<IFlagEvaluationCacheKeyFactory, FlagEvaluationCacheKeyFactory>();
-        services.AddScoped<IFlagEvaluationCacheManager, FlagEvaluationCacheManager>();
 
         services.AddScoped<IEmailTemplateRenderer, RazorEmailTemplateRenderer>();
         services.AddScoped<IEmailSender, SendGridEmailSender>();
