@@ -1,11 +1,12 @@
 using System.Globalization;
+using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Entities;
 
 namespace ToggleHub.Infrastructure.Cache;
 
-public class CacheKeyFactory
+public class CacheKeyFormatter : ICacheKeyFormatter
 {
-    public string Create(string template, params object[] parameters)
+    public string Format(string template, params object[] parameters)
     {
         var normalized = parameters.Select(CreateCacheKeyParameter).ToArray();
         return string.Format(template, normalized);

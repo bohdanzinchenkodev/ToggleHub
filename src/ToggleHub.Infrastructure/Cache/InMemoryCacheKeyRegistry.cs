@@ -3,7 +3,7 @@ using ToggleHub.Application.Interfaces;
 
 namespace ToggleHub.Infrastructure.Cache;
  
-public class InMemoryCacheKeyManager : ICacheKeyManager
+public class InMemoryCacheKeyRegistry : ICacheKeyRegistry
 
 {
     private readonly ConcurrentDictionary<string, byte> _keys = new();

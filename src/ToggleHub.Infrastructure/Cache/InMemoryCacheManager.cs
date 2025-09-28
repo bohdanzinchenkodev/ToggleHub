@@ -8,13 +8,13 @@ namespace ToggleHub.Infrastructure.Cache;
 public class CacheManager
 {
     private readonly IMemoryCache _memoryCache;
-    private readonly ICacheKeyManager _keyManager;
+    private readonly ICacheKeyRegistry _keyRegistry;
     private CancellationTokenSource _clearToken = new();
 
-    public CacheManager(IMemoryCache memoryCache, ICacheKeyManager keyManager)
+    public CacheManager(IMemoryCache memoryCache, ICacheKeyRegistry keyRegistry)
     {
         _memoryCache = memoryCache;
-        _keyManager = keyManager;
+        _keyRegistry = keyRegistry;
     }
 
     public async Task<T> GetAsync<T>(CacheKey key, Func<Task<T>> acquire)
@@ -61,17 +61,17 @@ public class CacheManager
     public Task RemoveAsync(string key)
     {
         _memoryCache.Remove(key);
-        _keyManager.RemoveKey(key);
+        _keyRegistry.RemoveKey(key);
         return Task.CompletedTask;
     }
 
     public Task RemoveByPrefixAsync(string prefix)
     {
-        var keys = _keyManager.GetKeys().Where(k => k.StartsWith(prefix));
+        var keys = _keyRegistry.GetKeys().Where(k => k.StartsWith(prefix));
         foreach (var key in keys)
         {
             _memoryCache.Remove(key);
-            _keyManager.RemoveKey(key);
+            _keyRegistry.RemoveKey(key);
         }
         return Task.CompletedTask;
     }
@@ -82,7 +82,7 @@ public class CacheManager
         _clearToken.Dispose();
         _clearToken = new CancellationTokenSource();
 
-        _keyManager.Clear();// reset tracked keys
+        _keyRegistry.Clear();// reset tracked keys
         return Task.CompletedTask;
     }
 
@@ -98,7 +98,7 @@ public class CacheManager
         options.AddExpirationToken(new CancellationChangeToken(_clearToken.Token));
         options.RegisterPostEvictionCallback(OnEviction);
 
-        _keyManager.AddKey(key.Key);
+        _keyRegistry.AddKey(key.Key);
         return options;
     }
 
@@ -114,7 +114,7 @@ public class CacheManager
                 // handled elsewhere
                 break;
             default:
-                _keyManager.RemoveKey(key);
+                _keyRegistry.RemoveKey(key);
                 break;
         }
     }
