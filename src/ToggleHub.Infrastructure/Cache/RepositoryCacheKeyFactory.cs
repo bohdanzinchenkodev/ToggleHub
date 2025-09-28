@@ -41,7 +41,7 @@ public class RepositoryCacheKeyFactory : IRepositoryCacheKeyFactory
     {
         return For<T>(new Dictionary<string, object?>
         {
-            { nameof(BaseEntity.Id), id }
+            { nameof(id), id }
         });
     }
 
@@ -58,7 +58,7 @@ public class RepositoryCacheKeyFactory : IRepositoryCacheKeyFactory
     {
         return For<T>(new Dictionary<string, object?>
         {
-            { nameof(ISluggedEntity.Slug), slug }
+            { nameof(slug), slug }
         });
     }
 
