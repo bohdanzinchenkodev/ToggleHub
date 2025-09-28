@@ -18,11 +18,11 @@ public class CacheKeyFactory : ICacheKeyFactory
         _settings = settings;
     }
 
-    public CacheKey For<T>(Dictionary<string, object?> parameters) where T : BaseEntity
+    public CacheKey For(string entityName, Dictionary<string, object?> parameters)
     {
         // always start with entity type as the base part
         var parts = new List<string> { "entity:{0}" };
-        var values = new List<object> { typeof(T).Name.ToLower() };
+        var values = new List<object> { entityName };
 
         // append dictionary keys in stable order
         foreach (var kvp in parameters.OrderBy(p => p.Key))
@@ -34,7 +34,12 @@ public class CacheKeyFactory : ICacheKeyFactory
         var template = string.Join(":", parts);
         var formatted = _keyFormatter.Format(template, values.ToArray());
 
-        return new CacheKey(formatted, GetCacheTime<T>());
+        return new CacheKey(formatted, GetCacheTime());
+    }
+    
+    public CacheKey For<T>(Dictionary<string, object?> parameters) where T : BaseEntity
+    {
+        return For(typeof(T).Name.ToLower(), parameters);
     }
 
     public CacheKey ForEntityById<T>(int id) where T : BaseEntity
@@ -67,7 +72,7 @@ public class CacheKeyFactory : ICacheKeyFactory
         return $"entity:{typeof(T).Name.ToLower()}:";
     }
 
-    private int GetCacheTime<T>()
+    private int GetCacheTime()
     {
         return _settings.DefaultCacheTimeMinutes;
     }

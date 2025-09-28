@@ -4,6 +4,7 @@ namespace ToggleHub.Application.Interfaces;
 
 public interface ICacheKeyFactory
 {
+    CacheKey For(string entityName, Dictionary<string, object?> parameters);
     CacheKey For<T>(Dictionary<string, object?> parameters) where T : BaseEntity;
     CacheKey ForEntityById<T>(int id) where T : BaseEntity;
     CacheKey ForEntityAll<T>(int page, int pageSize) where T : BaseEntity;

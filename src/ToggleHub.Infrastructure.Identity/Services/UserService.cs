@@ -5,6 +5,7 @@ using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Helpers;
 using ToggleHub.Domain.Repositories;
 using ToggleHub.Infrastructure.Identity.Data;
+using ToggleHub.Infrastructure.Identity.Entities;
 using ToggleHub.Infrastructure.Identity.Mapping;
 
 namespace ToggleHub.Infrastructure.Identity.Services;
@@ -15,30 +16,39 @@ public class UserService : IUserService
     private readonly IWorkContext _workContext;
     private readonly IValidator<UpdateCurrentUserDto> _updateUserValidator;
     private readonly IOrgMemberRepository _orgMemberRepository;
+    private readonly ICacheManager _cacheManager;
+    private readonly ICacheKeyFactory _cacheKeyFactory;
 
     public UserService(
         ToggleHubIdentityDbContext toggleHubIdentityDbContext, 
         IWorkContext workContext,
         IValidator<UpdateCurrentUserDto> updateUserValidator,
-        IOrgMemberRepository orgMemberRepository)
+        IOrgMemberRepository orgMemberRepository, ICacheKeyFactory cacheKeyFactory, ICacheManager cacheManager)
     {
         _toggleHubIdentityDbContext = toggleHubIdentityDbContext;
         _workContext = workContext;
         _updateUserValidator = updateUserValidator;
         _orgMemberRepository = orgMemberRepository;
+        _cacheKeyFactory = cacheKeyFactory;
+        _cacheManager = cacheManager;
     }
 
     public async Task<UserDto?> GetUserByIdAsync(int id)
     {
-        var user = await _toggleHubIdentityDbContext
-            .Users
-            .Include(x => x.UserRoles)
-            .ThenInclude(x => x.Role)
-            .FirstOrDefaultAsync(u => u.Id == id);
-        if (user == null)
-            return null;
+        var cacheKey = _cacheKeyFactory.For(nameof(AppUser), new Dictionary<string, object?>
+        {
+            { nameof(id), id }
+        });
+        return await _cacheManager.GetAsync(cacheKey, async () =>
+        {
+            var user = await _toggleHubIdentityDbContext
+                .Users
+                .Include(x => x.UserRoles)
+                .ThenInclude(x => x.Role)
+                .FirstOrDefaultAsync(u => u.Id == id);
 
-        return user.ToUserDto();
+            return user?.ToUserDto();
+        });
     }
 
     public async Task<IEnumerable<UserDto>> GetUsersByIdsAsync(IEnumerable<int> ids)
@@ -54,13 +64,21 @@ public class UserService : IUserService
     }
     public async Task<UserDto?> GetUserByEmailAsync(string email)
     {
-        var user = await _toggleHubIdentityDbContext
-            .Users
-            .Include(x => x.UserRoles)
-            .ThenInclude(x => x.Role)
-            .FirstOrDefaultAsync(u => u.Email!.ToLower() == email.ToLower());
+        var cacheKey = _cacheKeyFactory.For(nameof(AppUser), new Dictionary<string, object?>
+        {
+            { nameof(email), email.ToLower() }
+        });
+        return await _cacheManager.GetAsync(cacheKey, async () =>
+        {
+            var user = await _toggleHubIdentityDbContext
+                .Users
+                .Include(x => x.UserRoles)
+                .ThenInclude(x => x.Role)
+                .FirstOrDefaultAsync(u => u.Email!.ToLower() == email.ToLower());
         
-        return user?.ToUserDto();
+            return user?.ToUserDto();
+        });
+        
     }
     
     public async Task<UserDto> UpdateCurrentUserAsync(UpdateCurrentUserDto updateDto)
@@ -96,6 +114,13 @@ public class UserService : IUserService
         user.LastName = updateDto.LastName;
 
         await _toggleHubIdentityDbContext.SaveChangesAsync();
+        
+        // Invalidate cache
+        var cacheKeyById = _cacheKeyFactory.For(nameof(AppUser), new Dictionary<string, object?>
+        {
+            { nameof(user.Id), user.Id }
+        });
+        await _cacheManager.RemoveAsync(cacheKeyById.Key);
 
         return user.ToUserDto();
     }
@@ -103,7 +128,7 @@ public class UserService : IUserService
     public async Task<string[]> GetCurrentUserPermissionsAsync(int organizationId)
     {
         var currentUserId = _workContext.GetCurrentUserId() ?? throw new UnauthorizedAccessException();
-        
+
         var orgMember = await _orgMemberRepository.GetOrgMemberAsync(organizationId, currentUserId);
         if (orgMember == null)
             throw new ApplicationException($"User is not a member of organization with ID {organizationId}");
