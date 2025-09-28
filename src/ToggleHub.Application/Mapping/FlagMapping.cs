@@ -42,6 +42,7 @@ public static class FlagMapping
     
     public static void UpdateEntity(this UpdateFlagDto updateDto, Flag flag)
     {
+        flag.Key = updateDto.Key;
         flag.Description = updateDto.Description;
         flag.Enabled = updateDto.Enabled;
         flag.DefaultValueOnRaw = updateDto.DefaultValueOnRaw;
