@@ -7,6 +7,7 @@ using ToggleHub.Application.EventHandlers;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Repositories;
 using ToggleHub.Infrastructure.Cache;
+using ToggleHub.Infrastructure.Constants;
 using ToggleHub.Infrastructure.Data;
 using ToggleHub.Infrastructure.Email;
 using ToggleHub.Infrastructure.Repositories;
@@ -50,12 +51,24 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IEmailSender, SendGridEmailSender>();
         services.AddScoped<IUrlBuilder, UrlBuilder>();
         
+        var mailSettings = configuration.GetSection("Mail").Get<MailSettings>();
+        switch (mailSettings)
+        {
+            case { Provider: MailProviders.SendGrid }:
+                services.AddScoped<IEmailSender, SendGridEmailSender>();
+                
+                services.AddSingleton(mailSettings);
+                break;
+            case { Provider: MailProviders.Mailpit }:
+                services.AddScoped<IEmailSender, MailpitEmailSender>();
+                break;
+            default:
+                throw new InvalidOperationException("Invalid mail provider configuration.");
+        }
+        
         services.AddScoped<IApiKeyContext, ApiKeyContext>();
         
         // Register settings
-        services.Configure<SendGridSettings>(configuration.GetSection("SendGrid"));
-        services.AddSingleton(registeredServices =>
-            registeredServices.GetRequiredService<IOptions<SendGridSettings>>().Value);
             
         services.Configure<ApplicationUrlSettings>(configuration.GetSection("ApplicationUrls"));
         services.AddSingleton(registeredServices =>
@@ -64,6 +77,19 @@ public static class ServiceCollectionExtensions
         services.Configure<CacheSettings>(configuration.GetSection("Cache"));
         services.AddSingleton(registeredServices =>
             registeredServices.GetRequiredService<IOptions<CacheSettings>>().Value);
+        
+        services.Configure<CacheSettings>(configuration.GetSection("Mailpit"));
+        services.AddSingleton(registeredServices =>
+            registeredServices.GetRequiredService<IOptions<MailpitSettings>>().Value);
+        
+        
+        services.AddSingleton(registeredServices =>
+            registeredServices.GetRequiredService<IOptions<MailpitSettings>>().Value);
+        services.Configure<MailpitSettings>(configuration.GetSection(MailProviders.Mailpit));
+        
+        services.Configure<SendGridSettings>(configuration.GetSection(MailProviders.SendGrid));
+        services.AddSingleton(registeredServices =>
+            registeredServices.GetRequiredService<IOptions<SendGridSettings>>().Value);
 
         // in memory event publisher
         services.RegisterEventHandlers();
