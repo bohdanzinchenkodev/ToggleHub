@@ -1,5 +1,4 @@
 using System.Security.Authentication;
-using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using ToggleHub.Domain.Exceptions;
@@ -9,16 +8,22 @@ namespace ToggleHub.API.Middleware;
 public class GlobalExceptionHandler : IExceptionHandler
 {
     private readonly IProblemDetailsService _problemDetailsService;
-    public GlobalExceptionHandler(IProblemDetailsService problemDetailsService)
+    private readonly ILogger<GlobalExceptionHandler> _logger;
+
+    public GlobalExceptionHandler(
+        IProblemDetailsService problemDetailsService,
+        ILogger<GlobalExceptionHandler> logger)
     {
         _problemDetailsService = problemDetailsService;
+        _logger = logger;
     }
+
     public async ValueTask<bool> TryHandleAsync(
         HttpContext httpContext,
         Exception exception,
         CancellationToken cancellationToken)
     {
-        httpContext.Response.StatusCode = exception switch
+        var statusCode = exception switch
         {
             ApplicationException
                 or UserCreationFailedException => StatusCodes.Status400BadRequest,
@@ -28,6 +33,14 @@ public class GlobalExceptionHandler : IExceptionHandler
             NotFoundException _ => StatusCodes.Status404NotFound,
             _ => StatusCodes.Status500InternalServerError
         };
+
+        httpContext.Response.StatusCode = statusCode;
+
+        if (statusCode >= 500)
+            _logger.LogError(exception, "Unhandled server error at {Path}", httpContext.Request.Path);
+        else
+            _logger.LogWarning(exception, "Handled exception {ExceptionType} at {Path}", exception.GetType().Name, httpContext.Request.Path);
+
         var problemDetails = await _problemDetailsService.TryWriteAsync(new ProblemDetailsContext
         {
             HttpContext = httpContext,
@@ -35,11 +48,12 @@ public class GlobalExceptionHandler : IExceptionHandler
             ProblemDetails = new ProblemDetails
             {
                 Type = exception.GetType().Name,
-                Detail = httpContext.Response.StatusCode == StatusCodes.Status500InternalServerError ? "An error occurred" : exception.Message,
+                Detail = statusCode == StatusCodes.Status500InternalServerError ? "An error occurred" : exception.Message,
                 Title = "An error occurred",
-                Status = httpContext.Response.StatusCode
+                Status = statusCode
             }
         });
+
         return problemDetails;
     }
 }

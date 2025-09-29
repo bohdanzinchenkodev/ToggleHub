@@ -1,4 +1,3 @@
-
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
@@ -8,10 +7,14 @@ namespace ToggleHub.API.Middleware;
 public class ValidationExceptionHandler : IExceptionHandler
 {
     private readonly IProblemDetailsService _problemDetailsService;
+    private readonly ILogger<ValidationExceptionHandler> _logger;
 
-    public ValidationExceptionHandler(IProblemDetailsService problemDetailsService)
+    public ValidationExceptionHandler(
+        IProblemDetailsService problemDetailsService,
+        ILogger<ValidationExceptionHandler> logger)
     {
         _problemDetailsService = problemDetailsService;
+        _logger = logger;
     }
 
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
@@ -20,6 +23,16 @@ public class ValidationExceptionHandler : IExceptionHandler
             return false;
 
         httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+        var errors = validationException.Errors
+            .GroupBy(e => e.PropertyName)
+            .ToDictionary(
+                g => LowercaseFirstCharEachProperty(g.Key),
+                g => g.Select(e => e.ErrorMessage).ToArray()
+            );
+
+        _logger.LogWarning("Validation failed at {Path}. Errors: {@Errors}", httpContext.Request.Path, errors);
+
         var context = new ProblemDetailsContext
         {
             HttpContext = httpContext,
@@ -30,13 +43,6 @@ public class ValidationExceptionHandler : IExceptionHandler
                 Status = StatusCodes.Status400BadRequest
             }
         };
-
-        var errors = validationException.Errors
-            .GroupBy(e => e.PropertyName)
-            .ToDictionary(
-                g => LowercaseFirstCharEachProperty(g.Key),
-                g => g.Select(e => e.ErrorMessage).ToArray()
-            );
         context.ProblemDetails.Extensions.Add("errors", errors);
 
         return await _problemDetailsService.TryWriteAsync(context);
