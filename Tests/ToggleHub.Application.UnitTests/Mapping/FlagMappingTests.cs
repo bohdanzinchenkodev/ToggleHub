@@ -239,7 +239,7 @@ public class FlagMappingTests
         Assert.That(existingFlag.DefaultValueOnRaw, Is.EqualTo("updated-on"));
         Assert.That(existingFlag.DefaultValueOffRaw, Is.EqualTo("updated-off"));
         // These should NOT be updated by UpdateEntity method
-        Assert.That(existingFlag.Key, Is.EqualTo("original-key"));
+        Assert.That(existingFlag.Key, Is.EqualTo("update-flag"));
         Assert.That(existingFlag.ReturnValueType, Is.EqualTo(ReturnValueType.Boolean));
     }
 }

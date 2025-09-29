@@ -99,7 +99,7 @@ public class FlagServiceTests
             RuleSets = new List<RuleSet>()
         };
 
-        _mockFlagRepository.Setup(r => r.CreateAsync(It.IsAny<Flag>()))
+        _mockFlagRepository.Setup(r => r.CreateAsync(It.IsAny<Flag>(), true))
             .ReturnsAsync(createdFlag);
 
         // Act
@@ -117,7 +117,7 @@ public class FlagServiceTests
         _mockEnvironmentRepository.Verify(r => r.GetByIdAsync(createDto.EnvironmentId), Times.Once);
         _mockProjectRepository.Verify(r => r.GetByIdAsync(createDto.ProjectId), Times.Once);
         _mockFlagRepository.Verify(r => r.ExistsAsync(createDto.Key, createDto.EnvironmentId, createDto.ProjectId), Times.Once);
-        _mockFlagRepository.Verify(r => r.CreateAsync(It.IsAny<Flag>()), Times.Once);
+        _mockFlagRepository.Verify(r => r.CreateAsync(It.IsAny<Flag>(), true), Times.Once);
     }
 
     [Test]
@@ -153,7 +153,7 @@ public class FlagServiceTests
         _mockEnvironmentRepository.Verify(r => r.GetByIdAsync(It.IsAny<int>()), Times.Never);
         _mockProjectRepository.Verify(r => r.GetByIdAsync(It.IsAny<int>()), Times.Never);
         _mockFlagRepository.Verify(r => r.ExistsAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()), Times.Never);
-        _mockFlagRepository.Verify(r => r.CreateAsync(It.IsAny<Flag>()), Times.Never);
+        _mockFlagRepository.Verify(r => r.CreateAsync(It.IsAny<Flag>(), true), Times.Never);
     }
 
     [Test]
@@ -189,7 +189,7 @@ public class FlagServiceTests
 
         _mockProjectRepository.Verify(r => r.GetByIdAsync(It.IsAny<int>()), Times.Never);
         _mockFlagRepository.Verify(r => r.ExistsAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()), Times.Never);
-        _mockFlagRepository.Verify(r => r.CreateAsync(It.IsAny<Flag>()), Times.Never);
+        _mockFlagRepository.Verify(r => r.CreateAsync(It.IsAny<Flag>(), true), Times.Never);
     }
 
     [Test]
@@ -234,7 +234,7 @@ public class FlagServiceTests
         Assert.That(exception.Message, Is.EqualTo("Project with ID 999 not found."));
 
         _mockFlagRepository.Verify(r => r.ExistsAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()), Times.Never);
-        _mockFlagRepository.Verify(r => r.CreateAsync(It.IsAny<Flag>()), Times.Never);
+        _mockFlagRepository.Verify(r => r.CreateAsync(It.IsAny<Flag>(), true), Times.Never);
     }
 
     [Test]
@@ -289,7 +289,7 @@ public class FlagServiceTests
         Assert.That(exception, Is.Not.Null);
         Assert.That(exception.Message, Is.EqualTo("Flag with key 'existing-flag' already exists in the environment."));
 
-        _mockFlagRepository.Verify(r => r.CreateAsync(It.IsAny<Flag>()), Times.Never);
+        _mockFlagRepository.Verify(r => r.CreateAsync(It.IsAny<Flag>(), true), Times.Never);
     }
 
     [Test]
@@ -332,7 +332,7 @@ public class FlagServiceTests
         _mockFlagRepository.Setup(r => r.GetByIdAsync(updateDto.Id))
             .ReturnsAsync(existingFlag);
 
-        _mockFlagRepository.Setup(r => r.UpdateAsync(It.IsAny<Flag>()))
+        _mockFlagRepository.Setup(r => r.UpdateAsync(It.IsAny<Flag>(), true))
             .Returns(Task.CompletedTask);
 
         // Act
@@ -347,7 +347,7 @@ public class FlagServiceTests
         Assert.That(result.DefaultValueOffRaw, Is.EqualTo("updated-off"));
 
         _mockFlagRepository.Verify(r => r.GetByIdAsync(updateDto.Id), Times.Once);
-        _mockFlagRepository.Verify(r => r.UpdateAsync(It.IsAny<Flag>()), Times.Once);
+        _mockFlagRepository.Verify(r => r.UpdateAsync(It.IsAny<Flag>(), true), Times.Once);
     }
 
     [Test]
@@ -382,7 +382,7 @@ public class FlagServiceTests
         Assert.That(exception.Errors.First().ErrorMessage, Is.EqualTo("Key is required"));
 
         _mockFlagRepository.Verify(r => r.GetByIdAsync(It.IsAny<int>()), Times.Never);
-        _mockFlagRepository.Verify(r => r.UpdateAsync(It.IsAny<Flag>()), Times.Never);
+        _mockFlagRepository.Verify(r => r.UpdateAsync(It.IsAny<Flag>(), true), Times.Never);
     }
 
     [Test]
@@ -417,7 +417,7 @@ public class FlagServiceTests
         Assert.That(exception, Is.Not.Null);
         Assert.That(exception.Message, Is.EqualTo("Flag with ID 999 not found."));
 
-        _mockFlagRepository.Verify(r => r.UpdateAsync(It.IsAny<Flag>()), Times.Never);
+        _mockFlagRepository.Verify(r => r.UpdateAsync(It.IsAny<Flag>(), true), Times.Never);
     }
 
     [Test]
@@ -482,7 +482,7 @@ public class FlagServiceTests
         _mockFlagRepository.Setup(r => r.GetByIdAsync(updateDto.Id))
             .ReturnsAsync(existingFlag);
 
-        _mockFlagRepository.Setup(r => r.UpdateAsync(It.IsAny<Flag>()))
+        _mockFlagRepository.Setup(r => r.UpdateAsync(It.IsAny<Flag>(), true))
             .Returns(Task.CompletedTask);
 
         // Act
@@ -493,6 +493,6 @@ public class FlagServiceTests
         Assert.That(result.Id, Is.EqualTo(1));
 
         _mockFlagRepository.Verify(r => r.GetByIdAsync(updateDto.Id), Times.Once);
-        _mockFlagRepository.Verify(r => r.UpdateAsync(It.IsAny<Flag>()), Times.Once);
+        _mockFlagRepository.Verify(r => r.UpdateAsync(It.IsAny<Flag>(), true), Times.Once);
     }
 }

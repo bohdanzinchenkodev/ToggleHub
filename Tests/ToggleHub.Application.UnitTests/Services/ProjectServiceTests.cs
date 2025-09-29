@@ -11,7 +11,6 @@ namespace ToggleHub.Application.UnitTests.Services;
 
 public class ProjectServiceTests
 {
-    private Mock<ISluggedRepository> _mockSluggedRepository;
     private Mock<IProjectRepository> _mockProjectRepository;
     private Mock<IValidator<CreateProjectDto>> _mockCreateValidator;
     private Mock<IValidator<UpdateProjectDto>> _mockUpdateValidator;
@@ -23,7 +22,7 @@ public class ProjectServiceTests
     [SetUp]
     public void SetUp()
     {
-        _mockSluggedRepository = new Mock<ISluggedRepository>();
+        
         _mockProjectRepository = new Mock<IProjectRepository>();
         _mockCreateValidator = new Mock<IValidator<CreateProjectDto>>();
         _mockUpdateValidator = new Mock<IValidator<UpdateProjectDto>>();
@@ -69,7 +68,7 @@ public class ProjectServiceTests
             .ReturnsAsync(false);
 
         var expectedSlug = "test-project";
-        _mockSlugGenerator.Setup(s => s.GenerateAsync<Project>(createDto.Name))
+        _mockSlugGenerator.Setup(s => s.GenerateAsync(createDto.Name, It.IsAny<Func<string, Task<IEnumerable<string>>>>()))
             .ReturnsAsync(expectedSlug);
 
         var createdProject = new Project
@@ -81,7 +80,7 @@ public class ProjectServiceTests
             CreatedAt = DateTime.UtcNow
         };
 
-        _mockProjectRepository.Setup(r => r.CreateAsync(It.IsAny<Project>()))
+        _mockProjectRepository.Setup(r => r.CreateAsync(It.IsAny<Project>(), true))
             .ReturnsAsync(createdProject);
 
         // Act
@@ -96,8 +95,8 @@ public class ProjectServiceTests
 
         _mockOrganizationRepository.Verify(r => r.GetByIdAsync(createDto.OrganizationId), Times.Once);
         _mockProjectRepository.Verify(r => r.NameExistsAsync(createDto.Name, organization.Id), Times.Once);
-        _mockSlugGenerator.Verify(s => s.GenerateAsync<Project>(createDto.Name), Times.Once);
-        _mockProjectRepository.Verify(r => r.CreateAsync(It.IsAny<Project>()), Times.Once);
+        _mockSlugGenerator.Verify(s => s.GenerateAsync(createDto.Name, It.IsAny<Func<string, Task<IEnumerable<string>>>>()), Times.Once);
+        _mockProjectRepository.Verify(r => r.CreateAsync(It.IsAny<Project>(), true), Times.Once);
     }
 
     [Test]
@@ -126,8 +125,8 @@ public class ProjectServiceTests
 
         _mockOrganizationRepository.Verify(r => r.GetByIdAsync(It.IsAny<int>()), Times.Never);
         _mockProjectRepository.Verify(r => r.NameExistsAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Never);
-        _mockSlugGenerator.Verify(s => s.GenerateAsync<Project>(It.IsAny<string>()), Times.Never);
-        _mockProjectRepository.Verify(r => r.CreateAsync(It.IsAny<Project>()), Times.Never);
+        _mockSlugGenerator.Verify(s => s.GenerateAsync(It.IsAny<string>(), null), Times.Never);
+        _mockProjectRepository.Verify(r => r.CreateAsync(It.IsAny<Project>(), true), Times.Never);
     }
 
     [Test]
@@ -156,8 +155,8 @@ public class ProjectServiceTests
         Assert.That(exception.Message, Is.EqualTo("Organization with ID 999 not found"));
 
         _mockProjectRepository.Verify(r => r.NameExistsAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Never);
-        _mockSlugGenerator.Verify(s => s.GenerateAsync<Project>(It.IsAny<string>()), Times.Never);
-        _mockProjectRepository.Verify(r => r.CreateAsync(It.IsAny<Project>()), Times.Never);
+        _mockSlugGenerator.Verify(s => s.GenerateAsync(It.IsAny<string>(), null), Times.Never);
+        _mockProjectRepository.Verify(r => r.CreateAsync(It.IsAny<Project>(), true), Times.Never);
     }
 
     [Test]
@@ -195,8 +194,8 @@ public class ProjectServiceTests
         Assert.That(exception, Is.Not.Null);
         Assert.That(exception.Message, Is.EqualTo("Project with name 'Existing Project' already exists in your organization."));
 
-        _mockSlugGenerator.Verify(s => s.GenerateAsync<Project>(It.IsAny<string>()), Times.Never);
-        _mockProjectRepository.Verify(r => r.CreateAsync(It.IsAny<Project>()), Times.Never);
+        _mockSlugGenerator.Verify(s => s.GenerateAsync(It.IsAny<string>(), null), Times.Never);
+        _mockProjectRepository.Verify(r => r.CreateAsync(It.IsAny<Project>(), true), Times.Never);
     }
 
     [Test]
@@ -240,7 +239,7 @@ public class ProjectServiceTests
             .ReturnsAsync(false);
 
         var newSlug = "updated-project";
-        _mockSlugGenerator.Setup(s => s.GenerateAsync<Project>(updateDto.Name))
+        _mockSlugGenerator.Setup(s => s.GenerateAsync(updateDto.Name, It.IsAny<Func<string, Task<IEnumerable<string>>>>()))
             .ReturnsAsync(newSlug);
 
         // Act
@@ -255,11 +254,11 @@ public class ProjectServiceTests
         _mockProjectRepository.Verify(r => r.GetByIdAsync(updateDto.Id), Times.Once);
         _mockOrganizationRepository.Verify(r => r.GetByIdAsync(existingProject.OrganizationId), Times.Once);
         _mockProjectRepository.Verify(r => r.NameExistsAsync(updateDto.Name, organization.Id), Times.Once);
-        _mockSlugGenerator.Verify(s => s.GenerateAsync<Project>(updateDto.Name), Times.Once);
+        _mockSlugGenerator.Verify(s => s.GenerateAsync(updateDto.Name, It.IsAny<Func<string, Task<IEnumerable<string>>>>()), Times.Once);
         _mockProjectRepository.Verify(r => r.UpdateAsync(It.Is<Project>(p => 
             p.Id == 1 && 
             p.Name == "Updated Project" && 
-            p.Slug == newSlug)), Times.Once);
+            p.Slug == newSlug), true), Times.Once);
     }
 
     [Test]
@@ -289,8 +288,8 @@ public class ProjectServiceTests
         _mockProjectRepository.Verify(r => r.GetByIdAsync(It.IsAny<int>()), Times.Never);
         _mockOrganizationRepository.Verify(r => r.GetByIdAsync(It.IsAny<int>()), Times.Never);
         _mockProjectRepository.Verify(r => r.NameExistsAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Never);
-        _mockSlugGenerator.Verify(s => s.GenerateAsync<Project>(It.IsAny<string>()), Times.Never);
-        _mockProjectRepository.Verify(r => r.UpdateAsync(It.IsAny<Project>()), Times.Never);
+        _mockSlugGenerator.Verify(s => s.GenerateAsync(It.IsAny<string>(), null), Times.Never);
+        _mockProjectRepository.Verify(r => r.UpdateAsync(It.IsAny<Project>(), true), Times.Never);
     }
 
     [Test]
@@ -320,8 +319,8 @@ public class ProjectServiceTests
 
         _mockOrganizationRepository.Verify(r => r.GetByIdAsync(It.IsAny<int>()), Times.Never);
         _mockProjectRepository.Verify(r => r.NameExistsAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Never);
-        _mockSlugGenerator.Verify(s => s.GenerateAsync<Project>(It.IsAny<string>()), Times.Never);
-        _mockProjectRepository.Verify(r => r.UpdateAsync(It.IsAny<Project>()), Times.Never);
+        _mockSlugGenerator.Verify(s => s.GenerateAsync(It.IsAny<string>(), null), Times.Never);
+        _mockProjectRepository.Verify(r => r.UpdateAsync(It.IsAny<Project>(), true), Times.Never);
     }
 
     [Test]
@@ -371,8 +370,8 @@ public class ProjectServiceTests
         Assert.That(exception, Is.Not.Null);
         Assert.That(exception.Message, Is.EqualTo("Project with name 'Existing Project' already exists."));
 
-        _mockSlugGenerator.Verify(s => s.GenerateAsync<Project>(It.IsAny<string>()), Times.Never);
-        _mockProjectRepository.Verify(r => r.UpdateAsync(It.IsAny<Project>()), Times.Never);
+        _mockSlugGenerator.Verify(s => s.GenerateAsync(It.IsAny<string>(), null), Times.Never);
+        _mockProjectRepository.Verify(r => r.UpdateAsync(It.IsAny<Project>(), true), Times.Never);
     }
 
     [Test]
@@ -421,10 +420,10 @@ public class ProjectServiceTests
         Assert.That(result.Slug, Is.EqualTo("same-project"));
 
         _mockProjectRepository.Verify(r => r.NameExistsAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Never);
-        _mockSlugGenerator.Verify(s => s.GenerateAsync<Project>(It.IsAny<string>()), Times.Never);
+        _mockSlugGenerator.Verify(s => s.GenerateAsync(It.IsAny<string>(), null), Times.Never);
         _mockProjectRepository.Verify(r => r.UpdateAsync(It.Is<Project>(p => 
             p.Id == 1 && 
             p.Name == "Same Project" && 
-            p.Slug == "same-project")), Times.Once);
+            p.Slug == "same-project"), true), Times.Once);
     }
 }

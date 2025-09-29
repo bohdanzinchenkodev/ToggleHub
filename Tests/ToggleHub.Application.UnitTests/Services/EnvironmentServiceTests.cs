@@ -56,7 +56,7 @@ public class EnvironmentServiceTests
             ProjectId = 1
         };
 
-        _mockEnvironmentRepository.Setup(r => r.CreateAsync(It.IsAny<Environment>()))
+        _mockEnvironmentRepository.Setup(r => r.CreateAsync(It.IsAny<Environment>(), true))
             .ReturnsAsync(createdEnvironment);
 
         // Act
@@ -67,7 +67,7 @@ public class EnvironmentServiceTests
         Assert.That(result.Id, Is.EqualTo(1));
         Assert.That(result.Type, Is.EqualTo(EnvironmentType.Dev));
 
-        _mockEnvironmentRepository.Verify(r => r.CreateAsync(It.IsAny<Environment>()), Times.Once);
+        _mockEnvironmentRepository.Verify(r => r.CreateAsync(It.IsAny<Environment>(), true), Times.Once);
     }
 
     [Test]
@@ -94,7 +94,7 @@ public class EnvironmentServiceTests
         Assert.That(exception.Errors.First().PropertyName, Is.EqualTo("TypeString"));
         Assert.That(exception.Errors.First().ErrorMessage, Is.EqualTo("Invalid environment type"));
 
-        _mockEnvironmentRepository.Verify(r => r.CreateAsync(It.IsAny<Environment>()), Times.Never);
+        _mockEnvironmentRepository.Verify(r => r.CreateAsync(It.IsAny<Environment>(), true), Times.Never);
     }
 
     [Test]
@@ -133,7 +133,7 @@ public class EnvironmentServiceTests
         _mockEnvironmentRepository.Verify(r => r.GetByIdAsync(updateDto.Id), Times.Once);
         _mockEnvironmentRepository.Verify(r => r.UpdateAsync(It.Is<Environment>(e => 
             e.Id == 1 && 
-            e.Type == EnvironmentType.Staging)), Times.Once);
+            e.Type == EnvironmentType.Staging), true), Times.Once);
     }
 
     [Test]
@@ -161,7 +161,7 @@ public class EnvironmentServiceTests
         Assert.That(exception.Errors.First().ErrorMessage, Is.EqualTo("Invalid environment type"));
 
         _mockEnvironmentRepository.Verify(r => r.GetByIdAsync(It.IsAny<int>()), Times.Never);
-        _mockEnvironmentRepository.Verify(r => r.UpdateAsync(It.IsAny<Environment>()), Times.Never);
+        _mockEnvironmentRepository.Verify(r => r.UpdateAsync(It.IsAny<Environment>(), true), Times.Never);
     }
 
     [Test]
@@ -189,7 +189,7 @@ public class EnvironmentServiceTests
         Assert.That(exception, Is.Not.Null);
         Assert.That(exception.Message, Is.EqualTo("Environment with id 999 not found."));
 
-        _mockEnvironmentRepository.Verify(r => r.UpdateAsync(It.IsAny<Environment>()), Times.Never);
+        _mockEnvironmentRepository.Verify(r => r.UpdateAsync(It.IsAny<Environment>(), true), Times.Never);
     }
 
     [Test]
@@ -208,7 +208,7 @@ public class EnvironmentServiceTests
         Assert.That(exception, Is.Not.Null);
         Assert.That(exception.Message, Is.EqualTo("Environment with id 999 not found."));
 
-        _mockEnvironmentRepository.Verify(r => r.DeleteAsync(It.IsAny<int>()), Times.Never);
+        _mockEnvironmentRepository.Verify(r => r.DeleteAsync(It.IsAny<int>(), true), Times.Never);
     }
 
     [Test]
@@ -231,7 +231,7 @@ public class EnvironmentServiceTests
 
         // Assert
         _mockEnvironmentRepository.Verify(r => r.GetByIdAsync(id), Times.Once);
-        _mockEnvironmentRepository.Verify(r => r.DeleteAsync(id), Times.Once);
+        _mockEnvironmentRepository.Verify(r => r.DeleteAsync(id, true), Times.Once);
     }
 
     [Test]

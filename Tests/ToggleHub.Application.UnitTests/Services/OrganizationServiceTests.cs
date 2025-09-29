@@ -58,7 +58,7 @@ public class OrganizationServiceTests
             .ReturnsAsync(false);
 
         var expectedSlug = "test-organization";
-        _mockSlugGenerator.Setup(s => s.GenerateAsync<Organization>(createDto.Name))
+        _mockSlugGenerator.Setup(s => s.GenerateAsync(createDto.Name, It.IsAny<Func<string, Task<IEnumerable<string>>>>()))
             .ReturnsAsync(expectedSlug);
 
         var createdOrganization = new Organization
@@ -69,7 +69,7 @@ public class OrganizationServiceTests
             CreatedAt = DateTime.UtcNow
         };
 
-        _mockOrganizationRepository.Setup(r => r.CreateAsync(It.IsAny<Organization>()))
+        _mockOrganizationRepository.Setup(r => r.CreateAsync(It.IsAny<Organization>(), true))
             .ReturnsAsync(createdOrganization);
 
         _mockWorkContext.Setup(wc => wc.GetCurrentUserId())
@@ -84,8 +84,8 @@ public class OrganizationServiceTests
         Assert.That(result.Slug, Is.EqualTo(expectedSlug));
 
         _mockOrganizationRepository.Verify(r => r.NameExistsAsync(createDto.Name), Times.Once);
-        _mockSlugGenerator.Verify(s => s.GenerateAsync<Organization>(createDto.Name), Times.Once);
-        _mockOrganizationRepository.Verify(r => r.CreateAsync(It.IsAny<Organization>()), Times.Once);
+        _mockSlugGenerator.Verify(s => s.GenerateAsync(createDto.Name, It.IsAny<Func<string, Task<IEnumerable<string>>>>()), Times.Once);
+        _mockOrganizationRepository.Verify(r => r.CreateAsync(It.IsAny<Organization>(), true), Times.Once);
     }
 
     [Test]
@@ -112,8 +112,8 @@ public class OrganizationServiceTests
         Assert.That(exception.Errors.First().ErrorMessage, Is.EqualTo("Name is required"));
 
         _mockOrganizationRepository.Verify(r => r.NameExistsAsync(It.IsAny<string>()), Times.Never);
-        _mockSlugGenerator.Verify(s => s.GenerateAsync<Organization>(It.IsAny<string>()), Times.Never);
-        _mockOrganizationRepository.Verify(r => r.CreateAsync(It.IsAny<Organization>()), Times.Never);
+        _mockSlugGenerator.Verify(s => s.GenerateAsync(createDto.Name, It.IsAny<Func<string, Task<IEnumerable<string>>>>()), Times.Never);
+        _mockOrganizationRepository.Verify(r => r.CreateAsync(It.IsAny<Organization>(), true), Times.Never);
     }
 
     [Test]
@@ -140,8 +140,8 @@ public class OrganizationServiceTests
         Assert.That(exception, Is.Not.Null);
         Assert.That(exception.Message, Is.EqualTo("Organization with name Existing Organization already exists"));
 
-        _mockSlugGenerator.Verify(s => s.GenerateAsync<Organization>(It.IsAny<string>()), Times.Never);
-        _mockOrganizationRepository.Verify(r => r.CreateAsync(It.IsAny<Organization>()), Times.Never);
+        _mockSlugGenerator.Verify(s => s.GenerateAsync(It.IsAny<string>(), null), Times.Never);
+        _mockOrganizationRepository.Verify(r => r.CreateAsync(It.IsAny<Organization>(), true), Times.Never);
     }
 
     [Test]
@@ -174,7 +174,7 @@ public class OrganizationServiceTests
             .ReturnsAsync(false);
 
         var newSlug = "updated-organization";
-        _mockSlugGenerator.Setup(s => s.GenerateAsync<Organization>(updateDto.Name))
+        _mockSlugGenerator.Setup(s => s.GenerateAsync(updateDto.Name, It.IsAny<Func<string, Task<IEnumerable<string>>>>()))
             .ReturnsAsync(newSlug);
 
         // Act
@@ -183,11 +183,11 @@ public class OrganizationServiceTests
         // Assert
         _mockOrganizationRepository.Verify(r => r.GetByIdAsync(updateDto.Id), Times.Once);
         _mockOrganizationRepository.Verify(r => r.NameExistsAsync(updateDto.Name), Times.Once);
-        _mockSlugGenerator.Verify(s => s.GenerateAsync<Organization>(updateDto.Name), Times.Once);
+        _mockSlugGenerator.Verify(s => s.GenerateAsync(updateDto.Name, It.IsAny<Func<string, Task<IEnumerable<string>>>>()), Times.Once);
         _mockOrganizationRepository.Verify(r => r.UpdateAsync(It.Is<Organization>(o => 
             o.Id == 1 && 
             o.Name == "Updated Organization" && 
-            o.Slug == newSlug)), Times.Once);
+            o.Slug == newSlug), true), Times.Once);
     }
 
     [Test]
@@ -216,8 +216,8 @@ public class OrganizationServiceTests
 
         _mockOrganizationRepository.Verify(r => r.GetByIdAsync(It.IsAny<int>()), Times.Never);
         _mockOrganizationRepository.Verify(r => r.NameExistsAsync(It.IsAny<string>()), Times.Never);
-        _mockSlugGenerator.Verify(s => s.GenerateAsync<Organization>(It.IsAny<string>()), Times.Never);
-        _mockOrganizationRepository.Verify(r => r.UpdateAsync(It.IsAny<Organization>()), Times.Never);
+        _mockSlugGenerator.Verify(s => s.GenerateAsync(It.IsAny<string>(), It.IsAny<Func<string, Task<IEnumerable<string>>>>()), Times.Never);
+        _mockOrganizationRepository.Verify(r => r.UpdateAsync(It.IsAny<Organization>(), true), Times.Never);
     }
 
     [Test]
@@ -246,8 +246,8 @@ public class OrganizationServiceTests
         Assert.That(exception.Message, Is.EqualTo("Organization with ID 999 not found"));
 
         _mockOrganizationRepository.Verify(r => r.NameExistsAsync(It.IsAny<string>()), Times.Never);
-        _mockSlugGenerator.Verify(s => s.GenerateAsync<Organization>(It.IsAny<string>()), Times.Never);
-        _mockOrganizationRepository.Verify(r => r.UpdateAsync(It.IsAny<Organization>()), Times.Never);
+        _mockSlugGenerator.Verify(s => s.GenerateAsync(It.IsAny<string>(), null), Times.Never);
+        _mockOrganizationRepository.Verify(r => r.UpdateAsync(It.IsAny<Organization>(), true), Times.Never);
     }
 
     [Test]
@@ -286,8 +286,8 @@ public class OrganizationServiceTests
         Assert.That(exception, Is.Not.Null);
         Assert.That(exception.Message, Is.EqualTo("Organization with name Existing Organization already exists"));
 
-        _mockSlugGenerator.Verify(s => s.GenerateAsync<Organization>(It.IsAny<string>()), Times.Never);
-        _mockOrganizationRepository.Verify(r => r.UpdateAsync(It.IsAny<Organization>()), Times.Never);
+        _mockSlugGenerator.Verify(s => s.GenerateAsync(It.IsAny<string>(), It.IsAny<Func<string, Task<IEnumerable<string>>>>()), Times.Never);
+        _mockOrganizationRepository.Verify(r => r.UpdateAsync(It.IsAny<Organization>(), true), Times.Never);
     }
 
     [Test]
@@ -322,11 +322,11 @@ public class OrganizationServiceTests
         // Assert
         _mockOrganizationRepository.Verify(r => r.GetByIdAsync(updateDto.Id), Times.Once);
         _mockOrganizationRepository.Verify(r => r.NameExistsAsync(It.IsAny<string>()), Times.Never);
-        _mockSlugGenerator.Verify(s => s.GenerateAsync<Organization>(It.IsAny<string>()), Times.Never);
+        _mockSlugGenerator.Verify(s => s.GenerateAsync(It.IsAny<string>(), It.IsAny<Func<string, Task<IEnumerable<string>>>>()), Times.Never);
         _mockOrganizationRepository.Verify(r => r.UpdateAsync(It.Is<Organization>(o => 
             o.Id == 1 && 
             o.Name == "Same Organization" && 
-            o.Slug == "same-organization")), Times.Once);
+            o.Slug == "same-organization"), true), Times.Once);
     }
 
     [Test]
@@ -359,7 +359,7 @@ public class OrganizationServiceTests
             .ReturnsAsync(false);
 
         var newSlug = "completely-different-name";
-        _mockSlugGenerator.Setup(s => s.GenerateAsync<Organization>(updateDto.Name))
+        _mockSlugGenerator.Setup(s => s.GenerateAsync(updateDto.Name, It.IsAny<Func<string, Task<IEnumerable<string>>>>()))
             .ReturnsAsync(newSlug);
 
         // Act
@@ -368,10 +368,10 @@ public class OrganizationServiceTests
         // Assert
         _mockOrganizationRepository.Verify(r => r.GetByIdAsync(updateDto.Id), Times.Once);
         _mockOrganizationRepository.Verify(r => r.NameExistsAsync(updateDto.Name), Times.Once);
-        _mockSlugGenerator.Verify(s => s.GenerateAsync<Organization>(updateDto.Name), Times.Once);
+        _mockSlugGenerator.Verify(s => s.GenerateAsync(updateDto.Name, It.IsAny<Func<string, Task<IEnumerable<string>>>>()), Times.Once);
         _mockOrganizationRepository.Verify(r => r.UpdateAsync(It.Is<Organization>(o => 
             o.Id == 1 && 
             o.Name == "Completely Different Name" && 
-            o.Slug == newSlug)), Times.Once);
+            o.Slug == newSlug), true), Times.Once);
     }
 }
