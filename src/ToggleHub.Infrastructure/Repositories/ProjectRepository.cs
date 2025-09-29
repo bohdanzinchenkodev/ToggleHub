@@ -13,7 +13,7 @@ public class ProjectRepository : BaseSluggedRepository<Project>, IProjectReposit
     private readonly ICacheManager _cacheManager;
     private readonly ICacheKeyFactory _cacheKeyFactory;
 
-    public ProjectRepository(ToggleHubDbContext context, ICacheManager cacheManager, ICacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
+    public ProjectRepository(ToggleHubDbContext context, ICacheManager cacheManager, ICacheKeyFactory cacheKeyFactory, IEventPublisher eventPublisher) : base(context, cacheManager, cacheKeyFactory, eventPublisher)
     {
         _cacheManager = cacheManager;
         _cacheKeyFactory = cacheKeyFactory;

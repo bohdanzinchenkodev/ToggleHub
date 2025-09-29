@@ -62,12 +62,6 @@ public class ProjectService : IProjectService
         
         project = await _projectRepository.CreateAsync(project);
         
-        var eventMessage = new ProjectCreatedEvent
-        {
-            Project = project
-        };
-        await _eventPublisher.PublishAsync(eventMessage);
-        
         return project.ToDto();
     }
 

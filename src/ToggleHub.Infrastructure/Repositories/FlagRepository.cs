@@ -13,7 +13,7 @@ public class FlagRepository : BaseRepository<Flag>, IFlagRepository
     private readonly ICacheManager _cacheManager;
     private readonly ICacheKeyFactory _cacheKeyFactory;
 
-    public FlagRepository(ToggleHubDbContext context, ICacheManager cacheManager, ICacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
+    public FlagRepository(ToggleHubDbContext context, ICacheManager cacheManager, ICacheKeyFactory cacheKeyFactory, IEventPublisher eventPublisher) : base(context, cacheManager, cacheKeyFactory, eventPublisher)
     {
         _cacheManager = cacheManager;
         _cacheKeyFactory = cacheKeyFactory;

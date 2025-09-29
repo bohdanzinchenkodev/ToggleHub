@@ -88,12 +88,6 @@ public class FlagService : IFlagService
 
         await _flagRepository.UpdateAsync(flag);
         
-        var eventMessage = new FlagUpdatedEvent
-        {
-            Flag = flag
-        };
-        await _eventPublisher.PublishAsync(eventMessage);
-        
         return flag.ToDto();
     }
 
@@ -102,12 +96,6 @@ public class FlagService : IFlagService
         var flag = await _flagRepository.GetByIdAsync(id);
         if (flag == null)
             throw new NotFoundException($"Flag with ID {id} not found.");
-        
-        var eventMessage = new FlagDeletedEvent
-        {
-            Flag = flag
-        };
-        await _eventPublisher.PublishAsync(eventMessage);
 
         await _flagRepository.DeleteAsync(flag.Id);
     }

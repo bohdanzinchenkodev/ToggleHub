@@ -11,7 +11,9 @@ public class BaseSluggedRepository<T> : BaseRepository<T>, IBaseSluggedRepositor
 {
     private readonly ICacheManager _cacheManager;
     private readonly ICacheKeyFactory _cacheKeyFactory;
-    public BaseSluggedRepository(ToggleHubDbContext context, ICacheManager cacheManager, ICacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
+
+
+    public BaseSluggedRepository(ToggleHubDbContext context, ICacheManager cacheManager, ICacheKeyFactory cacheKeyFactory, IEventPublisher eventPublisher) : base(context, cacheManager, cacheKeyFactory, eventPublisher)
     {
         _cacheManager = cacheManager;
         _cacheKeyFactory = cacheKeyFactory;

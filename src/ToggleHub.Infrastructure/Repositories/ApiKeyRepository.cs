@@ -12,7 +12,8 @@ public class ApiKeyRepository : BaseRepository<ApiKey>, IApiKeyRepository
 {
     private readonly ICacheManager _cacheManager;
     private readonly ICacheKeyFactory _cacheKeyFactory;
-    public ApiKeyRepository(ToggleHubDbContext context, ICacheManager cacheManager, ICacheKeyFactory cacheKeyFactory) : base(context, cacheManager, cacheKeyFactory)
+
+    public ApiKeyRepository(ToggleHubDbContext context, ICacheManager cacheManager, ICacheKeyFactory cacheKeyFactory, IEventPublisher eventPublisher) : base(context, cacheManager, cacheKeyFactory, eventPublisher)
     {
         _cacheManager = cacheManager;
         _cacheKeyFactory = cacheKeyFactory;

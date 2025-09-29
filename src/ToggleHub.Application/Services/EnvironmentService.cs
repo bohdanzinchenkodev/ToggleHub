@@ -107,11 +107,5 @@ public class EnvironmentService : IEnvironmentService
             });
         }
         await _environmentRepository.CreateAsync(environments);
-        var eventMessage = new EnvironmentsAddedToProjectEvent
-        {
-            ProjectId = projectId,
-            Environments = environments
-        };
-        await _eventPublisher.PublishAsync(eventMessage);
     }
 }
