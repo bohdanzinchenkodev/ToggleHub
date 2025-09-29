@@ -68,4 +68,12 @@ public class ProjectRepository : BaseSluggedRepository<Project>, IProjectReposit
                 .FirstOrDefaultAsync(o => o.Slug == slug && o.OrganizationId == organizationId);
         });
     }
+    public async Task<IEnumerable<string>> GetSlugsByPatternAsync(string baseSlug, int organizationId)
+    {
+        return await _dbSet
+            .Where(o => o.Slug == baseSlug || o.Slug.StartsWith(baseSlug + "-"))
+            .Where(o => o.OrganizationId == organizationId)
+            .Select(o => o.Slug)
+            .ToListAsync();
+    }
 }

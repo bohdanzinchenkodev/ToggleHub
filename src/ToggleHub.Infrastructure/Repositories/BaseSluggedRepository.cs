@@ -6,7 +6,7 @@ using ToggleHub.Infrastructure.Data;
 
 namespace ToggleHub.Infrastructure.Repositories;
 
-public class BaseSluggedRepository<T> : BaseRepository<T>, IBaseSluggedRepository<T> 
+public abstract class BaseSluggedRepository<T> : BaseRepository<T>, IBaseSluggedRepository<T> 
     where T : BaseEntity, ISluggedEntity
 {
     private readonly ICacheManager _cacheManager;
@@ -30,6 +30,14 @@ public class BaseSluggedRepository<T> : BaseRepository<T>, IBaseSluggedRepositor
                 return await query
                     .FirstOrDefaultAsync(entity => entity.Slug == slug);
             });
+    }
+    public async Task<IEnumerable<string>> GetSlugsByPatternAsync<T>(string baseSlug) where T : BaseEntity, ISluggedEntity
+    {
+        var dbSet = _context.Set<T>();
+        return await dbSet
+            .Where(o => o.Slug == baseSlug || o.Slug.StartsWith(baseSlug + "-"))
+            .Select(o => o.Slug)
+            .ToListAsync();
     }
     
 }

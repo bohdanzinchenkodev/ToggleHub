@@ -4,5 +4,8 @@ namespace ToggleHub.Application.Interfaces;
 
 public interface ISlugGenerator
 {
-    Task<string> GenerateAsync<T>(string name) where T : BaseEntity, ISluggedEntity;
+    Task<string> GenerateAsync(
+        string name,
+        Func<string, Task<IEnumerable<string>>>? existingSlugsFactory = null
+    );
 }

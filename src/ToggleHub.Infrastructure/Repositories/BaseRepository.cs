@@ -9,7 +9,7 @@ using ToggleHub.Infrastructure.Extensions;
 
 namespace ToggleHub.Infrastructure.Repositories;
 
-public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
+public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
 {
     protected readonly ToggleHubDbContext _context;
     protected readonly DbSet<T> _dbSet;

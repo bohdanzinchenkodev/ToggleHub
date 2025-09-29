@@ -1,36 +1,33 @@
 using System.Text.RegularExpressions;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Entities;
-using ToggleHub.Domain.Repositories;
 
 namespace ToggleHub.Application.Services;
 
 public class SlugGenerator : ISlugGenerator
 {
-    private readonly ISluggedRepository _repository;
-
-    public SlugGenerator(ISluggedRepository repository)
-    {
-        _repository = repository;
-    }
-    
-    public async Task<string> GenerateAsync<T>(string name) where T : BaseEntity, ISluggedEntity
+    public async Task<string> GenerateAsync(
+        string name,
+        Func<string, Task<IEnumerable<string>>>? existingSlugsFactory = null
+    ) 
     {
         string baseSlug = GenerateValidSlug(name);
-        
-        // Get all existing slugs that match the pattern
-        var existingSlugs = (await _repository.GetSlugsByPatternAsync<T>(baseSlug)).ToArray();
-        
+
+        // If no factory is provided, assume no existing slugs
+        var existingSlugs = existingSlugsFactory != null
+            ? (await existingSlugsFactory(baseSlug)).ToArray()
+            : Array.Empty<string>();
+
         // If base slug doesn't exist, use it
         if (!existingSlugs.Contains(baseSlug))
         {
             return baseSlug;
         }
-        
+
         // Find the highest counter from existing slugs
         int maxCounter = 0;
         var counterPattern = new Regex($"^{Regex.Escape(baseSlug)}-(\\d+)$");
-        
+
         foreach (var slug in existingSlugs)
         {
             var match = counterPattern.Match(slug);
@@ -39,11 +36,10 @@ public class SlugGenerator : ISlugGenerator
                 maxCounter = Math.Max(maxCounter, counter);
             }
         }
-        
+
         // Return the next available slug
         return $"{baseSlug}-{maxCounter + 1}";
     }
-   
 
     private static string GenerateValidSlug(string name)
     {
@@ -57,7 +53,7 @@ public class SlugGenerator : ISlugGenerator
         slug = Regex.Replace(slug, @"\s+", "-");
 
         // Remove or replace special characters, keeping only alphanumeric and hyphens
-        slug = Regex.Replace(slug, @"[^a-z0-9\-]", "");
+        slug = Regex.Replace(slug, @"[^a-z0-9\\-]", "");
 
         // Remove multiple consecutive hyphens
         slug = Regex.Replace(slug, @"-+", "-");

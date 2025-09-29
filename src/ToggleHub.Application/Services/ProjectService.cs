@@ -57,7 +57,8 @@ public class ProjectService : IProjectService
         
         var project = createProjectDto.ToEntity();
     
-        project.Slug = await _slugGenerator.GenerateAsync<Project>(project.Name);
+        project.Slug = await _slugGenerator.GenerateAsync(createProjectDto.Name,
+            async baseSlug => await _projectRepository.GetSlugsByPatternAsync(baseSlug, organization.Id));
         project.CreatedAt = DateTime.UtcNow;
         
         project = await _projectRepository.CreateAsync(project);
@@ -84,7 +85,8 @@ public class ProjectService : IProjectService
             if(await _projectRepository.NameExistsAsync(updateProjectDto.Name, organization!.Id))
                 throw new ApplicationException($"Project with name '{updateProjectDto.Name}' already exists.");
             
-            slug = await _slugGenerator.GenerateAsync<Project>(updateProjectDto.Name);
+            slug = await _slugGenerator.GenerateAsync(updateProjectDto.Name,
+                async baseSlug => await _projectRepository.GetSlugsByPatternAsync(baseSlug, organization.Id));
         }
         
         updateProjectDto.ToEntity(project);

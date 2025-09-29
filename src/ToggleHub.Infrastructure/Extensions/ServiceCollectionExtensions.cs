@@ -22,8 +22,6 @@ public static class ServiceCollectionExtensions
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
         // Register repositories
-        services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
-        services.AddScoped<ISluggedRepository, SluggedRepository>();
         services.AddScoped<IOrganizationRepository, OrganizationRepository>();
         services.AddScoped<IOrgMemberRepository, OrgMemberRepository>();
         services.AddScoped<IProjectRepository, ProjectRepository>();
@@ -42,9 +40,10 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ICacheKeyRegistry, InMemoryCacheKeyRegistry>();
         services.AddScoped<ICacheKeyFormatter, CacheKeyFormatter>();
         services.AddScoped<ICacheKeyFactory, CacheKeyFactory>();
-        
         services.AddScoped<IFlagEvaluationCacheKeyFactory, FlagEvaluationCacheKeyFactory>();
-
+        
+        
+        //Email
         services.AddScoped<IEmailTemplateRenderer, RazorEmailTemplateRenderer>();
         services.AddScoped<IEmailSender, SendGridEmailSender>();
         services.AddScoped<IUrlBuilder, UrlBuilder>();
