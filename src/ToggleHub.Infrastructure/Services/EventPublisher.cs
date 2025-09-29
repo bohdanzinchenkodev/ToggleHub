@@ -4,7 +4,7 @@ using ToggleHub.Application.EventHandlers;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Events;
 
-namespace ToggleHub.Application.Services;
+namespace ToggleHub.Infrastructure.Services;
 
 public class EventPublisher : IEventPublisher
 {

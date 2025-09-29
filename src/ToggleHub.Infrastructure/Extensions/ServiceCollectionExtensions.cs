@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using ToggleHub.Application;
+using ToggleHub.Application.EventHandlers;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Repositories;
 using ToggleHub.Infrastructure.Cache;
@@ -62,6 +64,28 @@ public static class ServiceCollectionExtensions
         services.Configure<CacheSettings>(configuration.GetSection("Cache"));
         services.AddSingleton(registeredServices =>
             registeredServices.GetRequiredService<IOptions<CacheSettings>>().Value);
+
+        // in memory event publisher
+        services.RegisterEventHandlers();
+
+        return services;
+    }
+    private static IServiceCollection RegisterEventHandlers(this IServiceCollection services)
+    {
+        var assembly = typeof(IApplicationMaker).Assembly;
+        var eventHandlerInterfaceType = typeof(IConsumer<>);
+        var eventHandlerTypes = assembly.GetTypes()
+            .Where(t => !t.IsAbstract && !t.IsInterface)
+            .SelectMany(t => t.GetInterfaces(), (t, i) => new { Type = t, Interface = i })
+            .Where(ti => ti.Interface.IsGenericType && ti.Interface.GetGenericTypeDefinition() == eventHandlerInterfaceType)
+            .Distinct();
+
+        foreach (var handlerTypeTuple in eventHandlerTypes)
+        {
+            services.AddScoped(handlerTypeTuple.Interface, handlerTypeTuple.Type);
+        }
+
+        services.AddScoped<IEventPublisher, EventPublisher>();
 
         return services;
     }
