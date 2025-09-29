@@ -1,11 +1,10 @@
 using Moq;
-using ToggleHub.Application;
 using ToggleHub.Application.Interfaces;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Infrastructure.Cache;
 using ToggleHub.Infrastructure.Settings;
 
-namespace ToggleHub.Application.UnitTests.Services;
+namespace ToggleHub.Infrastructure.UnitTests.Services;
 
 public class CacheKeyFactoryTests
 {

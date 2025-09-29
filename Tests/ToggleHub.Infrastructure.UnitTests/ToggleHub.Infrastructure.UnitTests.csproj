@@ -6,9 +6,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
-        <RootNamespace>ToggleHub.Application.UnitTests</RootNamespace>
     </PropertyGroup>
-
+    
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.2" />
         <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.0" />
@@ -20,17 +19,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Using Include="NUnit.Framework" />
+        <Using Include="NUnit.Framework"/>
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\ToggleHub.Application\ToggleHub.Application.csproj" />
-      <ProjectReference Include="..\..\src\ToggleHub.Domain\ToggleHub.Domain.csproj" />
       <ProjectReference Include="..\..\src\ToggleHub.Infrastructure\ToggleHub.Infrastructure.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Mapping\" />
     </ItemGroup>
 
 </Project>
