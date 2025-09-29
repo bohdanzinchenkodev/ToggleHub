@@ -1,9 +1,10 @@
 using ToggleHub.Application.Interfaces;
+using ToggleHub.Domain.Entities;
 using ToggleHub.Domain.Events;
 
 namespace ToggleHub.Application.EventHandlers;
 
-public class OrganizationInviteCreatedEventHandler : IConsumer<OrganizationInviteCreatedEvent>
+public class OrganizationInviteCreatedEventHandler : IConsumer<EntityCreatedEvent<OrganizationInvite>>
 {
     private readonly IInvitationEmailWorkflowService _invitationEmailWorkflowService;
 
@@ -12,8 +13,8 @@ public class OrganizationInviteCreatedEventHandler : IConsumer<OrganizationInvit
         _invitationEmailWorkflowService = invitationEmailWorkflowService;
     }
 
-    public async Task HandleEventAsync(OrganizationInviteCreatedEvent eventMessage)
+    public async Task HandleEventAsync(EntityCreatedEvent<OrganizationInvite> eventMessage)
     {
-        await _invitationEmailWorkflowService.SendInvitationEmailAsync(eventMessage.Invite);
+        await _invitationEmailWorkflowService.SendInvitationEmailAsync(eventMessage.Entity);
     }
 }
