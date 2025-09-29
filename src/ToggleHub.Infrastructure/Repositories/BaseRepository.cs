@@ -44,7 +44,7 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntit
             key,
             () =>
             {
-                var query = WithIncludes(_dbSet).AsNoTracking();
+                var query = WithIncludes(_dbSet);
                 return query.FirstOrDefaultAsync(x => x.Id == id)!;
             });
     }

@@ -26,7 +26,7 @@ public abstract class BaseSluggedRepository<T> : BaseRepository<T>, IBaseSlugged
             key,
             async () =>
             {
-                var query = WithIncludes(_dbSet).AsNoTracking();
+                var query = WithIncludes(_dbSet);
                 return await query
                     .FirstOrDefaultAsync(entity => entity.Slug == slug);
             });
