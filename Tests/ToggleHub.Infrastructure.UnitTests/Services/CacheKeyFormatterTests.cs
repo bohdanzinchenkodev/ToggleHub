@@ -2,7 +2,7 @@ using System.Globalization;
 using ToggleHub.Domain.Entities;
 using ToggleHub.Infrastructure.Cache;
 
-namespace ToggleHub.Application.UnitTests.Services;
+namespace ToggleHub.Infrastructure.UnitTests.Services;
 
 public class CacheKeyFormatterTests
 {
