@@ -7,6 +7,8 @@ receivers:
         endpoint: 0.0.0.0:4318
     
 exporters:
+  prometheus:
+    endpoint: 0.0.0.0:8889   # collector will serve /metrics here
   otlphttp:
     endpoint: http://loki:3100/otlp
   debug:
@@ -20,3 +22,6 @@ service:
     logs:
       receivers: [otlp]
       exporters: [debug, otlphttp]
+    metrics:
+      receivers: [otlp]
+      exporters: [prometheus]

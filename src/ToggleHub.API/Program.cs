@@ -26,7 +26,21 @@ builder.Services.AddOpenTelemetry()
             {
                 opt.Endpoint = new Uri("http://localhost:4317");
             });
+        })
+    .WithMetrics(mb =>
+    {
+        // Useful built-ins
+        mb.AddAspNetCoreInstrumentation();   // request duration, active reqs, etc.
+        mb.AddHttpClientInstrumentation();   // outgoing HTTP
+        mb.AddRuntimeInstrumentation();      // GC, LOH, exceptions, locks
+        mb.AddProcessInstrumentation();      // CPU, mem, threads (optional)
+
+        // Export to collector via OTLP HTTP
+        mb.AddOtlpExporter(o =>
+        {
+            o.Endpoint = new Uri("http://localhost:4317");
         });
+    });
 
 
 builder.Services.AddControllers();

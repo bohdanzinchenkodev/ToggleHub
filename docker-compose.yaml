@@ -20,8 +20,19 @@ services:
       loki:
         condition: service_healthy
     ports:
-      - "4318:4318"   # OTLP HTTP (your app will send here)
+      - "4318:4318"   # OTLP HTTP (app → collector)
       - "4317:4317"   # OTLP gRPC (optional, if your app uses gRPC)
+      - "8889:8889"   # Prometheus scrape endpoint exposed by collector
+
+  prometheus:
+    image: prom/prometheus:latest
+    command: [ "--config.file=/etc/prometheus/prometheus.yml" ]
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - otel-collector
 
   grafana:
     image: grafana/grafana:latest
@@ -32,7 +43,9 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_USERS_DEFAULT_THEME=dark
     volumes:
-      - ./grafana-datasource.yaml:/etc/grafana/provisioning/datasources/loki.yaml:ro
+      - ./grafana-datasource.yaml:/etc/grafana/provisioning/datasources/datasources.yaml:ro
     depends_on:
       loki:
         condition: service_healthy
+      prometheus:
+        condition: service_started
