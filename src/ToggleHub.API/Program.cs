@@ -1,3 +1,8 @@
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using ToggleHub.API.Extensions;
 using ToggleHub.API.Middleware;
 using ToggleHub.API.OpenApi;
@@ -11,6 +16,17 @@ builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer<ApiKeySecurityTransformer>();
 });
+
+builder.Logging.ClearProviders();
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(x => x.AddService("ToggleHub.Api", serviceVersion: "1.0.0"))
+    .WithLogging(logging =>
+        {
+            logging.AddOtlpExporter(opt =>
+            {
+                opt.Endpoint = new Uri("http://localhost:4317");
+            });
+        });
 
 
 builder.Services.AddControllers();
