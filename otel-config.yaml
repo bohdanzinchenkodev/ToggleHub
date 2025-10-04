@@ -5,15 +5,24 @@ receivers:
         endpoint: 0.0.0.0:4317
       http:
         endpoint: 0.0.0.0:4318
-    
+
 exporters:
+  # Metrics → Prometheus (collector exposes /metrics)
   prometheus:
-    endpoint: 0.0.0.0:8889   # collector will serve /metrics here
-  otlphttp:
+    endpoint: 0.0.0.0:8889
+
+  # Logs → Loki via OTLP/HTTP
+  otlphttp/loki:
     endpoint: http://loki:3100/otlp
+
+  # Traces → Tempo via OTLP/HTTP
+  otlphttp/tempo:
+    endpoint: http://tempo:4318
+
+  # Optional local debugging
   debug:
-    verbosity: detailed   # shows log body + attributes
-    
+    verbosity: detailed
+
 service:
   telemetry:
     logs:
@@ -21,7 +30,12 @@ service:
   pipelines:
     logs:
       receivers: [otlp]
-      exporters: [debug, otlphttp]
+      exporters: [debug, otlphttp/loki]
+
     metrics:
       receivers: [otlp]
       exporters: [prometheus]
+
+    traces:
+      receivers: [otlp]
+      exporters: [otlphttp/tempo]

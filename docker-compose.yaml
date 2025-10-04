@@ -2,11 +2,26 @@ version: "3.8"
 
 services:
   loki:
-    image: grafana/loki:latest
+    image: grafana/loki:3.5.5
     ports:
       - "3100:3100"
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3100/ready"]
+      interval: 10s
+      timeout: 3s
+      retries: 20
+
+  tempo:
+    image: grafana/tempo:2.8.2
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./tempo.yaml:/etc/tempo.yaml:ro
+    ports:
+      - "3200"  # tempo
+      - "4317"  # otlp grpc
+      - "4318"  # otlp http
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3200/ready"]
       interval: 10s
       timeout: 3s
       retries: 20
@@ -19,13 +34,15 @@ services:
     depends_on:
       loki:
         condition: service_healthy
+      tempo:
+        condition: service_healthy
     ports:
       - "4318:4318"   # OTLP HTTP (app → collector)
       - "4317:4317"   # OTLP gRPC (optional, if your app uses gRPC)
       - "8889:8889"   # Prometheus scrape endpoint exposed by collector
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.6.0
     command: [ "--config.file=/etc/prometheus/prometheus.yml" ]
     ports:
       - "9090:9090"
@@ -35,7 +52,7 @@ services:
       - otel-collector
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:12.2.0
     ports:
       - "3000:3000"
     environment:
@@ -49,3 +66,5 @@ services:
         condition: service_healthy
       prometheus:
         condition: service_started
+      tempo:
+        condition: service_healthy

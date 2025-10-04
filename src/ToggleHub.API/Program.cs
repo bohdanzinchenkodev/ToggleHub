@@ -40,6 +40,22 @@ builder.Services.AddOpenTelemetry()
         {
             o.Endpoint = new Uri("http://localhost:4317");
         });
+    })
+    .WithTracing(tb =>
+    {
+        // Server + client spans
+        tb.AddAspNetCoreInstrumentation(opts =>
+        {
+            opts.RecordException = true;
+            opts.Filter = ctx => true; // keep it simple; filter later if needed
+        });
+        tb.AddHttpClientInstrumentation();
+
+        // Export to Collector (same endpoint you already use)
+        tb.AddOtlpExporter(o =>
+        {
+            o.Endpoint = new Uri("http://localhost:4317");
+        });
     });
 
 
