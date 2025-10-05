@@ -24,16 +24,14 @@ export const useFlagOperations = (organization, project, selectedEnvironment) =>
 	// Handle flag toggle
 	const handleFlagToggle = async (flag, newEnabled) => {
 		console.log('Toggle attempt:', { flagId: flag.id, flagKey: flag.key, newEnabled, currentEnabled: flag.enabled });
-		
+		console.log(localFlags);
+
 		// Immediately update local state for instant UI feedback
 		setLocalFlags(prev => {
-			if (!prev || !prev.data) return prev;
-			return {
-				...prev,
-				data: prev.data.map(f =>
-					f.id === flag.id ? { ...f, enabled: newEnabled } : f
-				)
-			};
+			if (!prev) return prev;
+			return prev.map(f =>
+				f.id === flag.id ? { ...f, enabled: newEnabled } : f
+			);
 		});
 
 		// Add flag to processing set
@@ -61,13 +59,10 @@ export const useFlagOperations = (organization, project, selectedEnvironment) =>
 			console.error('Failed to toggle flag:', error);
 			// Revert the local state change on error
 			setLocalFlags(prev => {
-				if (!prev || !prev.data) return prev;
-				return {
-					...prev,
-					data: prev.data.map(f =>
-						f.id === flag.id ? { ...f, enabled: !newEnabled } : f
-					)
-				};
+				if (!prev) return prev;
+				return prev.map(f =>
+					f.id === flag.id ? { ...f, enabled: !newEnabled } : f
+				);
 			});
 		} finally {
 			// Remove flag from processing set
