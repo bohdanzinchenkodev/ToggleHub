@@ -1,6 +1,12 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using ToggleHub.API.Middleware;
+using ToggleHub.API.Settings;
 using ToggleHub.Infrastructure.Constants;
 
 namespace ToggleHub.API.Extensions;
@@ -23,6 +29,56 @@ public static class ServiceCollectionExtensions
                 policy.AddAuthenticationSchemes(AuthConstants.AuthSchemes.ApiKey)
                     .RequireAuthenticatedUser());
         });
+
+        return services;
+    }
+    
+    public static IServiceCollection AddOpenTelemetry(this IServiceCollection services, IConfiguration configuration, ILoggingBuilder loggingBuilder)
+    {
+        var openTelemetrySettings = configuration.GetSection("OpenTelemetry").Get<OpenTelemetrySettings>();
+        if (openTelemetrySettings is null)
+            return services;
+        
+        services.AddSingleton(openTelemetrySettings);
+        if (!openTelemetrySettings.Enabled)
+            return services;
+        
+        loggingBuilder.ClearProviders();
+        services.AddOpenTelemetry()
+            .ConfigureResource(x => x.AddService(openTelemetrySettings.ServiceName, serviceVersion: openTelemetrySettings.ServiceVersion))
+            .WithLogging(logging =>
+            {
+                logging.AddOtlpExporter(opt =>
+                {
+                    opt.Endpoint = new Uri(openTelemetrySettings.OtlpEndpoint);
+                });
+            })
+            .WithMetrics(mb =>
+            {
+                // Useful built-ins
+                mb.AddAspNetCoreInstrumentation();   // request duration, active reqs, etc.
+                mb.AddHttpClientInstrumentation();   // outgoing HTTP
+                mb.AddRuntimeInstrumentation();      // GC, LOH, exceptions, locks
+                mb.AddProcessInstrumentation();      // CPU, mem, threads (optional)
+
+                // Export to collector via OTLP HTTP
+                mb.AddOtlpExporter(o =>
+                {
+                    o.Endpoint = new Uri(openTelemetrySettings.OtlpEndpoint);
+                });
+            })
+            .WithTracing(tb =>
+            {
+                // Server + client spans
+                
+                    tb.AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddOtlpExporter(o =>
+                {
+                    o.Endpoint = new Uri(openTelemetrySettings.OtlpEndpoint);
+                });
+            });
+        
 
         return services;
     }
