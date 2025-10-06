@@ -12,8 +12,8 @@ using ToggleHub.Infrastructure.Identity.Data;
 namespace ToggleHub.Infrastructure.Identity.Migrations
 {
     [DbContext(typeof(ToggleHubIdentityDbContext))]
-    [Migration("20251006205129_SeedIdentityRoles")]
-    partial class SeedIdentityRoles
+    [Migration("20251006213541_SeedUserRoles")]
+    partial class SeedUserRoles
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
