@@ -2,7 +2,7 @@
 class EnvConfig {
   constructor() {
     // Use Vite's environment variable handling
-    this.API_URL = import.meta.env.VITE_API_URL;
+    this.API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5160';
   }
 
   getApiUrl() {
