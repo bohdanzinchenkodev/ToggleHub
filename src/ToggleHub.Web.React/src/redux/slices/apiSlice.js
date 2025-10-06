@@ -1,9 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { envConfig } from '../../config/env.js';
 
 export const api = createApi({
 	reducerPath: 'api', // key in the store
 	baseQuery: fetchBaseQuery({
-		baseUrl: 'http://localhost:5160/api',
+		baseUrl: `${envConfig.getApiUrl()}/api`,
 		credentials: 'include', // send cookies automatically
 	}),
 	tagTypes: ['Flags', 'User', 'UserPermissions', 'OrganizationInvites', 'OrganizationMembers', 'Organizations', 'Projects'],
