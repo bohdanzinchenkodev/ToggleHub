@@ -6,7 +6,7 @@ using ToggleHub.Domain.Repositories;
 
 namespace ToggleHub.API.Middleware;
 
-public class ApiKeyAuthenticationHandler 
+public class ApiKeyAuthenticationHandler
     : AuthenticationHandler<AuthenticationSchemeOptions>
 {
     private readonly IApiKeyRepository _apiKeyRepo;
@@ -15,9 +15,8 @@ public class ApiKeyAuthenticationHandler
         IOptionsMonitor<AuthenticationSchemeOptions> options,
         ILoggerFactory logger,
         UrlEncoder encoder,
-        ISystemClock clock,
         IApiKeyRepository apiKeyRepo)
-        : base(options, logger, encoder, clock)
+        : base(options, logger, encoder)  
     {
         _apiKeyRepo = apiKeyRepo;
     }
@@ -30,30 +29,21 @@ public class ApiKeyAuthenticationHandler
         if (!header.ToString().StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
             return AuthenticateResult.Fail("Invalid Authorization scheme");
 
-        var providedKey = header.ToString().Substring("Bearer ".Length).Trim();
+        var providedKey = header.ToString()["Bearer ".Length..].Trim();
 
         var apiKey = await _apiKeyRepo.GetByKeyAsync(providedKey);
-
-        /*if (apiKey is null || !apiKey.IsActive || 
-            (apiKey.ExpiresAt.HasValue && apiKey.ExpiresAt.Value <= DateTime.UtcNow))
-        {
+        if (apiKey is null)
             return AuthenticateResult.Fail("Invalid or expired API key");
-        }*/
-        if (apiKey == null)
-            return AuthenticateResult.Fail("Invalid or expired API key");
-        
 
-        // update last used timestamp
-        apiKey.LastUsedAt = DateTime.UtcNow;
+        apiKey.LastUsedAt = DateTime.UtcNow; 
         await _apiKeyRepo.UpdateAsync(apiKey);
 
-        // Claims (you can later use HttpContext.User.FindFirst("OrgId") to grab these)
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, apiKey.OrganizationId.ToString()),
             new Claim("OrgId", apiKey.OrganizationId.ToString()),
             new Claim("ProjectId", apiKey.ProjectId.ToString()),
-            new Claim("EnvironmentId", apiKey.EnvironmentId.ToString())
+            new Claim("EnvironmentId", apiKey.EnvironmentId.ToString()),
         };
 
         var identity = new ClaimsIdentity(claims, Scheme.Name);
