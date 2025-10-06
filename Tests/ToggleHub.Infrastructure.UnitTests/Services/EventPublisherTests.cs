@@ -27,8 +27,8 @@ namespace ToggleHub.Infrastructure.UnitTests.Services
             consumer2.Setup(c => c.HandleEventAsync(evt)).Returns(Task.CompletedTask).Verifiable();
 
             var services = new ServiceCollection();
-            services.AddSingleton<IConsumer<TestEvent>>(consumer1.Object);
-            services.AddSingleton<IConsumer<TestEvent>>(consumer2.Object);
+            services.AddSingleton(consumer1.Object);
+            services.AddSingleton(consumer2.Object);
 
             var sp = services.BuildServiceProvider();
             var logger = Mock.Of<ILogger<EventPublisher>>();
@@ -56,7 +56,7 @@ namespace ToggleHub.Infrastructure.UnitTests.Services
             var logger = new Mock<ILogger<EventPublisher>>();
 
             var services = new ServiceCollection();
-            services.AddSingleton<IConsumer<TestEvent>>(failingConsumer.Object);
+            services.AddSingleton(failingConsumer.Object);
 
             var sp = services.BuildServiceProvider();
 

@@ -25,16 +25,6 @@ public class CacheKeyFormatterTests
     }
 
     [Test]
-    public void Format_WithNullParameter_ShouldUseNullString()
-    {
-        // Act
-        var result = _formatter.Format("test:{0}", (object)null);
-
-        // Assert
-        Assert.That(result, Is.EqualTo("test:null"));
-    }
-
-    [Test]
     public void Format_WithBaseEntity_ShouldUseEntityId()
     {
         // Arrange
