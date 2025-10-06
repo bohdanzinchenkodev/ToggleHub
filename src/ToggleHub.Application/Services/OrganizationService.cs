@@ -39,7 +39,7 @@ public class OrganizationService : IOrganizationService
         var entity = createDto.ToEntity();
 
         entity.Slug = await _slugGenerator.GenerateAsync(entity.Name,
-            async baseSlug => await _organizationRepository.GetSlugsByPatternAsync<Organization>(baseSlug));
+            async baseSlug => await _organizationRepository.GetSlugsByPatternAsync(baseSlug));
         entity.CreatedAt = DateTime.UtcNow;
         entity = await _organizationRepository.CreateAsync(entity);
         
@@ -75,7 +75,7 @@ public class OrganizationService : IOrganizationService
                 throw new ApplicationException($"Organization with name {updateDto.Name} already exists");
             
             slug = await _slugGenerator.GenerateAsync(updateDto.Name,
-                async baseSlug => await _organizationRepository.GetSlugsByPatternAsync<Organization>(baseSlug));
+                async baseSlug => await _organizationRepository.GetSlugsByPatternAsync(baseSlug));
         }
         
         

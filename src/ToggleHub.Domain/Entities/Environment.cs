@@ -13,5 +13,5 @@ public class Environment : BaseEntity
     public int ProjectId { get; set; }
     
     // Navigation property
-    public Project Project { get; set; }
+    public Project? Project { get; set; }
 }

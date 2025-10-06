@@ -31,7 +31,7 @@ public abstract class BaseSluggedRepository<T> : BaseRepository<T>, IBaseSlugged
                     .FirstOrDefaultAsync(entity => entity.Slug == slug);
             });
     }
-    public async Task<IEnumerable<string>> GetSlugsByPatternAsync<T>(string baseSlug) where T : BaseEntity, ISluggedEntity
+    public async Task<IEnumerable<string>> GetSlugsByPatternAsync(string baseSlug) 
     {
         var dbSet = _context.Set<T>();
         return await dbSet
