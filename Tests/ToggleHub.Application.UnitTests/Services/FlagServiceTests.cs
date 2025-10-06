@@ -121,7 +121,7 @@ public class FlagServiceTests
     }
 
     [Test]
-    public async Task CreateAsync_WithInvalidValidation_ShouldThrowValidationException()
+    public void CreateAsync_WithInvalidValidation_ShouldThrowValidationException()
     {
         // Arrange
         var createDto = new CreateFlagDto
@@ -157,7 +157,7 @@ public class FlagServiceTests
     }
 
     [Test]
-    public async Task CreateAsync_WithNonExistentEnvironment_ShouldThrowApplicationException()
+    public void CreateAsync_WithNonExistentEnvironment_ShouldThrowApplicationException()
     {
         // Arrange
         var createDto = new CreateFlagDto
@@ -193,7 +193,7 @@ public class FlagServiceTests
     }
 
     [Test]
-    public async Task CreateAsync_WithNonExistentProject_ShouldThrowApplicationException()
+    public void CreateAsync_WithNonExistentProject_ShouldThrowApplicationException()
     {
         // Arrange
         var createDto = new CreateFlagDto
@@ -238,7 +238,7 @@ public class FlagServiceTests
     }
 
     [Test]
-    public async Task CreateAsync_WithExistingKey_ShouldThrowApplicationException()
+    public void CreateAsync_WithExistingKey_ShouldThrowApplicationException()
     {
         // Arrange
         var createDto = new CreateFlagDto
@@ -351,7 +351,7 @@ public class FlagServiceTests
     }
 
     [Test]
-    public async Task UpdateAsync_WithInvalidValidation_ShouldThrowValidationException()
+    public void UpdateAsync_WithInvalidValidation_ShouldThrowValidationException()
     {
         // Arrange
         var updateDto = new UpdateFlagDto
@@ -386,7 +386,7 @@ public class FlagServiceTests
     }
 
     [Test]
-    public async Task UpdateAsync_WithNonExistentId_ShouldThrowApplicationException()
+    public void UpdateAsync_WithNonExistentId_ShouldThrowApplicationException()
     {
         // Arrange
         var updateDto = new UpdateFlagDto

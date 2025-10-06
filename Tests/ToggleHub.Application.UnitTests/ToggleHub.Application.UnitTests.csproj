@@ -7,6 +7,7 @@
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
         <RootNamespace>ToggleHub.Application.UnitTests</RootNamespace>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
 
     <ItemGroup>

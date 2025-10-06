@@ -89,7 +89,7 @@ public class OrganizationServiceTests
     }
 
     [Test]
-    public async Task CreateAsync_WithInvalidValidation_ShouldThrowValidationException()
+    public void CreateAsync_WithInvalidValidation_ShouldThrowValidationException()
     {
         // Arrange
         var createDto = new CreateOrganizationDto
@@ -117,7 +117,7 @@ public class OrganizationServiceTests
     }
 
     [Test]
-    public async Task CreateAsync_WithExistingName_ShouldThrowApplicationException()
+    public void CreateAsync_WithExistingName_ShouldThrowApplicationException()
     {
         // Arrange
         var createDto = new CreateOrganizationDto
@@ -191,7 +191,7 @@ public class OrganizationServiceTests
     }
 
     [Test]
-    public async Task UpdateAsync_WithInvalidValidation_ShouldThrowValidationException()
+    public void UpdateAsync_WithInvalidValidation_ShouldThrowValidationException()
     {
         // Arrange
         var updateDto = new UpdateOrganizationDto
@@ -221,7 +221,7 @@ public class OrganizationServiceTests
     }
 
     [Test]
-    public async Task UpdateAsync_WithNonExistentId_ShouldThrowApplicationException()
+    public void UpdateAsync_WithNonExistentId_ShouldThrowApplicationException()
     {
         // Arrange
         var updateDto = new UpdateOrganizationDto
@@ -251,7 +251,7 @@ public class OrganizationServiceTests
     }
 
     [Test]
-    public async Task UpdateAsync_WithExistingName_ShouldThrowApplicationException()
+    public void UpdateAsync_WithExistingName_ShouldThrowApplicationException()
     {
         // Arrange
         var updateDto = new UpdateOrganizationDto

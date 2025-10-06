@@ -100,7 +100,7 @@ public class ProjectServiceTests
     }
 
     [Test]
-    public async Task CreateAsync_WithInvalidValidation_ShouldThrowValidationException()
+    public void CreateAsync_WithInvalidValidation_ShouldThrowValidationException()
     {
         // Arrange
         var createDto = new CreateProjectDto
@@ -130,7 +130,7 @@ public class ProjectServiceTests
     }
 
     [Test]
-    public async Task CreateAsync_WithNonExistentOrganization_ShouldThrowApplicationException()
+    public void CreateAsync_WithNonExistentOrganization_ShouldThrowApplicationException()
     {
         // Arrange
         var createDto = new CreateProjectDto
@@ -160,7 +160,7 @@ public class ProjectServiceTests
     }
 
     [Test]
-    public async Task CreateAsync_WithExistingNameInOrganization_ShouldThrowApplicationException()
+    public void CreateAsync_WithExistingNameInOrganization_ShouldThrowApplicationException()
     {
         // Arrange
         var createDto = new CreateProjectDto
@@ -262,7 +262,7 @@ public class ProjectServiceTests
     }
 
     [Test]
-    public async Task UpdateAsync_WithInvalidValidation_ShouldThrowValidationException()
+    public void UpdateAsync_WithInvalidValidation_ShouldThrowValidationException()
     {
         // Arrange
         var updateDto = new UpdateProjectDto
@@ -293,7 +293,7 @@ public class ProjectServiceTests
     }
 
     [Test]
-    public async Task UpdateAsync_WithNonExistentId_ShouldThrowApplicationException()
+    public void UpdateAsync_WithNonExistentId_ShouldThrowApplicationException()
     {
         // Arrange
         var updateDto = new UpdateProjectDto
@@ -324,7 +324,7 @@ public class ProjectServiceTests
     }
 
     [Test]
-    public async Task UpdateAsync_WithExistingNameInOrganization_ShouldThrowApplicationException()
+    public void UpdateAsync_WithExistingNameInOrganization_ShouldThrowApplicationException()
     {
         // Arrange
         var updateDto = new UpdateProjectDto
