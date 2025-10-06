@@ -15,7 +15,7 @@ public static class UserMapping
             LastName = user.LastName,
             Roles = user.UserRoles?.Select(ur => new UserRoleDto
             {
-                Id = ur.Role.Id,
+                Id = ur.Role!.Id,
                 Role = ur.Role.Name!
             }).ToList() ?? new List<UserRoleDto>(),
         };

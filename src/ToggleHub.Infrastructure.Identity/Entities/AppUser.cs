@@ -6,5 +6,5 @@ public class AppUser : IdentityUser<int>
 {
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
-    public virtual ICollection<AppUserRole> UserRoles { get; set; }
+    public virtual ICollection<AppUserRole> UserRoles { get; set; } = new List<AppUserRole>();
 }
