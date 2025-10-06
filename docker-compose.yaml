@@ -1,33 +1,122 @@
 version: "3.8"
 
 services:
+  # ---------------------- Database ----------------------
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: ${COMPOSE_PROJECT_NAME:-togglehub}-sql
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "127.0.0.1:${SQL_PORT}:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost,1433 -U sa -P ${DB_PASSWORD} -C -Q 'SELECT 1'"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+
+  # ---------------------- API ----------------------
+  togglehub-api:
+    build:
+      context: .
+      dockerfile: src/ToggleHub.API/Dockerfile
+    container_name: ${COMPOSE_PROJECT_NAME:-togglehub}-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=${DB_NAME};User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=true;
+      - ApplicationUrls__ClientBaseUrl=${CLIENT_BASE_URL}
+      - ApplicationUrls__ApiBaseUrl=${API_BASE_URL}
+      - OpenTelemetry__Enabled=${OTEL_ENABLED}
+      - OpenTelemetry__ServiceName=${OTEL_SERVICE_NAME}
+      - OpenTelemetry__ServiceVersion=${OTEL_SERVICE_VERSION}
+      - OpenTelemetry__OtlpEndpoint=${OTEL_OTLP_ENDPOINT}
+      - Mail__Provider=${MAIL_PROVIDER}
+      - Mailpit__Host=${MAILPIT_HOST}
+      - Mailpit__Port=${MAILPIT_PORT}
+      - Mailpit__FromEmail=${MAILPIT_FROM_EMAIL}
+      - Mailpit__FromName=${MAILPIT_FROM_NAME}
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
+    ports:
+      - "127.0.0.1:${API_PORT}:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # ---------------------- Frontend (Vite build -> static) ----------------------
+  togglehub-frontend:
+    build:
+      context: src/ToggleHub.Web.React
+      dockerfile: Dockerfile
+      args:
+        # Build-time: point the SPA at the API exposed on the host
+        - VITE_API_URL=http://localhost:${API_PORT}
+    container_name: ${COMPOSE_PROJECT_NAME:-togglehub}-web
+    depends_on:
+      togglehub-api:
+        condition: service_started
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT}:3001"
+    restart: unless-stopped
+
+  # ---------------------- Mailpit (SMTP + Web UI) ----------------------
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: ${COMPOSE_PROJECT_NAME:-togglehub}-mailpit
+    environment:
+      - MP_SMTP_AUTH_ACCEPT_ANY=1
+      - MP_SMTP_AUTH_ALLOW_INSECURE=1
+    ports:
+      - "127.0.0.1:${MAILPIT_WEB_PORT}:8025"
+      - "127.0.0.1:${MAILPIT_SMTP_PORT}:1025"
+    restart: unless-stopped
+
+  # ---------------------- Loki (logs) ----------------------
   loki:
     image: grafana/loki:3.5.5
+    container_name: ${COMPOSE_PROJECT_NAME:-togglehub}-loki
     ports:
-      - "3100:3100"
+      - "127.0.0.1:${LOKI_PORT}:3100"
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3100/ready"]
       interval: 10s
       timeout: 3s
       retries: 20
+    restart: unless-stopped
 
+  # ---------------------- Tempo (traces) ----------------------
   tempo:
     image: grafana/tempo:2.8.2
+    container_name: ${COMPOSE_PROJECT_NAME:-togglehub}-tempo
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
       - ./tempo.yaml:/etc/tempo.yaml:ro
     ports:
-      - "3200"  # tempo
-      - "4317"  # otlp grpc
-      - "4318"  # otlp http
+      - "127.0.0.1:${TEMPO_HTTP_PORT}:3200"
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3200/ready"]
       interval: 10s
       timeout: 3s
       retries: 20
+    restart: unless-stopped
 
+  # ---------------------- OpenTelemetry Collector ----------------------
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
+    container_name: ${COMPOSE_PROJECT_NAME:-togglehub}-otel
     command: [ "--config=/etc/otel-config.yaml" ]
     volumes:
       - ./otel-config.yaml:/etc/otel-config.yaml:ro
@@ -37,28 +126,32 @@ services:
       tempo:
         condition: service_healthy
     ports:
-      - "4318:4318"   # OTLP HTTP (app → collector)
-      - "4317:4317"   # OTLP gRPC (optional, if your app uses gRPC)
-      - "8889:8889"   # Prometheus scrape endpoint exposed by collector
+      - "127.0.0.1:${OTEL_HTTP_PORT}:4318"   # OTLP HTTP (app → collector)
+      - "127.0.0.1:${OTEL_GRPC_PORT}:4317"   # OTLP gRPC (optional)
+      - "127.0.0.1:${OTEL_METRICS_PORT}:8889"   # Prometheus scrape exposed by collector
+    restart: unless-stopped
 
+  # ---------------------- Prometheus ----------------------
   prometheus:
     image: prom/prometheus:v3.6.0
+    container_name: ${COMPOSE_PROJECT_NAME:-togglehub}-prometheus
     command: [ "--config.file=/etc/prometheus/prometheus.yml" ]
-    ports:
-      - "9090:9090"
     volumes:
       - ./prometheus.yaml:/etc/prometheus/prometheus.yml:ro
     depends_on:
       - otel-collector
+    ports:
+      - "127.0.0.1:${PROMETHEUS_PORT}:9090"
+    restart: unless-stopped
 
+  # ---------------------- Grafana ----------------------
   grafana:
     image: grafana/grafana:12.2.0
-    ports:
-      - "3000:3000"
+    container_name: ${COMPOSE_PROJECT_NAME:-togglehub}-grafana
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_USERS_DEFAULT_THEME=dark
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+      - GF_USERS_DEFAULT_THEME=${GRAFANA_DEFAULT_THEME}
     volumes:
       - ./grafana-datasource.yaml:/etc/grafana/provisioning/datasources/datasources.yaml:ro
     depends_on:
@@ -68,3 +161,9 @@ services:
         condition: service_started
       tempo:
         condition: service_healthy
+    ports:
+      - "127.0.0.1:${GRAFANA_PORT}:3000"
+    restart: unless-stopped
+
+volumes:
+  sqlserver_data:
