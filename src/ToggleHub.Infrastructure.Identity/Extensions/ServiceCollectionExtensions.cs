@@ -49,4 +49,10 @@ public static class ServiceCollectionExtensions
         
         return services;
     }
+    public static async Task ApplyIdentityMigrationsAsync(this IServiceProvider services, CancellationToken cancellationToken = default)
+    {
+        using var scope = services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ToggleHubIdentityDbContext>();
+        await dbContext.Database.MigrateAsync(cancellationToken);
+    }
 }

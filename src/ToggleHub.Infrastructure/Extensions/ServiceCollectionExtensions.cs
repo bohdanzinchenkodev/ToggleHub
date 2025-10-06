@@ -116,4 +116,11 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+    
+    public static async Task ApplyInfrastructureMigrationsAsync(this IServiceProvider services, CancellationToken cancellationToken = default)
+    {
+        using var scope = services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ToggleHubDbContext>();
+        await dbContext.Database.MigrateAsync(cancellationToken);
+    }
 }

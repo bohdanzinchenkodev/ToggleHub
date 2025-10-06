@@ -47,6 +47,10 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 var app = builder.Build();
 
+// Apply migrations at startup
+await app.Services.ApplyIdentityMigrationsAsync();
+await app.Services.ApplyInfrastructureMigrationsAsync();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
