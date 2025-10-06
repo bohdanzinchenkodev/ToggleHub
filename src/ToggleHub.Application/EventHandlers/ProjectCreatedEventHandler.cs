@@ -34,6 +34,6 @@ public class ProjectCreatedEventHandler : IConsumer<EntityCreatedEvent<Project>>
         
         var project = environments.First().Project;
         
-        await _apiKeyService.CreateApiKeysForEnvironmentsAsync(environments, project.Id);
+        await _apiKeyService.CreateApiKeysForEnvironmentsAsync(environments, project!.Id);
     }
 }
