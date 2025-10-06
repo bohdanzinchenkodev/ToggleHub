@@ -1,5 +1,48 @@
-bin/
-obj/
-/packages/
-riderModule.iml
+# --- OS junk ---
+.DS_Store
+Thumbs.db
+
+# --- Git / tooling ---
+.gitignore
+!.env.dev
+!.env.example
+!.env.prod.example
+
+# --- Env files ---
+.env
+.env.*.local
+
+# --- .NET ---
+**/bin/
+**/obj/
+**/packages/
+*.user
+*.suo
+
+# --- Node / JS ---
+**/node_modules/
+**/dist/
+**/dist-ssr/
+**/.turbo/
+**/.next/
+**/.vite/
+**/coverage/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# --- Editors / IDEs ---
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# --- ReSharper / Rider caches ---
 /_ReSharper.Caches/
+*.DotSettings.user
+
+# --- Docker ---
+**/.dockerignore
+
+# --- Misc project-specific ---
+riderModule.iml
