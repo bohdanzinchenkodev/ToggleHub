@@ -4,7 +4,6 @@ import {
     Route,
     Routes
 } from "react-router";
-import Home from "./pages/Home.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
