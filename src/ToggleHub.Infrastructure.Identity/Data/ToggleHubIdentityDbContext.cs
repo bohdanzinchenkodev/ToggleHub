@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ToggleHub.Infrastructure.Identity.Constants;
 using ToggleHub.Infrastructure.Identity.Entities;
 
 namespace ToggleHub.Infrastructure.Identity.Data;
@@ -13,6 +14,7 @@ public class ToggleHubIdentityDbContext : IdentityDbContext<AppUser, AppRole, in
     }
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        builder.HasDefaultSchema(DbConstants.IdentitySchemeName);
         base.OnModelCreating(builder);
         builder.Entity<AppUser>(b =>
         {

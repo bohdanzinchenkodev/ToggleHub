@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ToggleHub.Application.Interfaces;
+using ToggleHub.Infrastructure.Identity.Constants;
 using ToggleHub.Infrastructure.Identity.Data;
 using ToggleHub.Infrastructure.Identity.Entities;
 using ToggleHub.Infrastructure.Identity.Services;
@@ -17,7 +18,8 @@ public static class ServiceCollectionExtensions
     {
         services.AddDbContext<ToggleHubIdentityDbContext>(options =>
             options.UseSqlServer(
-                configuration.GetConnectionString("DefaultConnection")));
+                configuration.GetConnectionString("DefaultConnection"),
+                sqlOptions => sqlOptions.MigrationsHistoryTable(DbConstants.MigrationHistoryTable, DbConstants.IdentitySchemeName)));
         
         services.AddIdentity<AppUser, AppRole>()
             .AddRoles<AppRole>()   

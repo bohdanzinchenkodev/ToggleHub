@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ToggleHub.Domain.Entities;
+using ToggleHub.Infrastructure.Constants;
 using Environment = ToggleHub.Domain.Entities.Environment;
 
 namespace ToggleHub.Infrastructure.Data;
@@ -24,6 +25,8 @@ public class ToggleHubDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasDefaultSchema(DbConstants.AppSchemeName);
+
         base.OnModelCreating(modelBuilder);
 
         // Configure Organization
@@ -35,7 +38,7 @@ public class ToggleHubDbContext : DbContext
             entity.HasIndex(e => e.Slug).IsUnique();
             entity.Property(e => e.CreatedAt).IsRequired();
         });
-        
+
 
         // Configure OrgMember
         modelBuilder.Entity<OrgMember>(entity =>
@@ -44,42 +47,41 @@ public class ToggleHubDbContext : DbContext
             entity.Property(e => e.OrganizationId).IsRequired();
             entity.Property(e => e.UserId).IsRequired();
             entity.Property(e => e.Role).IsRequired();
-            
+
             entity.HasOne(e => e.Organization)
-                  .WithMany()
-                  .HasForeignKey(e => e.OrganizationId)
-                  .OnDelete(DeleteBehavior.Cascade);
-            
+                .WithMany()
+                .HasForeignKey(e => e.OrganizationId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         // Configure Project
         modelBuilder.Entity<Project>(entity =>
         {
-              entity.HasKey(e => e.Id);
-              entity.Property(e => e.OrganizationId).IsRequired();
-              entity.Property(e => e.Name).IsRequired().HasMaxLength(255);
-              entity.Property(e => e.Slug).IsRequired().HasMaxLength(255);
-              entity.Property(e => e.CreatedAt).IsRequired();
-              entity.HasIndex(e => new { e.OrganizationId, e.Slug }).IsUnique();
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.OrganizationId).IsRequired();
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(255);
+            entity.Property(e => e.Slug).IsRequired().HasMaxLength(255);
+            entity.Property(e => e.CreatedAt).IsRequired();
+            entity.HasIndex(e => new { e.OrganizationId, e.Slug }).IsUnique();
 
-              entity.HasOne(e => e.Organization)
-                    .WithMany()
-                    .HasForeignKey(e => e.OrganizationId)
-                    .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Organization)
+                .WithMany()
+                .HasForeignKey(e => e.OrganizationId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-              // Single, paired mapping for Project↔Environment
-              entity.HasMany(p => p.Environments)
-                    .WithOne(e => e.Project)
-                    .HasForeignKey(e => e.ProjectId)
-                    .IsRequired()
-                    .OnDelete(DeleteBehavior.Cascade);
+            // Single, paired mapping for Project↔Environment
+            entity.HasMany(p => p.Environments)
+                .WithOne(e => e.Project)
+                .HasForeignKey(e => e.ProjectId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Environment>(entity =>
         {
-              entity.HasKey(e => e.Id);
-              entity.Property(e => e.Type).IsRequired();
-              // Do not reconfigure the Project relation here
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Type).IsRequired();
+            // Do not reconfigure the Project relation here
         });
 
         // Configure ApiKey
@@ -90,22 +92,22 @@ public class ToggleHubDbContext : DbContext
             entity.Property(e => e.ProjectId).IsRequired();
             entity.Property(e => e.EnvironmentId).IsRequired();
             entity.Property(e => e.Key).IsRequired();
-            
+
             entity.HasOne(e => e.Organization)
-                  .WithMany()
-                  .HasForeignKey(e => e.OrganizationId)
-                  .OnDelete(DeleteBehavior.Restrict);
-                  
+                .WithMany()
+                .HasForeignKey(e => e.OrganizationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Restrict);
-                  
+                .WithMany()
+                .HasForeignKey(e => e.ProjectId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             entity.HasOne(e => e.Environment)
-                  .WithMany()
-                  .HasForeignKey(e => e.EnvironmentId)
-                  .OnDelete(DeleteBehavior.Cascade);
-            
+                .WithMany()
+                .HasForeignKey(e => e.EnvironmentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             entity.HasIndex(e => e.Key).IsUnique();
         });
 
@@ -119,21 +121,21 @@ public class ToggleHubDbContext : DbContext
             entity.Property(e => e.Description).HasMaxLength(1000);
             entity.Property(e => e.Enabled).IsRequired();
             entity.Property(e => e.UpdatedAt).IsRequired();
-                  
+
             entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Restrict);
-                  
+                .WithMany()
+                .HasForeignKey(e => e.ProjectId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             entity.HasOne(e => e.Environment)
-                  .WithMany()
-                  .HasForeignKey(e => e.EnvironmentId)
-                  .OnDelete(DeleteBehavior.Cascade);
-            
+                .WithMany()
+                .HasForeignKey(e => e.EnvironmentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             entity.HasMany(e => e.RuleSets)
-                    .WithOne(e => e.Flag)
-                    .HasForeignKey(e => e.FlagId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                .WithOne(e => e.Flag)
+                .HasForeignKey(e => e.FlagId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         // Configure Rule
@@ -144,16 +146,16 @@ public class ToggleHubDbContext : DbContext
             entity.Property(e => e.Priority).IsRequired();
             entity.Property(e => e.Percentage).IsRequired().HasDefaultValue(100);
             entity.Property(e => e.BucketingSeed).IsRequired();
-            
+
             entity.HasOne(e => e.Flag)
-                  .WithMany(x => x.RuleSets)
-                  .HasForeignKey(e => e.FlagId)
-                  .OnDelete(DeleteBehavior.Cascade);
-            
+                .WithMany(x => x.RuleSets)
+                .HasForeignKey(e => e.FlagId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             entity.HasMany(e => e.Conditions)
-                    .WithOne(e => e.RuleSet)
-                    .HasForeignKey(e => e.RuleSetId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                .WithOne(e => e.RuleSet)
+                .HasForeignKey(e => e.RuleSetId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         // Configure RuleCondition
@@ -165,31 +167,31 @@ public class ToggleHubDbContext : DbContext
             entity.Property(e => e.FieldType).IsRequired();
             entity.Property(e => e.Operator).IsRequired();
             entity.Property(e => e.ValueString).HasMaxLength(1000);
-            
+
             entity.HasOne(e => e.RuleSet)
-                  .WithMany(rs => rs.Conditions)
-                  .HasForeignKey(e => e.RuleSetId)
-                  .OnDelete(DeleteBehavior.Cascade);
-                  
+                .WithMany(rs => rs.Conditions)
+                .HasForeignKey(e => e.RuleSetId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             entity.HasMany(e => e.Items)
-                    .WithOne()
-                    .HasForeignKey(i => i.RuleConditionId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                .WithOne()
+                .HasForeignKey(i => i.RuleConditionId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
-        
+
         // Configure RuleConditionItem
         modelBuilder.Entity<RuleConditionItem>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.RuleConditionId).IsRequired();
             entity.Property(e => e.ValueString).HasMaxLength(1000);
-            
+
             entity.HasOne(e => e.RuleCondition)
-                  .WithMany(rc => rc.Items)
-                  .HasForeignKey(e => e.RuleConditionId)
-                  .OnDelete(DeleteBehavior.Cascade);
+                .WithMany(rc => rc.Items)
+                .HasForeignKey(e => e.RuleConditionId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
-        
+
         // Configure AuditLog
         modelBuilder.Entity<AuditLog>(entity =>
         {
@@ -203,22 +205,21 @@ public class ToggleHubDbContext : DbContext
             entity.Property(e => e.TargetId).IsRequired();
             entity.Property(e => e.DiffJson).HasMaxLength(8000);
             entity.Property(e => e.CreatedAt).IsRequired();
-            
+
             entity.HasOne(e => e.Organization)
-                  .WithMany()
-                  .HasForeignKey(e => e.OrganizationId)
-                  .OnDelete(DeleteBehavior.Restrict);
-                  
+                .WithMany()
+                .HasForeignKey(e => e.OrganizationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Restrict);
-                  
+                .WithMany()
+                .HasForeignKey(e => e.ProjectId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             entity.HasOne(e => e.Environment)
-                  .WithMany()
-                  .HasForeignKey(e => e.EnvironmentId)
-                  .OnDelete(DeleteBehavior.Cascade);
-            
+                .WithMany()
+                .HasForeignKey(e => e.EnvironmentId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         // Configure OrganizationInvite
@@ -231,12 +232,12 @@ public class ToggleHubDbContext : DbContext
             entity.Property(e => e.CreatedAt).IsRequired();
             entity.Property(e => e.ExpiresAt).IsRequired();
             entity.Property(e => e.Status).IsRequired();
-            
+
             entity.HasOne(e => e.Organization)
-                  .WithMany()
-                  .HasForeignKey(e => e.OrganizationId)
-                  .OnDelete(DeleteBehavior.Cascade);
-            
+                .WithMany()
+                .HasForeignKey(e => e.OrganizationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             entity.HasIndex(e => e.Token).IsUnique();
             entity.HasIndex(e => new { e.OrganizationId, e.Email }).IsUnique();
         });

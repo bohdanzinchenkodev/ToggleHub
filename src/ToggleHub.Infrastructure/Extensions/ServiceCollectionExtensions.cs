@@ -22,7 +22,8 @@ public static class ServiceCollectionExtensions
     {
         // Add DbContext
         services.AddDbContext<ToggleHubDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
+                sqlOptions => sqlOptions.MigrationsHistoryTable(DbConstants.MigrationHistoryTable, DbConstants.AppSchemeName)));
 
         // Register repositories
         services.AddScoped<IOrganizationRepository, OrganizationRepository>();
