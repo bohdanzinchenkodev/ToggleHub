@@ -1,0 +1,99 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    env:
+      SHA: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # WEB (bake API URL)
+      - name: Build&Push WEB (multi-arch)
+        run: |
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/togglehub-web:${SHA::7} \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/togglehub-web:latest \
+            --build-arg VITE_API_URL=${{ secrets.API_URL }} \
+            src/ToggleHub.Web.React --push
+
+      # API
+      - name: Build&Push API (multi-arch)
+        run: |
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/togglehub-api:${SHA::7} \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/togglehub-api:latest \
+            -f src/ToggleHub.API/Dockerfile \
+            . --push
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # upload compose file to server
+      - name: Copy compose to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "docker-compose.prod.yml"
+          target: "/opt/togglehub"
+
+      # create/update .env.prod on server from secrets
+      - name: Write .env.prod on server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            mkdir -p /opt/togglehub
+            cat > /opt/togglehub/.env.prod <<'EOF'
+  ROOT_DOMAIN=${{ secrets.ROOT_DOMAIN }}
+  LETSENCRYPT_EMAIL=${{ secrets.LETSENCRYPT_EMAIL }}
+  
+  IMAGE_API=${{ secrets.DOCKERHUB_USERNAME }}/togglehub-api:${{ github.sha }}
+  IMAGE_WEB=${{ secrets.DOCKERHUB_USERNAME }}/togglehub-web:${{ github.sha }}
+  
+  ASPNETCORE_ENVIRONMENT=Production
+  CLIENT_BASE_URL=https://app.${{ secrets.ROOT_DOMAIN }}
+  API_BASE_URL=${{ secrets.API_URL }}
+  
+  SQLSERVER_CONNECTION=${{ secrets.SQL_CONNECTION }}
+  
+  MAIL_PROVIDER=SendGrid
+  SENDGRID_FROM_EMAIL=${{ secrets.SENDGRID_FROM_EMAIL }}
+  SENDGRID_FROM_NAME=${{ secrets.SENDGRID_FROM_NAME }}
+  SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}
+  
+  OTEL_ENABLED=false
+  EOF
+
+# deploy
+- name: Deploy compose
+  uses: appleboy/ssh-action@v1.2.0
+  with:
+    host: ${{ secrets.SSH_HOST }}
+    username: ${{ secrets.SSH_USER }}
+    key: ${{ secrets.SSH_PRIVATE_KEY }}
+    script: |
+      set -e
+      cd /opt/togglehub
+      docker compose -f docker-compose.prod.yml --env-file .env.prod pull
+      docker compose -f docker-compose.prod.yml --env-file .env.prod up -d
+      docker image prune -f
