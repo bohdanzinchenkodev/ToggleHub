@@ -63,37 +63,38 @@ jobs:
           script: |
             set -e
             mkdir -p /opt/togglehub
-            cat > /opt/togglehub/.env.prod <<'EOF'
-  ROOT_DOMAIN=${{ secrets.ROOT_DOMAIN }}
-  LETSENCRYPT_EMAIL=${{ secrets.LETSENCRYPT_EMAIL }}
-  
-  IMAGE_API=${{ secrets.DOCKERHUB_USERNAME }}/togglehub-api:${{ github.sha }}
-  IMAGE_WEB=${{ secrets.DOCKERHUB_USERNAME }}/togglehub-web:${{ github.sha }}
-  
-  ASPNETCORE_ENVIRONMENT=Production
-  CLIENT_BASE_URL=https://app.${{ secrets.ROOT_DOMAIN }}
-  API_BASE_URL=${{ secrets.API_URL }}
-  
-  SQLSERVER_CONNECTION=${{ secrets.SQL_CONNECTION }}
-  
-  MAIL_PROVIDER=SendGrid
-  SENDGRID_FROM_EMAIL=${{ secrets.SENDGRID_FROM_EMAIL }}
-  SENDGRID_FROM_NAME=${{ secrets.SENDGRID_FROM_NAME }}
-  SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}
-  
-  OTEL_ENABLED=false
-  EOF
+            printf "%s\n" \
+              "ROOT_DOMAIN=${{ secrets.ROOT_DOMAIN }}" \
+              "LETSENCRYPT_EMAIL=${{ secrets.LETSENCRYPT_EMAIL }}" \
+              "" \
+              "IMAGE_API=${{ secrets.DOCKERHUB_USERNAME }}/togglehub-api:${{ github.sha }}" \
+              "IMAGE_WEB=${{ secrets.DOCKERHUB_USERNAME }}/togglehub-web:${{ github.sha }}" \
+              "" \
+              "ASPNETCORE_ENVIRONMENT=Production" \
+              "CLIENT_BASE_URL=https://app.${{ secrets.ROOT_DOMAIN }}" \
+              "API_BASE_URL=${{ secrets.API_URL }}" \
+              "" \
+              "SQLSERVER_CONNECTION=${{ secrets.SQL_CONNECTION }}" \
+              "" \
+              "MAIL_PROVIDER=SendGrid" \
+              "SENDGRID_FROM_EMAIL=${{ secrets.SENDGRID_FROM_EMAIL }}" \
+              "SENDGRID_FROM_NAME=${{ secrets.SENDGRID_FROM_NAME }}" \
+              "SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}" \
+              "" \
+              "OTEL_ENABLED=false" \
+              > /opt/togglehub/.env.prod
 
-# deploy
-- name: Deploy compose
-  uses: appleboy/ssh-action@v1.2.0
-  with:
-    host: ${{ secrets.SSH_HOST }}
-    username: ${{ secrets.SSH_USER }}
-    key: ${{ secrets.SSH_PRIVATE_KEY }}
-    script: |
-      set -e
-      cd /opt/togglehub
-      docker compose -f docker-compose.prod.yml --env-file .env.prod pull
-      docker compose -f docker-compose.prod.yml --env-file .env.prod up -d
-      docker image prune -f
+
+      # deploy
+      - name: Deploy compose
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            cd /opt/togglehub
+            docker compose -f docker-compose.prod.yml --env-file .env.prod pull
+            docker compose -f docker-compose.prod.yml --env-file .env.prod up -d
+            docker image prune -f
