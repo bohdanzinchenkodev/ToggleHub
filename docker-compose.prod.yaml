@@ -29,7 +29,7 @@ services:
     restart: unless-stopped
 
   togglehub-api:
-    image: ${IMAGE_API}:latest
+    image: ${IMAGE_API}
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - ASPNETCORE_URLS=http://+:8080
@@ -51,7 +51,7 @@ services:
     restart: unless-stopped
 
   togglehub-frontend:
-    image: ${IMAGE_WEB}:latest
+    image: ${IMAGE_WEB}
     labels:
       - traefik.enable=true
       - traefik.http.routers.app.rule=Host(`app.${ROOT_DOMAIN}`)
