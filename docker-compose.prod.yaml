@@ -57,6 +57,6 @@ services:
       - traefik.http.routers.app.rule=Host(`app.${ROOT_DOMAIN}`)
       - traefik.http.routers.app.entrypoints=websecure
       - traefik.http.routers.app.tls.certresolver=le
-      - traefik.http.services.app.loadbalancer.server.port=3001
+      - traefik.http.services.app.loadbalancer.server.port=80
     networks: [internal, edge]
     restart: unless-stopped
