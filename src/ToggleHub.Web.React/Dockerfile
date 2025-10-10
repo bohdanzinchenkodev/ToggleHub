@@ -16,11 +16,9 @@ ENV VITE_API_URL=${VITE_API_URL}
 RUN npm run build
 
 # Runtime stage
-FROM node:20-alpine
-WORKDIR /app
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
 
-RUN npm install -g serve
-COPY --from=build /app/dist ./dist
-
-EXPOSE 3001
-CMD ["serve", "-s", "dist", "-l", "3001", "--no-clipboard"]
+# (Optional) add custom nginx.conf if needed
+EXPOSE 80
+CMD ["nginx","-g","daemon off;"]
