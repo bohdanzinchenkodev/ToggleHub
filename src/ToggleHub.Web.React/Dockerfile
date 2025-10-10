@@ -12,13 +12,13 @@ COPY . ./
 ARG VITE_API_URL
 ENV VITE_API_URL=${VITE_API_URL}
 
-# Build (Vite reads from ENV, or falls back to .env.production)
+# Build 
 RUN npm run build
 
 # Runtime stage
 FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# (Optional) add custom nginx.conf if needed
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 CMD ["nginx","-g","daemon off;"]
