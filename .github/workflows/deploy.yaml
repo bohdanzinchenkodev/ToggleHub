@@ -3,6 +3,10 @@ name: Build & Deploy
 on:
   push:
     branches: [ master ]
+    
+env:
+  REG_USER: ${{ secrets.DOCKERHUB_USERNAME }}
+  SHA: ${{ github.sha }}
 
 jobs:
   build-web:
