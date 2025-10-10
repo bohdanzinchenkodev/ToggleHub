@@ -60,18 +60,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      # Ensure target folder exists and is writable (fixes your scp error)
-      - name: Prepare /opt/togglehub on server
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            set -e
-            sudo mkdir -p /opt/togglehub
-            sudo chown $USER:$USER /opt/togglehub
             
       - name: Copy compose to server
         uses: appleboy/scp-action@v0.1.7
