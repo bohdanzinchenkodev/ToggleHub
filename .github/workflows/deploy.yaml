@@ -89,7 +89,7 @@ jobs:
             IMAGE_WEB=${{ secrets.DOCKERHUB_USERNAME }}/togglehub-web:${{ github.sha }}
             
             ASPNETCORE_ENVIRONMENT=Production
-            CLIENT_BASE_URL=https://app.${{ secrets.ROOT_DOMAIN }}
+            CLIENT_BASE_URL=https://${{ secrets.ROOT_DOMAIN }}
             API_BASE_URL=${{ secrets.API_URL }}
             
             SQLSERVER_CONNECTION=${{ secrets.SQL_CONNECTION }}
