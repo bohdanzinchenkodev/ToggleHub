@@ -46,16 +46,20 @@ public static class ServiceCollectionExtensions
         
         loggingBuilder.ClearProviders();
         loggingBuilder.AddConsole();
+        loggingBuilder.AddOpenTelemetry(o =>
+        {
+            o.IncludeFormattedMessage = true;
+            o.IncludeScopes = true;
+            o.ParseStateValues = true;
+            o.AddOtlpExporter(exp =>
+            {
+                exp.Endpoint = new Uri(openTelemetrySettings.OtlpEndpoint);   
+                exp.Protocol = OtlpExportProtocol.HttpProtobuf; 
+            });
+        });
         services.AddOpenTelemetry()
             .ConfigureResource(x => x.AddService(openTelemetrySettings.ServiceName, serviceVersion: openTelemetrySettings.ServiceVersion))
-            .WithLogging(logging =>
-            {
-                logging.AddOtlpExporter(opt =>
-                {
-                    opt.Endpoint = new Uri(openTelemetrySettings.OtlpEndpoint);
-                    opt.Protocol = OtlpExportProtocol.HttpProtobuf;
-                });
-            })
+            
             .WithMetrics(mb =>
             {
                 // Useful built-ins
