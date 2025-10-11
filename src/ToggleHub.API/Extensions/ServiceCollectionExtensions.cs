@@ -90,7 +90,7 @@ public static class ServiceCollectionExtensions
                     .AddHttpClientInstrumentation()
                     .AddOtlpExporter(o =>
                     {
-                        o.Endpoint = new Uri(openTelemetrySettings.OtlpEndpointMetrics);
+                        o.Endpoint = new Uri(openTelemetrySettings.OtlpEndpointTraces);
                         o.Protocol = OtlpExportProtocol.HttpProtobuf;
                     });
             });
