@@ -102,6 +102,10 @@ jobs:
             SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}
             
             OTEL_ENABLED=${{ secrets.OTEL_ENABLED }}
+            OTEL_SERVICE_NAME=${{ secrets.OTEL_SERVICE_NAME }}
+            OTEL_SERVICE_VERSION=${{ secrets.OTEL_SERVICE_VERSION }}
+            OTEL_OTLP_ENDPOINT=${{ secrets.OTEL_OTLP_ENDPOINT }}
+            
             GRAFANA_CLOUD_OTLP_ENDPOINT=${{ secrets.GRAFANA_CLOUD_OTLP_ENDPOINT }}
             GRAFANA_CLOUD_INSTANCE_ID=${{ secrets.GRAFANA_CLOUD_INSTANCE_ID }}
             GRAFANA_CLOUD_API_KEY=${{ secrets.GRAFANA_CLOUD_API_KEY }}
