@@ -69,9 +69,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: |
-            docker-compose.prod.yaml
-            otel-config.prod.yaml
+          source: "docker-compose.prod.yaml,otel-config.prod.yaml"
           target: "/opt/togglehub"
 
 
