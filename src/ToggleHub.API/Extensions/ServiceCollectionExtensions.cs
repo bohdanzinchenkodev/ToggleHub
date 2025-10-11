@@ -45,9 +45,13 @@ public static class ServiceCollectionExtensions
             return services;
         
         loggingBuilder.ClearProviders();
-        loggingBuilder.AddConsole();
         loggingBuilder.AddOpenTelemetry(o =>
         {
+            o
+                .SetResourceBuilder(
+                    ResourceBuilder.CreateDefault()
+                        .AddService(openTelemetrySettings.ServiceName, serviceVersion: openTelemetrySettings.ServiceVersion))
+                .AddConsoleExporter();
             o.IncludeFormattedMessage = true;
             o.IncludeScopes = true;
             o.ParseStateValues = true;
@@ -57,7 +61,7 @@ public static class ServiceCollectionExtensions
                 exp.Protocol = OtlpExportProtocol.HttpProtobuf; 
             });
         });
-        services.AddOpenTelemetry()
+        /*services.AddOpenTelemetry()
             .ConfigureResource(x => x.AddService(openTelemetrySettings.ServiceName, serviceVersion: openTelemetrySettings.ServiceVersion))
             
             .WithMetrics(mb =>
@@ -86,7 +90,7 @@ public static class ServiceCollectionExtensions
                     o.Endpoint = new Uri(openTelemetrySettings.OtlpEndpoint);
                     o.Protocol = OtlpExportProtocol.HttpProtobuf;
                 });
-            });
+            });*/
         
 
         return services;
