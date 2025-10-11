@@ -63,13 +63,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
             
-      - name: Copy compose to server
+      - name: Copy compose & otel config
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "docker-compose.prod.yaml"
+          source: |
+            docker-compose.prod.yaml
+            otel-config.prod.yaml
           target: "/opt/togglehub"
 
 
@@ -101,17 +103,8 @@ jobs:
             SENDGRID_FROM_NAME=${{ secrets.SENDGRID_FROM_NAME }}
             SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}
             
-            OTEL_ENABLED=true
-            GRAFANA_CLOUD_OTLP_ENDPOINT=${{ secrets.GRAFANA_CLOUD_OTLP_ENDPOINT }}
-            GRAFANA_CLOUD_INSTANCE_ID=${{ secrets.GRAFANA_CLOUD_INSTANCE_ID }}
-            GRAFANA_CLOUD_API_KEY=${{ secrets.GRAFANA_CLOUD_API_KEY }}
-          
+            OTEL_ENABLED=false
             EOF
-            
-            cat > /opt/togglehub/otelcol-config.yaml <<'YAML'
-            ${{ secrets.GRAFANA_CLOUD_OTEL_CONFIG }}
-            
-            YAML
 
       # deploy
       - name: Deploy compose

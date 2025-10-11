@@ -91,7 +91,7 @@ services:
       - GRAFANA_CLOUD_INSTANCE_ID=${GRAFANA_CLOUD_INSTANCE_ID}
       - GRAFANA_CLOUD_API_KEY=${GRAFANA_CLOUD_API_KEY}
     volumes:
-      - ./otel-config.dev.yaml:/etc/otelcol-contrib/config.yaml:ro
+      - /opt/togglehub/otel-config.prod.yaml:/etc/otelcol-contrib/config.yaml:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
       - "4317:4317"   # OTLP/gRPC (optional to expose)
