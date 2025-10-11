@@ -24,7 +24,6 @@ export const ENVIRONMENT_STYLES = {
 		py: 2,
 		border: 2,
 		textAlign: 'center',
-		minWidth: 200,
 		fontWeight: 'medium'
 	},
 	CONTENT_CHIP: {
@@ -41,7 +40,7 @@ export const ENVIRONMENT_STYLES = {
 export const getEnvironmentStyle = (environmentType, styleType = 'SIDEBAR_TAB') => {
 	const baseStyle = ENVIRONMENT_STYLES[styleType];
 	const color = getEnvironmentColor(environmentType);
-	
+
 	return {
 		...baseStyle,
 		borderColor: color,

@@ -32,7 +32,7 @@ const EnvironmentTabs = ({ environments, selectedTab, onTabChange }) => {
 							<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
 								<Box sx={{
 									...getEnvironmentStyle(environment.type, 'SIDEBAR_TAB'),
-									minWidth: { xs: 100, md: 200 },
+									width: '90%',
 									px: { xs: 2, md: 3 }
 								}}>
 									{environment.type}
