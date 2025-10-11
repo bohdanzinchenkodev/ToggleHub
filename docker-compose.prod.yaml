@@ -27,6 +27,9 @@ services:
       - traefik_letsencrypt:/letsencrypt
     networks: [edge]
     restart: unless-stopped
+    depends_on:
+      - togglehub-api
+      - togglehub-frontend
 
   togglehub-api:
     image: ${IMAGE_API}
