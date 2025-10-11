@@ -80,3 +80,20 @@ services:
       - traefik.http.middlewares.redirect-to-apex.redirectregex.permanent=true
     networks: [internal, edge]
     restart: unless-stopped
+    
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    environment:
+      - GRAFANA_CLOUD_OTLP_ENDPOINT=${GRAFANA_CLOUD_OTLP_ENDPOINT}
+      - GRAFANA_CLOUD_INSTANCE_ID=${GRAFANA_CLOUD_INSTANCE_ID}
+      - GRAFANA_CLOUD_API_KEY=${GRAFANA_CLOUD_API_KEY}
+    volumes:
+      - ./otel-config.dev.yaml:/etc/otelcol-contrib/config.yaml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "4317:4317"   # OTLP/gRPC (optional to expose)
+      - "4318:4318"   # OTLP/HTTP (optional to expose)
+    networks: [internal]
+    restart: unless-stopped
+
+  
