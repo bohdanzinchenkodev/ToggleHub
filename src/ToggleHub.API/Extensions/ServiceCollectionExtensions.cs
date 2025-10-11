@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -51,6 +52,7 @@ public static class ServiceCollectionExtensions
                 logging.AddOtlpExporter(opt =>
                 {
                     opt.Endpoint = new Uri(openTelemetrySettings.OtlpEndpoint);
+                    opt.Protocol = OtlpExportProtocol.HttpProtobuf;
                 });
             })
             .WithMetrics(mb =>
@@ -65,6 +67,7 @@ public static class ServiceCollectionExtensions
                 mb.AddOtlpExporter(o =>
                 {
                     o.Endpoint = new Uri(openTelemetrySettings.OtlpEndpoint);
+                    o.Protocol = OtlpExportProtocol.HttpProtobuf;
                 });
             })
             .WithTracing(tb =>
@@ -76,6 +79,7 @@ public static class ServiceCollectionExtensions
                     .AddOtlpExporter(o =>
                 {
                     o.Endpoint = new Uri(openTelemetrySettings.OtlpEndpoint);
+                    o.Protocol = OtlpExportProtocol.HttpProtobuf;
                 });
             });
         
