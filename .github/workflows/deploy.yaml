@@ -101,8 +101,17 @@ jobs:
             SENDGRID_FROM_NAME=${{ secrets.SENDGRID_FROM_NAME }}
             SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}
             
-            OTEL_ENABLED=false
+            OTEL_ENABLED=true
+            GRAFANA_CLOUD_OTLP_ENDPOINT=${{ secrets.GRAFANA_CLOUD_OTLP_ENDPOINT }}
+            GRAFANA_CLOUD_INSTANCE_ID=${{ secrets.GRAFANA_CLOUD_INSTANCE_ID }}
+            GRAFANA_CLOUD_API_KEY=${{ secrets.GRAFANA_CLOUD_API_KEY }}
+          
             EOF
+            
+            cat > /opt/togglehub/otelcol-config.yaml <<'YAML'
+            ${{ secrets.GRAFANA_CLOUD_OTEL_CONFIG }}
+            
+            YAML
 
       # deploy
       - name: Deploy compose

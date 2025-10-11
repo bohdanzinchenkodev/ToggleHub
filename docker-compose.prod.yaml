@@ -41,6 +41,9 @@ services:
       - SendGrid__FromEmail=${SENDGRID_FROM_EMAIL}
       - SendGrid__FromName=${SENDGRID_FROM_NAME}
       - OpenTelemetry__Enabled=${OTEL_ENABLED}
+      - OpenTelemetry__ServiceName=${OTEL_SERVICE_NAME}
+      - OpenTelemetry__ServiceVersion=${OTEL_SERVICE_VERSION}
+      - OpenTelemetry__OtlpEndpoint=${OTEL_OTLP_ENDPOINT}
     labels:
       - traefik.enable=true
       - traefik.docker.network=edge
