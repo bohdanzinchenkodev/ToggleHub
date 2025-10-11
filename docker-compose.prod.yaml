@@ -43,7 +43,13 @@ services:
       - OpenTelemetry__Enabled=${OTEL_ENABLED}
       - OpenTelemetry__ServiceName=${OTEL_SERVICE_NAME}
       - OpenTelemetry__ServiceVersion=${OTEL_SERVICE_VERSION}
-      - OpenTelemetry__OtlpEndpoint=${OTEL_OTLP_ENDPOINT}
+      - OpenTelemetry__OtlpLogsEnabled=${OTEL_OTLP_LOGS_ENABLED}
+      - OpenTelemetry__OtlpEndpointLogs=${OTEL_OTLP_ENDPOINT_LOGS}
+      - OpenTelemetry__OtlpTracesEnabled=${OTEL_OTLP_TRACES_ENABLED}
+      - OpenTelemetry__OtlpEndpointTraces=${OTEL_OTLP_ENDPOINT_TRACES}
+      - OpenTelemetry__OtlpMetricsEnabled=${OTEL_OTLP_METRICS_ENABLED}
+      - OpenTelemetry__OtlpEndpointMetrics=${OTEL_OTLP_ENDPOINT_METRICS}
+      - OpenTelemetry__OtlpProtocol=${OTEL_OTLP_PROTOCOL}
     labels:
       - traefik.enable=true
       - traefik.docker.network=edge
