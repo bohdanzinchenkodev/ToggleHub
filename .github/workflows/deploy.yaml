@@ -102,6 +102,9 @@ jobs:
             SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}
             
             OTEL_ENABLED=false
+            GRAFANA_CLOUD_OTLP_ENDPOINT=${{ secrets.GRAFANA_CLOUD_OTLP_ENDPOINT }}
+            GRAFANA_CLOUD_INSTANCE_ID=${{ secrets.GRAFANA_CLOUD_INSTANCE_ID }}
+            GRAFANA_CLOUD_API_KEY=${{ secrets.GRAFANA_CLOUD_API_KEY }}
             EOF
 
       # deploy
