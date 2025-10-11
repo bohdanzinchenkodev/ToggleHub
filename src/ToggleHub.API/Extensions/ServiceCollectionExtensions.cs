@@ -41,57 +41,62 @@ public static class ServiceCollectionExtensions
             return services;
         
         services.AddSingleton(openTelemetrySettings);
-        if (!openTelemetrySettings.Enabled)
+        if (!openTelemetrySettings.Enabled || 
+            openTelemetrySettings is { OtlpLogsEnabled: false, OtlpMetricsEnabled: false, OtlpTracesEnabled: false })
             return services;
         
         loggingBuilder.ClearProviders();
         loggingBuilder.AddOpenTelemetry(o =>
         {
-            o
-                .SetResourceBuilder(
+            o.SetResourceBuilder(
                     ResourceBuilder.CreateDefault()
-                        .AddService(openTelemetrySettings.ServiceName, serviceVersion: openTelemetrySettings.ServiceVersion))
-                .AddConsoleExporter();
+                        .AddService(openTelemetrySettings.ServiceName, serviceVersion: openTelemetrySettings.ServiceVersion));
+            o.AddConsoleExporter();
             o.IncludeFormattedMessage = true;
             o.IncludeScopes = true;
             o.ParseStateValues = true;
-            o.AddOtlpExporter(exp =>
-            {
-                exp.Endpoint = new Uri(openTelemetrySettings.OtlpEndpoint);   
-                exp.Protocol = OtlpExportProtocol.HttpProtobuf; 
-            });
+            if(openTelemetrySettings.OtlpLogsEnabled)
+                o.AddOtlpExporter(opt =>
+                {
+                    opt.Endpoint = new Uri(openTelemetrySettings.OtlpEndpointLogs);
+                    opt.Protocol = openTelemetrySettings.GetProtocol();
+                });
         });
-        /*services.AddOpenTelemetry()
-            .ConfigureResource(x => x.AddService(openTelemetrySettings.ServiceName, serviceVersion: openTelemetrySettings.ServiceVersion))
-            
-            .WithMetrics(mb =>
+        var otlpBuilder = services.AddOpenTelemetry()
+            .ConfigureResource(x => x.AddService(openTelemetrySettings.ServiceName, serviceVersion: openTelemetrySettings.ServiceVersion));
+        if (openTelemetrySettings.OtlpMetricsEnabled)
+        {
+            otlpBuilder.WithMetrics(mb =>
             {
                 // Useful built-ins
-                mb.AddAspNetCoreInstrumentation();   // request duration, active reqs, etc.
-                mb.AddHttpClientInstrumentation();   // outgoing HTTP
-                mb.AddRuntimeInstrumentation();      // GC, LOH, exceptions, locks
-                mb.AddProcessInstrumentation();      // CPU, mem, threads (optional)
+                mb.AddAspNetCoreInstrumentation(); // request duration, active reqs, etc.
+                mb.AddHttpClientInstrumentation(); // outgoing HTTP
+                mb.AddRuntimeInstrumentation(); // GC, LOH, exceptions, locks
+                mb.AddProcessInstrumentation(); // CPU, mem, threads (optional)
 
-                // Export to collector via OTLP HTTP
                 mb.AddOtlpExporter(o =>
                 {
-                    o.Endpoint = new Uri(openTelemetrySettings.OtlpEndpoint);
+                    o.Endpoint = new Uri(openTelemetrySettings.OtlpEndpointMetrics);
                     o.Protocol = OtlpExportProtocol.HttpProtobuf;
                 });
-            })
-            .WithTracing(tb =>
+            });
+        }
+
+        if (openTelemetrySettings.OtlpTracesEnabled)
+        {
+            otlpBuilder.WithTracing(tb =>
             {
-                // Server + client spans
-                
-                    tb.AddAspNetCoreInstrumentation()
+                tb.AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
                     .AddOtlpExporter(o =>
-                {
-                    o.Endpoint = new Uri(openTelemetrySettings.OtlpEndpoint);
-                    o.Protocol = OtlpExportProtocol.HttpProtobuf;
-                });
-            });*/
-        
+                    {
+                        o.Endpoint = new Uri(openTelemetrySettings.OtlpEndpointMetrics);
+                        o.Protocol = OtlpExportProtocol.HttpProtobuf;
+                    });
+            });
+        }
+
+
 
         return services;
     }
