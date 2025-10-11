@@ -119,7 +119,7 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME:-togglehub}-otel
     command: [ "--config=/etc/otel-config.yaml" ]
     volumes:
-      - ./otel-config.yaml:/etc/otel-config.yaml:ro
+      - ./otel-config.dev.yaml:/etc/otel-config.yaml:ro
     depends_on:
       loki:
         condition: service_healthy
