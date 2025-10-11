@@ -45,6 +45,7 @@ public static class ServiceCollectionExtensions
             return services;
         
         loggingBuilder.ClearProviders();
+        loggingBuilder.AddConsole();
         services.AddOpenTelemetry()
             .ConfigureResource(x => x.AddService(openTelemetrySettings.ServiceName, serviceVersion: openTelemetrySettings.ServiceVersion))
             .WithLogging(logging =>
