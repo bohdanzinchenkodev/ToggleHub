@@ -22,6 +22,6 @@ public class FlagEvaluationController : ControllerBase
     public async Task<IActionResult> EvaluateFlag([FromBody] FlagEvaluationRequest evaluationRequest)
     {
         var result = await _flagEvaluationService.EvaluateAsync(evaluationRequest);
-        return Ok(result);
+        return Ok(result.Value);
     }
 }
