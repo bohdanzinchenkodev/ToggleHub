@@ -85,7 +85,6 @@ src/
 2. **Set up environment variables**
    ```bash
    cp .env.development .env
-   # Edit .env with your configuration
    ```
 
 3. **Start the development environment**
@@ -98,6 +97,7 @@ src/
    - API: http://localhost:5160
    - Swagger UI: http://localhost:5160/swagger
    - Grafana: http://localhost:3000
+   - Mailpit Web: http://localhost:8025
 
 ## 📖 Usage
 
