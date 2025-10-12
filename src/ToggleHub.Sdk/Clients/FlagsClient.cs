@@ -36,7 +36,7 @@ namespace ToggleHub.Sdk.Clients
         {
             using (var msg = new HttpRequestMessage(HttpMethod.Post, "/api/flags/evaluate"))
             {
-                msg.Headers.TryAddWithoutValidation("Bearer", _options.ApiKey);
+                msg.Headers.TryAddWithoutValidation("Authorization", $"Bearer {_options.ApiKey}");
 
                 var json = JsonSerializer.Serialize(request, JsonOptions);
                 msg.Content = new StringContent(json, Encoding.UTF8, "application/json");

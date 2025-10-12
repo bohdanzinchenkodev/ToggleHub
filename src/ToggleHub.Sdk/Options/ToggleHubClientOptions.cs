@@ -3,7 +3,7 @@ namespace ToggleHub.Sdk.Options
     public class ToggleHubClientOptions
     {
         /// <summary>Base URL of your ToggleHub API, e.g. https://api.toggle-hub.com</summary>
-        public string BaseAddress { get; set; } = "http://api.toggle-hub.com/";
+        public string BaseAddress { get; set; } = "https://api.toggle-hub.com/";
 
         /// <summary>API key value to send on each request.</summary>
         public string ApiKey { get; set; } = string.Empty;

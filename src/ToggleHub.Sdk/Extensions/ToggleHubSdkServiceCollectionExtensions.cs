@@ -5,7 +5,7 @@ using ToggleHub.Sdk.Options;
 
 namespace ToggleHub.Sdk.Extensions
 {
-    public static class ServiceCollectionExtensions
+    public static class ToggleHubSdkServiceCollectionExtensions
     {
         /// <summary>
         /// Registers a typed HttpClient + IFlagsClient.
