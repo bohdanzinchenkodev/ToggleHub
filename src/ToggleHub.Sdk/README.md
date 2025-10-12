@@ -6,7 +6,7 @@ Lightweight .NET SDK for evaluating feature flags via the ToggleHub API.
 
 ## 🧩 Installation
 
-```bash
+```
 dotnet add package ToggleHub.SDK
 ```
 
