@@ -19,6 +19,9 @@ namespace ToggleHub.Sdk.Extensions
             if (string.IsNullOrWhiteSpace(opts.ApiKey))
                 throw new ArgumentException("ApiKey must be provided.", nameof(configure));
             
+            if (string.IsNullOrWhiteSpace(opts.BaseAddress))
+                throw new ArgumentException("BaseAddress must be provided.", nameof(configure));
+            
             services.AddSingleton(opts);
 
             services.AddHttpClient<IFlagsClient, FlagsClient>(client =>
