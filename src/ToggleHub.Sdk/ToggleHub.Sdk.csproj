@@ -11,9 +11,17 @@
         <Company>Togglehub</Company>
         <Description>Lightweight client for ToggleHub flag evaluation API.</Description>
         <PackageReadmeFile>README.md</PackageReadmeFile>
+        <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/bohdanzinchenkodev/ToggleHub</RepositoryUrl>
+        
+        <PackageProjectUrl>https://github.com/bohdanzinchenkodev/ToggleHub/tree/master/src/ToggleHub.Sdk</PackageProjectUrl>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
     <ItemGroup>
         
@@ -21,8 +29,11 @@
         <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
         <PackageReference Include="System.Text.Json" Version="8.0.5" />
     </ItemGroup>
+
     <ItemGroup>
         <None Include="README.md" Pack="true" PackagePath="\"/>
+        <None Include="LICENSE"  Pack="true" PackagePath="\"/>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
     </ItemGroup>
 
 </Project>
